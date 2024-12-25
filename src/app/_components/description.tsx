@@ -28,8 +28,7 @@ export default function Description({
       <div className="text-gray-700 text-sm inline">
         {beforeHighlight}
         <span className="font-semibold text-blue-600 inline">
-          {" "}
-          {highlighting}{" "}
+          {highlighting}
         </span>
         {afterHighlight}
       </div>
