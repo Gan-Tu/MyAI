@@ -7,7 +7,7 @@ interface HeaderProps {
 
 export default function Header({ title, subtitle }: HeaderProps) {
   return (
-    <div className="flex items-center p-6 border-b border-gray-200 min-w-[140px]">
+    <div className="flex items-center p-6 min-w-[140px]">
       <div className="space-y-2">
         {title ? (
           <h1 className="text-lg font-bold text-gray-900">

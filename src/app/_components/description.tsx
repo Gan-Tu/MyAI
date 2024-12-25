@@ -3,11 +3,13 @@ import { useEffect, useRef, useState } from "react";
 interface DescriptionProps {
   description?: string;
   highlighting?: string;
+  className?: string;
 }
 
 export default function Description({
   description,
-  highlighting
+  highlighting,
+  className
 }: DescriptionProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [contentHeight, setContentHeight] = useState<number | null>(null);
@@ -36,7 +38,7 @@ export default function Description({
   );
 
   return (
-    <div className="p-6 relative">
+    <div className={`p-6 pb-3 relative ${className}`}>
       {/* Content container with smooth height transition */}
       <div
         className="overflow-hidden transition-all duration-300 ease-in-out relative line-height-[1.5rem]"
