@@ -35,7 +35,7 @@ export default function Chat() {
       )}
 
       {card && (
-        <div className="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+        <div className="bg-gray-100 min-h-screen flex items-center justify-center p-4 overflow-scroll pb-20">
           <div className="max-w-xl bg-white rounded-lg shadow-lg">
             <Header title={card?.title} subtitle={card?.subtitle} />
             <Description
