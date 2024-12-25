@@ -30,6 +30,10 @@ export default function Chat() {
           onChange={handleInputChange}
         />
       </form>
+      {/*
+      <Button onClick={() => runScript()} outline>
+        Run Script
+      </Button> */}
     </div>
   );
 }
