@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "@/components/base/button";
 import { entityCardSchema } from "@/lib/schema";
 import { ImageSearchResult } from "@/lib/types";
 import { experimental_useObject as useObject } from "ai/react";
@@ -16,6 +17,7 @@ export default function Chat() {
   const [input, setInput] = useState("");
   const [images, setImages] = useState<ImageSearchResult[] | null>(null);
   const [hideImage, setHideImage] = useState(false);
+  const [useCache, setUseCache] = useState(true);
   const [card, setCard] = useState<any>(null);
   const router = useRouter();
   const { object, submit, isLoading, stop } = useObject({
@@ -44,18 +46,22 @@ export default function Chat() {
   };
 
   const fetchEntityCard = async () => {
-    if (input) {
+    if (!input) return;
+    if (useCache) {
       const { data: cache, error } = await getCachedAiTopics(input);
       if (error) {
         console.error(error);
         submit(input);
-      } else if (cache) {
+        return;
+      }
+      if (cache) {
         setCard(cache);
         toast("Fetched AI response from redis cache");
-      } else {
-        submit(input);
+        return;
       }
     }
+
+    submit(input);
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -93,6 +99,17 @@ export default function Chat() {
           </button>
         </div>
       )}
+
+      <div className="mt-5 space-x-4">
+        Cache: <b>{useCache ? "enabled:" : "disabled:"}</b>
+        <Button
+          outline
+          onClick={() => setUseCache(!useCache)}
+          className="text-white px-4 py-2 mb-4 rounded"
+        >
+          toggle
+        </Button>
+      </div>
 
       <form onSubmit={handleSubmit}>
         <input
