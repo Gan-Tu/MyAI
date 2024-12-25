@@ -17,23 +17,31 @@ export default function Fact({
   const [isExpanded, setIsExpanded] = useState(false);
 
   return (
-    <div className={className}>
-      <h2 className="text-sm font-medium text-gray-900">
+    <div
+      className={`${className} ${
+        isExpanded && "col-span-2"
+      } transition ease-in-out`}
+    >
+      <h2 className="text-sm font-medium text-gray-900 text-pretty">
         {name || (
-          <div className="min-h-6 w-[150px] animate-pulse bg-slate-200 rounded col-span-2" />
+          <div className="min-h-6 w-[100px] animate-pulse bg-slate-200 rounded" />
         )}
       </h2>
-      <p className={"mt-1 text-lg font-semibold"}>
+      <span
+        className={`mt-1 text-md font-semibold ${
+          !isExpanded && "line-clamp-2"
+        }`}
+      >
         {shortAnswer ? (
           <MemoizedMarkdown id={`${name}-short`} content={shortAnswer} />
         ) : (
-          <div className="min-h-6 w-full animate-pulse bg-slate-200 rounded col-span-2" />
+          <div className="min-h-6 w-full animate-pulse bg-slate-200 rounded" />
         )}
-      </p>
+      </span>
       {isExpanded && (
-        <p className="mt-1 font-normal text-sm">
+        <span className="mt-1 font-normal text-sm">
           <MemoizedMarkdown id={`${name}-full`} content={fullAnswer} />
-        </p>
+        </span>
       )}
       <button
         onClick={() => setIsExpanded(!isExpanded)}
@@ -46,7 +54,7 @@ export default function Fact({
             "Show more"
           )
         ) : (
-          <div className="min-h-6 w-[100px] animate-pulse bg-slate-200 rounded col-span-2" />
+          <div className="min-h-6 w-[70px] animate-pulse bg-slate-200 rounded" />
         )}
       </button>
     </div>
