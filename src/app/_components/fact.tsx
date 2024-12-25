@@ -18,9 +18,17 @@ export default function Fact({
 
   return (
     <div className={className}>
-      <h2 className="text-sm font-medium text-gray-900">{name}</h2>
+      <h2 className="text-sm font-medium text-gray-900">
+        {name || (
+          <div className="min-h-6 w-[150px] animate-pulse bg-slate-200 rounded col-span-2" />
+        )}
+      </h2>
       <p className={"mt-1 text-lg font-semibold"}>
-        <MemoizedMarkdown id={`${name}-short`} content={shortAnswer} />
+        {shortAnswer ? (
+          <MemoizedMarkdown id={`${name}-short`} content={shortAnswer} />
+        ) : (
+          <div className="min-h-6 w-full animate-pulse bg-slate-200 rounded col-span-2" />
+        )}
       </p>
       {isExpanded && (
         <p className="mt-1 font-normal text-sm">
@@ -31,7 +39,15 @@ export default function Fact({
         onClick={() => setIsExpanded(!isExpanded)}
         className="mt-2 text-sm text-blue-600 hover:underline"
       >
-        {isExpanded ? "Show less" : "Show more"}
+        {shortAnswer && name ? (
+          isExpanded ? (
+            "Show less"
+          ) : (
+            "Show more"
+          )
+        ) : (
+          <div className="min-h-6 w-[100px] animate-pulse bg-slate-200 rounded col-span-2" />
+        )}
       </button>
     </div>
   );

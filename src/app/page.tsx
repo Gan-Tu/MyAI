@@ -34,18 +34,16 @@ export default function Chat() {
         </div>
       )}
 
-      {card && (
-        <div className="bg-gray-100 min-h-screen flex items-center justify-center p-4 overflow-scroll pb-20">
-          <div className="max-w-xl bg-white rounded-lg shadow-lg">
-            <Header title={card?.title} subtitle={card?.subtitle} />
-            <Description
-              description={card?.description}
-              highlighting={card?.highlighting}
-            />
-            <FactsList facts={card?.facts} />
-          </div>
+      <div className="bg-gray-100 min-h-screen flex items-center justify-center p-4 overflow-scroll pb-20">
+        <div className="max-w-xl min-w-[400px] bg-white rounded-lg shadow-lg">
+          <Header title={card?.title} subtitle={card?.subtitle} />
+          <Description
+            description={card?.description}
+            highlighting={card?.highlighting}
+          />
+          <FactsList facts={card?.facts} />
         </div>
-      )}
+      </div>
 
       <form
         onSubmit={(e) => {
