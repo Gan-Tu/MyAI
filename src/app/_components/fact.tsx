@@ -1,5 +1,5 @@
 import { MemoizedMarkdown } from "@/components/memoized-markdown";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface FactProps {
   name?: string;
@@ -15,21 +15,33 @@ export default function Fact({
   className
 }: FactProps) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const contentRef = useRef<HTMLDivElement>(null); // Reference to the expandable content
+  const [contentHeight, setContentHeight] = useState<number | null>(null); // Track the content's full height
+
+  useEffect(() => {
+    // Calculate the full content height dynamically
+    if (contentRef.current) {
+      setContentHeight(isExpanded ? contentRef.current.scrollHeight : 0);
+    }
+  }, [isExpanded]);
 
   return (
     <div
-      className={`${className} ${
-        isExpanded && "col-span-2"
-      } transition ease-in-out`}
+      className={`${className} transition-all ease-in-out duration-300 ${
+        isExpanded ? "col-span-2" : ""
+      }`}
     >
-      <h2 className="text-sm font-medium text-gray-900 text-pretty">
+      {/* Header */}
+      <h2 className="text-sm font-medium text-gray-900">
         {name || (
           <div className="min-h-6 w-[100px] animate-pulse bg-slate-200 rounded" />
         )}
       </h2>
+
+      {/* Short Answer */}
       <span
-        className={`mt-1 text-md font-semibold ${
-          !isExpanded && "line-clamp-2"
+        className={`mt-1 text-md font-semibold transition-all ease-in-out duration-300 ${
+          !isExpanded ? "line-clamp-2" : ""
         }`}
       >
         {shortAnswer ? (
@@ -38,13 +50,23 @@ export default function Fact({
           <div className="min-h-6 w-full animate-pulse bg-slate-200 rounded" />
         )}
       </span>
-      {isExpanded && (
-        <span className="mt-1 font-normal text-sm">
-          <MemoizedMarkdown id={`${name}-full`} content={fullAnswer} />
-        </span>
-      )}
+
+      {/* Expandable Full Answer */}
+      <div
+        ref={contentRef}
+        className="overflow-hidden transition-all ease-in-out duration-300"
+        style={{ maxHeight: contentHeight ? `${contentHeight}px` : "0px" }}
+      >
+        {fullAnswer && (
+          <span className="mt-1 text-sm font-normal">
+            <MemoizedMarkdown id={`${name}-full`} content={fullAnswer} />
+          </span>
+        )}
+      </div>
+
+      {/* Toggle Button */}
       <button
-        onClick={() => setIsExpanded(!isExpanded)}
+        onClick={() => setIsExpanded((prev) => !prev)}
         className="mt-2 text-sm text-blue-600 hover:underline"
       >
         {shortAnswer && name ? (
