@@ -3,6 +3,7 @@
 import { entityCardSchema } from "@/lib/schema";
 import { ImageSearchResult } from "@/lib/types";
 import { experimental_useObject as useObject } from "ai/react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Description from "./_components/description";
 import FactsList from "./_components/fact-list";
@@ -14,6 +15,7 @@ export default function Chat() {
   const [input, setInput] = useState("");
   const [images, setImages] = useState<ImageSearchResult[] | null>(null);
   const [hideImage, setHideImage] = useState(false);
+  const router = useRouter();
   const {
     object: card,
     submit,
@@ -40,6 +42,9 @@ export default function Chat() {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    router.refresh();
+    setImages(null);
+    setHideImage(false);
     submit(input);
     fetchImages();
   };
@@ -75,7 +80,7 @@ export default function Chat() {
         <input
           className="fixed bottom-0 w-full max-w-md p-2 mb-8 border border-gray-300 rounded shadow-xl overflow-hidden"
           value={input}
-          placeholder="Say something..."
+          placeholder="Search something..."
           onChange={(e) => setInput(e.target.value)}
         />
       </form>
