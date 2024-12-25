@@ -25,7 +25,7 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({ images, className }) => {
 
   return (
     <div
-      className={`relative flex bg-white text-5xl text-white font-medium overflow-x-auto box-content ${className}`}
+      className={`relative flex bg-white text-5xl text-white font-medium overflow-x-auto cursor-pointer box-content ${className}`}
     >
       <div ref={ref} className="keen-slider">
         {capElements(10, images).map((image, index) => (
