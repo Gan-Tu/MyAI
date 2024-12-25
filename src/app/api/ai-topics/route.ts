@@ -1,5 +1,6 @@
 import redis from "@/lib/redis";
 import { entityCardSchema } from '@/lib/schema';
+import { getAiTopicsRespCacheKey } from "@/lib/utils";
 import { openai } from '@ai-sdk/openai';
 import { streamObject } from 'ai';
 
@@ -136,8 +137,8 @@ export async function POST(req: Request) {
         system: systemPrompt,
         prompt: context,
         onFinish({ object }) {
-            if (object) {
-                redis.set(`ai-topics:resp:${context}`, object)
+            if (object && context) {
+                redis.set(getAiTopicsRespCacheKey(context), object)
             }
         },
     })

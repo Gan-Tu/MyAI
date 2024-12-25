@@ -2,12 +2,13 @@
 
 import redis from "@/lib/redis";
 import { ImageSearchResult, entityCardSchemaType } from "@/lib/types";
+import { getAiTopicsImagesCacheKey, getAiTopicsRespCacheKey } from "@/lib/utils";
 
 export async function searchImage(
   query: string
 ): Promise<{ data?: ImageSearchResult[]; error?: string }> {
   try {
-    let cacheKey = `ai-topics:images:${query}`;
+    let cacheKey = getAiTopicsImagesCacheKey(query)
     const cache: ImageSearchResult[] | null = await redis.get(cacheKey);
     if (cache) return { data: cache };
 
@@ -20,7 +21,7 @@ export async function searchImage(
       throw new Error(`Error fetching images: ${response.status}`);
     }
     const { items } = await response.json();
-    if (items) {
+    if (items && query) {
       await redis.set(cacheKey, items);
       return { data: items };
     } else {
@@ -37,7 +38,7 @@ export async function getCachedAiTopics(
 ): Promise<{ data?: entityCardSchemaType; error?: string }> {
   try {
     const data: entityCardSchemaType | null = await redis.get(
-      `ai-topics:resp:${query}`
+      getAiTopicsRespCacheKey(query)
     );
     if (data) {
       return { data };

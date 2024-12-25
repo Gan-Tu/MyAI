@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/base/button";
+import { MemoizedMarkdown } from "@/components/memoized-markdown";
 import { entityCardSchema } from "@/lib/schema";
 import { ImageSearchResult } from "@/lib/types";
 import { experimental_useObject as useObject } from "ai/react";
@@ -51,16 +52,12 @@ export default function Chat() {
       const { data: cache, error } = await getCachedAiTopics(input);
       if (error) {
         console.error(error);
-        submit(input);
-        return;
-      }
-      if (cache) {
+      } else if (cache) {
         setCard(cache);
         toast("Fetched AI response from redis cache");
         return;
       }
     }
-
     submit(input);
   };
 
@@ -101,7 +98,7 @@ export default function Chat() {
       )}
 
       <div className="mt-5 space-x-4">
-        Cache: <b>{useCache ? "enabled:" : "disabled:"}</b>
+        Cache: <b>{useCache ? "enabled" : "disabled"}</b>
         <Button
           outline
           onClick={() => setUseCache(!useCache)}
@@ -109,6 +106,13 @@ export default function Chat() {
         >
           toggle
         </Button>
+      </div>
+
+      <div className="text-sm my-4">
+        <MemoizedMarkdown
+          id="example-prompts"
+          content={`Here are some ideas:\n\n    1. sarenne black slope\n    2. willow chip by google\n    3. frankfurt ban on night flights\n    4. passion fruit martini`}
+        />
       </div>
 
       <form onSubmit={handleSubmit}>
