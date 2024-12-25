@@ -4,27 +4,29 @@ import { entityCardSchema } from "@/lib/schema";
 import { ImageSearchResult } from "@/lib/types";
 import { experimental_useObject as useObject } from "ai/react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Description from "./_components/description";
 import FactsList from "./_components/fact-list";
 import Header from "./_components/header";
 import ImageCarousel from "./_components/image-carousel";
-import { searchImage } from "./actions";
+import { getCachedAiTopics, searchImage } from "./actions";
 
 export default function Chat() {
   const [input, setInput] = useState("");
   const [images, setImages] = useState<ImageSearchResult[] | null>(null);
   const [hideImage, setHideImage] = useState(false);
+  const [card, setCard] = useState<any>(null);
   const router = useRouter();
-  const {
-    object: card,
-    submit,
-    isLoading,
-    stop
-  } = useObject({
+  const { object, submit, isLoading, stop } = useObject({
     api: "/api/ai-topics",
     schema: entityCardSchema
   });
+
+  useEffect(() => {
+    if (object) {
+      setCard(object);
+    }
+  }, [object]);
 
   const fetchImages = async () => {
     if (input) {
@@ -40,12 +42,26 @@ export default function Chat() {
     }
   };
 
+  const fetchEntityCard = async () => {
+    if (input) {
+      const { data: cache, error } = await getCachedAiTopics(input);
+      if (error) {
+        console.error(error);
+        submit(input);
+      } else if (cache) {
+        setCard(cache);
+      } else {
+        submit(input);
+      }
+    }
+  };
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     router.refresh();
     setImages(null);
     setHideImage(false);
-    submit(input);
+    fetchEntityCard();
     fetchImages();
   };
 

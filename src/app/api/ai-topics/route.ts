@@ -1,3 +1,4 @@
+import redis from "@/lib/redis";
 import { entityCardSchema } from '@/lib/schema';
 import { openai } from '@ai-sdk/openai';
 import { streamObject } from 'ai';
@@ -163,16 +164,21 @@ function getFakeResponseStream() {
 export async function POST(req: Request) {
     const context = await req.json();
 
-    if (process.env.NODE_ENV === 'development') {
-        return getFakeResponseStream();
-    }
+    // if (process.env.NODE_ENV === 'development') {
+    //     return getFakeResponseStream();
+    // }
 
     const result = await streamObject({
         model: openai('gpt-4o-mini'),
         schema: entityCardSchema,
         system: systemPrompt,
         prompt: context,
-    });
+        onFinish({ object }) {
+            if (object) {
+                redis.set(`ai-topics:resp:${context}`, object)
+            }
+        },
+    })
 
     return result.toTextStreamResponse();
 }

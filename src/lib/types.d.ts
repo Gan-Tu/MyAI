@@ -1,3 +1,6 @@
+import { entityCardSchema } from "@/lib/types";
+import { z } from "zod";
+
 export type ImageSearchResult = {
   link: string,
   title: string,
@@ -5,3 +8,5 @@ export type ImageSearchResult = {
   thumbnailHeight?: number
 }
 
+
+export type entityCardSchemaType = z.infer<typeof entityCardSchema>
