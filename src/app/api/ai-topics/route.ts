@@ -103,48 +103,15 @@ Your task is to generate a topic card based on a user query. The card should inc
 * The highlighted phrase should be exactly the same words as it occured in the description.
 `
 
-function getFakeResponseStream() {
-    const jsonData = {
-        "title": "Willow Chip by Google",
-        "subtitle": "Technology company",
-        "description": "Willow Chip is a cutting-edge technology developed by Google, designed to enhance machine learning and artificial intelligence applications. This chip focuses on optimizing performance and energy efficiency, making it suitable for a wide range of devices, from smartphones to data centers. With its advanced architecture, Willow Chip aims to accelerate processing speeds and improve overall computational capabilities, paving the way for more sophisticated AI solutions.",
-        "highlighting": "enhance machine learning",
-        "facts": [
-            {
-                "name": "Release Year",
-                "full_answer": "Willow Chip was announced in 2023, showcasing Google's commitment to advancing AI technology.",
-                "short_answer": "2023",
-                "fact_type": "FACT_SEEKING",
-                "is_numeric_fact": true,
-                "has_image_grounding": false
-            },
-            {
-                "name": "Energy Efficiency",
-                "full_answer": "The Willow Chip is designed to be highly energy-efficient, reducing power consumption while maintaining high performance levels.",
-                "short_answer": "High energy efficiency",
-                "fact_type": "FACT_SEEKING",
-                "is_numeric_fact": false,
-                "has_image_grounding": false
-            },
-            {
-                "name": "Applications",
-                "full_answer": "Willow Chip can be utilized in various applications, including mobile devices, cloud computing, and AI-driven services.",
-                "short_answer": "Mobile, cloud, AI services",
-                "fact_type": "LIST_ANSWER_SEEKING",
-                "is_numeric_fact": false,
-                "has_image_grounding": false
-            }
-        ]
-    }
+function getFakeResponseStream(jsonData: object) {
     const stream = new ReadableStream({
         async start(controller) {
-            // Split JSON data into chunks
-            const chunks = JSON.stringify(jsonData).match(/.{1,50}/g); // Split into chunks of 50 characters
+            // Split into chunks of 50 characters
+            const chunks = JSON.stringify(jsonData).match(/.{1,50}/g);
             if (chunks) {
                 for (const chunk of chunks) {
                     // Enqueue the chunk
                     controller.enqueue(new TextEncoder().encode(chunk));
-
                     // Delay before sending the next chunk
                     await new Promise((resolve) => setTimeout(resolve, 100)); // 100ms delay
                 }
@@ -163,11 +130,6 @@ function getFakeResponseStream() {
 
 export async function POST(req: Request) {
     const context = await req.json();
-
-    // if (process.env.NODE_ENV === 'development') {
-    //     return getFakeResponseStream();
-    // }
-
     const result = await streamObject({
         model: openai('gpt-4o-mini'),
         schema: entityCardSchema,
