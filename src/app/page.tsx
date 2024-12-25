@@ -5,6 +5,7 @@ import { ImageSearchResult } from "@/lib/types";
 import { experimental_useObject as useObject } from "ai/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import Description from "./_components/description";
 import FactsList from "./_components/fact-list";
 import Header from "./_components/header";
@@ -50,6 +51,7 @@ export default function Chat() {
         submit(input);
       } else if (cache) {
         setCard(cache);
+        toast("Fetched AI response from redis cache");
       } else {
         submit(input);
       }
