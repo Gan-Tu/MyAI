@@ -20,7 +20,7 @@ export default function Chat() {
   });
 
   return (
-    <div className="flex flex-col w-full max-w-md mx-auto stretch max-h-screen">
+    <div className="flex flex-col w-full max-w-md mx-auto stretch max-h-screen min-w-[400px]">
       {isLoading && (
         <div>
           <div>Loading...</div>
@@ -35,7 +35,7 @@ export default function Chat() {
       )}
 
       <div className="bg-gray-100 min-h-screen flex items-center justify-center p-4 overflow-scroll pb-20">
-        <div className="max-w-xl min-w-[400px] bg-white rounded-lg shadow-lg">
+        <div className="max-w-xl bg-white rounded-lg shadow-lg">
           <Header title={card?.title} subtitle={card?.subtitle} />
           <Description
             description={card?.description}
@@ -52,7 +52,7 @@ export default function Chat() {
         }}
       >
         <input
-          className="fixed bottom-0 w-full max-w-md p-2 mb-8 border border-gray-300 rounded shadow-xl"
+          className="fixed bottom-0 w-full max-w-md p-2 mb-8 border border-gray-300 rounded shadow-xl overflow-hidden"
           value={input}
           placeholder="Say something..."
           onChange={(e) => setInput(e.target.value)}
