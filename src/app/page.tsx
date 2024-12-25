@@ -1,39 +1,65 @@
 "use client";
 
-import { useChat } from "ai/react";
+import { entityCardSchema } from "@/lib/schema";
+import { experimental_useObject as useObject } from "ai/react";
+import { useState } from "react";
+import Description from "./_components/description";
+import FactsList from "./_components/fact-list";
+import Header from "./_components/header";
 
 export default function Chat() {
-  const { messages, input, handleInputChange, handleSubmit } = useChat({
-    maxSteps: 5
+  const [input, setInput] = useState("");
+  const {
+    object: card,
+    submit,
+    isLoading,
+    stop
+  } = useObject({
+    api: "/api/ai-topics",
+    schema: entityCardSchema
   });
-  return (
-    <div className="flex flex-col w-full max-w-md py-24 mx-auto stretch">
-      {messages.map((m) => (
-        <div key={m.id} className="whitespace-pre-wrap">
-          {m.role === "user" ? "User: " : "AI: "}
-          {m.toolInvocations ? (
-            <>
-              <pre>{JSON.stringify(m.toolInvocations, null, 2)}</pre>
-              <p>{m.content}</p>
-            </>
-          ) : (
-            <p>{m.content}</p>
-          )}
-        </div>
-      ))}
 
-      <form onSubmit={handleSubmit}>
+  return (
+    <div className="flex flex-col w-full max-w-md mx-auto stretch max-h-screen">
+      {isLoading && (
+        <div>
+          <div>Loading...</div>
+          <button
+            type="button"
+            onClick={() => stop()}
+            className="bg-black text-white px-4 py-2 mb-4 rounded"
+          >
+            Stop
+          </button>
+        </div>
+      )}
+
+      {card && (
+        <div className="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+          <div className="max-w-xl bg-white rounded-lg shadow-lg">
+            <Header title={card?.title} subtitle={card?.subtitle} />
+            <Description
+              description={card?.description}
+              highlighting={card?.highlighting}
+            />
+            <FactsList facts={card?.facts} />
+          </div>
+        </div>
+      )}
+
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          submit(input);
+        }}
+      >
         <input
           className="fixed bottom-0 w-full max-w-md p-2 mb-8 border border-gray-300 rounded shadow-xl"
           value={input}
           placeholder="Say something..."
-          onChange={handleInputChange}
+          onChange={(e) => setInput(e.target.value)}
         />
       </form>
-      {/*
-      <Button onClick={() => runScript()} outline>
-        Run Script
-      </Button> */}
     </div>
   );
 }
