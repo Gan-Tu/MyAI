@@ -1,3 +1,4 @@
+import { MemoizedMarkdown } from "@/components/memoized-markdown";
 import { useState } from "react";
 
 interface FactProps {
@@ -18,8 +19,14 @@ export default function Fact({
   return (
     <div className={className}>
       <h2 className="text-sm font-medium text-gray-900">{name}</h2>
-      <p className={"mt-1 text-lg font-semibold"}>{shortAnswer}</p>
-      {isExpanded && <p className="mt-1 font-normal text-sm">{fullAnswer}</p>}
+      <p className={"mt-1 text-lg font-semibold"}>
+        <MemoizedMarkdown id={`${name}-short`} content={shortAnswer} />
+      </p>
+      {isExpanded && (
+        <p className="mt-1 font-normal text-sm">
+          <MemoizedMarkdown id={`${name}-full`} content={fullAnswer} />
+        </p>
+      )}
       <button
         onClick={() => setIsExpanded(!isExpanded)}
         className="mt-2 text-sm text-blue-600 hover:underline"

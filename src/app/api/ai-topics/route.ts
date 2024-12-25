@@ -13,7 +13,7 @@ Your task is to generate a topic card based on a user query. The card should inc
 * **Title:** A brief, informative phrase (under 40 characters) representing the main topic of the user query.
 * **Subtitle:** An optional short phrase (under 5 words) that categorize or further describe the title.
 * **Description:** One or two paragraphs (40-80 words per paragraph) summarizing the topic's key attributes.
-* **Highlighting:** A short consecutive substring (3-5 words) from the description paragraph highlighting the most important attribute or topic of the description. The highlighted phrase should be exactly as it occured in the description. It should not be same or similar to the title or user query.
+* **Highlighting:** A short consecutive substring (3-5 words) from the description paragraph highlighting the most important attribute or topic of the description. The highlighted phrase should be exactly the same words as it occured in the description. It should not be same or similar to the title or user query.
 * **Facts:** At most 3 salient facts about the topic.
 
 ## Subtitle Guidelines
@@ -99,6 +99,7 @@ Your task is to generate a topic card based on a user query. The card should inc
 
 * Avoid using unicode characters.
 * Avoid backslashes before dollar sign "$". 
+* The highlighted phrase should be exactly the same words as it occured in the description.
 `
 
 export async function POST(req: Request) {

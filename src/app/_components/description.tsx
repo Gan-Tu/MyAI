@@ -11,17 +11,28 @@ export default function Description({
     return <></>;
   }
 
+  if (!highlighting) {
+    return (
+      <div className="p-6">
+        <div className="text-gray-700 text-sm inline">{description}</div>
+      </div>
+    );
+  }
+
   const [beforeHighlight, afterHighlight] = description.split(
     highlighting || ""
   );
 
   return (
     <div className="p-6">
-      <p className="text-gray-700 text-sm">
+      <div className="text-gray-700 text-sm inline">
         {beforeHighlight}
-        <span className="font-semibold text-blue-600">{highlighting}</span>
+        <span className="font-semibold text-blue-600 inline">
+          {" "}
+          {highlighting}{" "}
+        </span>
         {afterHighlight}
-      </p>
+      </div>
     </div>
   );
 }
