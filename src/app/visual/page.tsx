@@ -8,7 +8,6 @@ export default function Chat() {
     useChat({
       api: "/api/visual",
       maxSteps: 5,
-
       // run client-side tools that are automatically executed:
       async onToolCall({ toolCall }) {
         if (toolCall.toolName === "getLocation") {
