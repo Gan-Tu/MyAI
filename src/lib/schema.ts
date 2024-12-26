@@ -10,9 +10,6 @@ export const entityCardSchema = z.object({
       name: z.string().describe("1-3 words, unique, and succinctly represents the fact"),
       full_answer: z.string().describe("20-40 words of the full fact"),
       short_answer: z.string().describe("Under 10-word summary for the fact"),
-      fact_type: z.enum(["FACT_SEEKING", "LIST_ANSWER_SEEKING", "LONG_ANSWER_SEEKING", "WEB_RESULTS_SEEKING"]).describe("The type of fact"),
-      is_numeric_fact: z.boolean().describe("True if the answer is a numeric value with units (e.g., 100 miles) or a date."),
-      has_image_grounding: z.boolean().describe("True if the short answer is an entity with an associated image."),
     })
   ).describe("At most 3 salient facts about the topic."),
 });

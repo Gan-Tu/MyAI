@@ -22,7 +22,7 @@ Your task is to generate a topic card based on a user query. The card should inc
 
 **Mandatory:**
 
-* Do not include the word "overview" in the subtitle, case insensitive.
+* Do not include the unnecessary oveview type of words, such as "overview" or "explained", in the title, case insensitive.
 
 ## Subtitle Guidelines
 
@@ -108,6 +108,7 @@ Your task is to generate a topic card based on a user query. The card should inc
 * Avoid using unicode characters.
 * Avoid backslashes before dollar sign "$". 
 * The highlighted phrase should be exactly the same words as it occured in the description.
+* Provide factual information. For numeric facts and statements, if you are not sure, do not include them.
 `
 
 function getFakeResponseStream(jsonData: object) {
