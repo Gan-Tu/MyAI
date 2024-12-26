@@ -20,9 +20,9 @@ export default function Header({ title, subtitle }: HeaderProps) {
           <p className="text-sm text-gray-600">
             {capitalizeFirstLetter(subtitle)}
           </p>
-        ) : (
+        ) : !title ? (
           <div className="min-h-6 w-[120px] animate-pulse bg-slate-200 rounded col-span-2"></div>
-        )}
+        ) : null}
       </div>
     </div>
   );
