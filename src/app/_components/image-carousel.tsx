@@ -1,3 +1,4 @@
+import WheelControls from "@/lib/slider-wheel-controls";
 import { ImageSearchResult } from "@/lib/types";
 import { capElements } from "@/lib/utils";
 import "keen-slider/keen-slider.min.css";
@@ -9,11 +10,14 @@ interface ImageCarouselProps {
 }
 
 const ImageCarousel: React.FC<ImageCarouselProps> = ({ images, className }) => {
-  const [ref] = useKeenSlider<HTMLDivElement>({
-    loop: false,
-    mode: "free-snap",
-    slides: { perView: 2.5, spacing: 5 }
-  });
+  const [ref] = useKeenSlider<HTMLDivElement>(
+    {
+      loop: false,
+      mode: "free-snap",
+      slides: { perView: 2.5, spacing: 5 }
+    },
+    [WheelControls]
+  );
 
   if (!images) {
     return (
