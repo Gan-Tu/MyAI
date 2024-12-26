@@ -81,7 +81,10 @@ export default function Chat() {
             description={card?.description}
             highlighting={card?.highlighting}
           />
-          <FactsList className={card?.description ? "pt-0" : "pt-0"} facts={card?.facts} />
+          <FactsList
+            className={card?.description ? "pt-3" : "pt-0"}
+            facts={card?.facts}
+          />
         </div>
       </div>
 

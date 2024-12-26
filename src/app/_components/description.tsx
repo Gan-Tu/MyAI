@@ -60,7 +60,7 @@ export default function Description({
         </div>
 
         <button
-          className="text-blue-600 text-sm cursor-pointer"
+          className="absolute bottom-0 right-0 backdrop-blur-sm backdrop-opacity-15 bg-slate-100  pl-2  pr-1 cursor-pointer flex rounded-xl text-sm transition-all ease-in-out duration-300"
           onClick={() => setIsExpanded(!isExpanded)}
         >
           {isExpanded ? "Less" : "More"}
