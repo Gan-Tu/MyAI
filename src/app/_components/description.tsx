@@ -1,3 +1,4 @@
+import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/20/solid";
 import { useEffect, useRef, useState } from "react";
 
 interface DescriptionProps {
@@ -58,26 +59,18 @@ export default function Description({
           </p>
         </div>
 
-        {/* Floating "Show More" button */}
-        {!isExpanded && (
-          <span
-            className="absolute bottom-0 right-0 backdrop-blur-sm backdrop-opacity-15 bg-white/100 text-blue-600 text-sm pl-1 cursor-pointer"
-            onClick={() => setIsExpanded(true)}
-          >
-            ... Show More
-          </span>
-        )}
-      </div>
-
-      {/* "Show Less" button */}
-      {isExpanded && (
         <button
-          className="mt-2 text-blue-600 text-sm cursor-pointer"
-          onClick={() => setIsExpanded(false)}
+          className="text-blue-600 text-sm cursor-pointer"
+          onClick={() => setIsExpanded(!isExpanded)}
         >
-          Show Less
+          {isExpanded ? "Less" : "More"}
+          {isExpanded ? (
+            <ChevronUpIcon className="w-5 h-5 justify-end" />
+          ) : (
+            <ChevronDownIcon className="w-5 h-5 justify-end" />
+          )}
         </button>
-      )}
+      </div>
     </div>
   );
 }

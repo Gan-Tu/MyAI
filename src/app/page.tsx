@@ -71,7 +71,7 @@ export default function Chat() {
   };
 
   return (
-    <div className="flex  flex-col w-full max-w-md mx-auto stretch max-h-screen min-w-[350px] md:min-w-[500px] no-scrollbar pb-20 overflow-scroll min-h-screen">
+    <div className="flex flex-col w-full max-w-md mx-auto stretch max-h-screen min-w-[350px] md:min-w-[400px] no-scrollbar pb-20 overflow-scroll min-h-screen">
       <div className="my-auto">
         <div className="max-w-xl bg-white rounded-lg shadow-lg">
           <Header title={card?.title} subtitle={card?.subtitle} />
@@ -81,7 +81,7 @@ export default function Chat() {
             description={card?.description}
             highlighting={card?.highlighting}
           />
-          <FactsList facts={card?.facts} />
+          <FactsList className={card?.description ? "pt-0" : "pt-0"} facts={card?.facts} />
         </div>
       </div>
 
@@ -119,7 +119,7 @@ export default function Chat() {
 
       <form onSubmit={handleSubmit}>
         <input
-          className="fixed bottom-0 w-full max-w-md p-2 mb-8 border border-gray-300 rounded shadow-xl overflow-hidden"
+          className="fixed bottom-0 w-full max-w-md mx-auto stretch p-2 mb-8 border border-gray-300 rounded shadow-xl overflow-hidden"
           value={input}
           placeholder="Search something..."
           onChange={(e) => setInput(e.target.value)}
