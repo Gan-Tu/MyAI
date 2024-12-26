@@ -34,9 +34,15 @@ export default function Description({
     );
   }
 
-  const [beforeHighlight, afterHighlight] = description.split(
-    highlighting || ""
-  );
+  const [beforeHighlight, afterHighlight] =
+    description && highlighting && description.includes(highlighting)
+      ? [
+          description.slice(0, description.indexOf(highlighting)),
+          description.slice(
+            description.indexOf(highlighting) + highlighting.length
+          )
+        ]
+      : [description || "", ""];
 
   return (
     <div className={`p-5 pb-3 relative ${className}`}>
@@ -51,7 +57,7 @@ export default function Description({
           <p>
             {beforeHighlight}
             {highlighting && (
-              <span className="font-semibold bg-amber-100 px-1">
+              <span className="font-semibold bg-amber-100 px-[0.15rem]">
                 {highlighting}
               </span>
             )}
