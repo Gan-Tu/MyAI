@@ -71,7 +71,7 @@ export default function Chat() {
   };
 
   return (
-    <div className="flex  flex-col w-full max-w-md mx-auto stretch max-h-screen min-w-[500px] no-scrollbar pb-20 overflow-scroll min-h-screen">
+    <div className="flex  flex-col w-full max-w-md mx-auto stretch max-h-screen min-w-[350px] md:min-w-[500px] no-scrollbar pb-20 overflow-scroll min-h-screen">
       <div className="my-auto">
         <div className="max-w-xl bg-white rounded-lg shadow-lg">
           <Header title={card?.title} subtitle={card?.subtitle} />
@@ -97,22 +97,24 @@ export default function Chat() {
         </div>
       )}
 
-      <div className="mt-5 space-x-4">
-        Cache: <b>{useCache ? "enabled" : "disabled"}</b>
-        <Button
-          outline
-          onClick={() => setUseCache(!useCache)}
-          className="text-white px-4 py-2 mb-4 rounded"
-        >
-          toggle
-        </Button>
-      </div>
+      <div className="p-6">
+        <div className="mt-5 space-x-4">
+          Cache: <b>{useCache ? "enabled" : "disabled"}</b>
+          <Button
+            outline
+            onClick={() => setUseCache(!useCache)}
+            className="text-white px-4 py-2 mb-4 rounded"
+          >
+            toggle
+          </Button>
+        </div>
 
-      <div className="text-sm my-4">
-        <MemoizedMarkdown
-          id="example-prompts"
-          content={`Here are some ideas:\n\n    1. sarenne black slope\n    2. willow chip by google\n    3. frankfurt ban on night flights\n    4. passion fruit martini`}
-        />
+        <div className="text-sm my-4">
+          <MemoizedMarkdown
+            id="example-prompts"
+            content={`Here are some ideas:\n\n    1. sarenne black slope\n    2. willow chip by google\n    3. frankfurt ban on night flights\n    4. passion fruit martini`}
+          />
+        </div>
       </div>
 
       <form onSubmit={handleSubmit}>
