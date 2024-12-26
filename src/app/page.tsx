@@ -6,7 +6,7 @@ import { entityCardSchema } from "@/lib/schema";
 import { ImageSearchResult } from "@/lib/types";
 import { capElements } from "@/lib/utils";
 import { experimental_useObject as useObject } from "ai/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import Description from "./_components/description";
@@ -15,8 +15,9 @@ import Header from "./_components/header";
 import ImageCarousel from "./_components/image-carousel";
 import { getCachedAiTopics, searchImage } from "./actions";
 
-export default function Chat() {
-  const [input, setInput] = useState("");
+export default function AiTopics() {
+  const searchParams = useSearchParams();
+  const [input, setInput] = useState(searchParams.get("q") || null);
   const [images, setImages] = useState<ImageSearchResult[] | null>(null);
   const [hideImage, setHideImage] = useState(false);
   const [useCache, setUseCache] = useState(true);
@@ -62,13 +63,17 @@ export default function Chat() {
     submit(input);
   };
 
+  const fetchData = async () => {
+    fetchEntityCard();
+    fetchImages();
+  };
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     router.refresh();
     setImages(null);
     setHideImage(false);
-    fetchEntityCard();
-    fetchImages();
+    fetchData();
   };
 
   return (

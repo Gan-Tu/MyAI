@@ -18,7 +18,7 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({ images, className }) => {
   if (!images) {
     return (
       <div className="px-5 py-3">
-        <div className="h-[200px] animate-pulse bg-slate-200 rounded" />
+        <div className="h-[170px] animate-pulse bg-slate-200 rounded" />
       </div>
     );
   }
@@ -35,9 +35,7 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({ images, className }) => {
             alt={image?.title}
             className={`keen-slider__slide object-cover w-auto aspect-auto ${
               index === 0 && "ml-5 rounded-l-lg"
-            } ${
-              index === images?.length -1 && "rounded-r-lg"
-            }`}
+            } ${index === images?.length - 1 && "rounded-r-lg"}`}
             style={{
               width: image?.thumbnailWidth || "auto",
               height: image?.thumbnailHeight || 200,
