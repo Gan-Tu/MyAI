@@ -5,7 +5,10 @@ export type ImageSearchResult = {
   link: string,
   title: string,
   thumbnailWidth?: number,
-  thumbnailHeight?: number
+  thumbnailHeight?: number,
+  image?: {
+    contextLink?: string;
+  };
 }
 
 
