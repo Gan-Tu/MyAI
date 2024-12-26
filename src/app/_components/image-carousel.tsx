@@ -4,6 +4,7 @@ import { capElements } from "@/lib/utils";
 import "keen-slider/keen-slider.min.css";
 import { useKeenSlider } from "keen-slider/react";
 import Link from "next/link";
+import SafeImage from "./safe-image";
 
 interface ImageCarouselProps {
   images?: ImageSearchResult[] | null;
@@ -35,7 +36,7 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({ images, className }) => {
       <div ref={ref} className="keen-slider">
         {capElements(10, images).map((image, index) => {
           let imageElem = (
-            <img
+            <SafeImage
               key={index}
               src={image?.link}
               alt={image?.title}
