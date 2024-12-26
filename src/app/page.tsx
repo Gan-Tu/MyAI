@@ -4,6 +4,7 @@ import { Button } from "@/components/base/button";
 import { MemoizedMarkdown } from "@/components/memoized-markdown";
 import { entityCardSchema } from "@/lib/schema";
 import { ImageSearchResult } from "@/lib/types";
+import { capElements } from "@/lib/utils";
 import { experimental_useObject as useObject } from "ai/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -83,7 +84,7 @@ export default function Chat() {
           />
           <FactsList
             className={card?.description ? "pt-3" : "pt-0"}
-            facts={card?.facts}
+            facts={capElements(3, card?.facts)}
           />
         </div>
       </div>
