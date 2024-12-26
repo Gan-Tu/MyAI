@@ -44,7 +44,7 @@ export default function Fact({
       }}
       className={`${className} transition-all justify-start ease-in-out duration-300 rounded-xl ${
         isExpanded ? "col-span-2 p-2" : "bg-blue-100 p-4"
-      } ${noContent ? "" : "cursor-none"} grid content-start`}
+      } grid content-start`}
     >
       {/* Header */}
       <div className="flex justify-between items-start  transition-all ease-in-out duration-300">
