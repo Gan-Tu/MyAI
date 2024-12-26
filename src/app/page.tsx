@@ -93,14 +93,14 @@ export default function Chat() {
           <button
             type="button"
             onClick={() => stop()}
-            className="bg-black text-white px-4 py-2 mb-4 rounded"
+            className="bg-black text-white px-2 py-2 mb-4 rounded"
           >
             Stop loading...
           </button>
         </div>
       )}
 
-      <div className="p-6">
+      <div className="p-5">
         <div className="mt-5 space-x-4">
           Cache: <b>{useCache ? "enabled" : "disabled"}</b>
           <Button

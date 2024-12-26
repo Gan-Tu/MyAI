@@ -15,6 +15,7 @@ export default function Fact({
   fullAnswer,
   className
 }: FactProps) {
+  const noContent = !(name && shortAnswer);
   const [isExpanded, setIsExpanded] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null); // Reference to the expandable content
   const [contentHeight, setContentHeight] = useState<number | null>(null); // Track the content's full height
@@ -26,12 +27,24 @@ export default function Fact({
     }
   }, [isExpanded]);
 
+  if (noContent) {
+    return (
+      <div
+        className={`min-h-16 animate-pulse bg-slate-200 rounded ${className}`}
+      />
+    );
+  }
+
   return (
     <button
-      onClick={() => setIsExpanded((prev) => !prev)}
+      onClick={() => {
+        if (!noContent) {
+          setIsExpanded((prev) => !prev);
+        }
+      }}
       className={`${className} transition-all justify-start ease-in-out duration-300 rounded-xl ${
         isExpanded ? "col-span-2 p-2" : "bg-blue-100 p-4"
-      } grid content-start`}
+      } ${noContent ? "" : "cursor-none"} grid content-start`}
     >
       {/* Header */}
       <div className="flex justify-between items-start  transition-all ease-in-out duration-300">
@@ -41,7 +54,7 @@ export default function Fact({
           }`}
         >
           {name || (
-            <div className="min-h-6 w-[100px] animate-pulse bg-slate-200 rounded" />
+            <div className="min-h-6 w-[100px] animate-pulse bg-slate-300 rounded" />
           )}
         </h2>
         {isExpanded ? (
@@ -61,7 +74,7 @@ export default function Fact({
           {shortAnswer ? (
             <MemoizedMarkdown id={`${name}-short`} content={shortAnswer} />
           ) : (
-            <div className="min-h-6 w-full animate-pulse bg-slate-200 rounded" />
+            <div className="min-h-6 w-[150px] animate-pulse bg-slate-300 rounded" />
           )}
         </span>
 

@@ -24,7 +24,7 @@ export default function Description({
 
   if (!description) {
     return (
-      <div className="p-6">
+      <div className="p-5">
         <div className="text-gray-700 text-sm inline space-y-1">
           <div className="min-h-6 w-full animate-pulse bg-slate-200 rounded col-span-2" />
           <div className="min-h-6 w-full animate-pulse bg-slate-200 rounded col-span-2" />
@@ -39,7 +39,7 @@ export default function Description({
   );
 
   return (
-    <div className={`p-6 pb-3 relative ${className}`}>
+    <div className={`p-5 pb-3 relative ${className}`}>
       {/* Content container with smooth height transition */}
       <div
         className="overflow-hidden transition-all duration-300 ease-in-out relative line-height-[1.5rem]"
@@ -60,14 +60,14 @@ export default function Description({
         </div>
 
         <button
-          className="absolute bottom-0 right-0 backdrop-blur-sm backdrop-opacity-15 bg-slate-100  pl-2  pr-1 cursor-pointer flex rounded-xl text-sm transition-all ease-in-out duration-300"
+          className="absolute bottom-0 right-0 backdrop-blur-md backdrop-opacity-15 bg-slate-100  pl-2  pr-1  py-[0.15rem] cursor-pointer flex rounded-xl text-[0.8rem] text-center transition-all ease-in-out duration-300"
           onClick={() => setIsExpanded(!isExpanded)}
         >
           {isExpanded ? "Less" : "More"}
           {isExpanded ? (
-            <ChevronUpIcon className="w-5 h-5 justify-end" />
+            <ChevronUpIcon className="w-4 h-4 justify-end" />
           ) : (
-            <ChevronDownIcon className="w-5 h-5 justify-end" />
+            <ChevronDownIcon className="w-4 h-4 justify-end" />
           )}
         </button>
       </div>

@@ -1,11 +1,11 @@
 "use client";
 
 import {
-  Combobox,
-  ComboboxInput,
-  Dialog,
-  DialogBackdrop,
-  DialogPanel
+    Combobox,
+    ComboboxInput,
+    Dialog,
+    DialogBackdrop,
+    DialogPanel
 } from "@headlessui/react";
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 import { useEffect, useState } from "react";
@@ -46,7 +46,7 @@ export default function SearchBox({ initiallyOpen = false }: SearchBoxProps) {
         transition
         className="fixed inset-0 bg-gray-500/25 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in"
       />
-      <div className="fixed inset-0 z-10 flex items-center justify-center overflow-y-auto p-4 sm:p-6 md:p-20 flex-grow">
+      <div className="fixed inset-0 z-10 flex items-center justify-center overflow-y-auto p-4 sm:p-5 md:p-20 flex-grow">
         <DialogPanel
           transition
           className="w-full mx-auto max-w-xl transform divide-y divide-gray-100 overflow-hidden rounded-xl bg-white shadow-2xl ring-1 ring-black/5 transition-all data-[closed]:scale-95 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in"

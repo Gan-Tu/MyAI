@@ -14,7 +14,7 @@ interface FactsListProps {
 
 export default function FactsList({ facts = [], className }: FactsListProps) {
   return (
-    <div className={`grid grid-cols-2 gap-4 p-6 ${className}`}>
+    <div className={`grid grid-cols-2 gap-4 p-5 ${className}`}>
       {capElements(3, facts).map((fact, index) => (
         <Fact
           key={index}
