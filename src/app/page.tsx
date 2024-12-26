@@ -1,3 +1,4 @@
+import { ResetExpansionProvider } from "@/hooks/reset-expansion";
 import AiTopics from "./ai-topics";
 
 export default async function Page({
@@ -8,5 +9,9 @@ export default async function Page({
   const { q } = await searchParams;
   const query = Array.isArray(q) ? (q.length > 0 ? q[0] : undefined) : q;
 
-  return <AiTopics q={query} />;
+  return (
+    <ResetExpansionProvider>
+      <AiTopics q={query} />
+    </ResetExpansionProvider>
+  );
 }

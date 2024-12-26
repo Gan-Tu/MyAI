@@ -1,4 +1,5 @@
 import { MemoizedMarkdown } from "@/components/memoized-markdown";
+import { useResetExpansion } from "@/hooks/reset-expansion";
 import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/20/solid";
 import { useEffect, useRef, useState } from "react";
 
@@ -20,8 +21,9 @@ export default function Fact({
   className
 }: FactProps) {
   const noContent = !(name && shortAnswer);
-  const contentRef = useRef<HTMLDivElement>(null); // Reference to the expandable content
-  const [contentHeight, setContentHeight] = useState<number | null>(null); // Track the content's full height
+  const contentRef = useRef<HTMLDivElement>(null);
+  const [contentHeight, setContentHeight] = useState<number | null>(null);
+  const { resetFlag } = useResetExpansion();
 
   useEffect(() => {
     // Calculate the full content height dynamically
@@ -29,6 +31,12 @@ export default function Fact({
       setContentHeight(isExpanded ? contentRef.current.scrollHeight : 0);
     }
   }, [isExpanded]);
+
+  useEffect(() => {
+    if (resetFlag) {
+      setIsExpanded(false);
+    }
+  }, [resetFlag]);
 
   if (noContent) {
     return (

@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/base/button";
 import { MemoizedMarkdown } from "@/components/memoized-markdown";
+import { useResetExpansion } from "@/hooks/reset-expansion";
 import { entityCardSchema } from "@/lib/schema";
 import { ImageSearchResult } from "@/lib/types";
 import { capElements } from "@/lib/utils";
@@ -26,6 +27,7 @@ export default function AiTopics({ q }: AiTopicsProps) {
   const [useCache, setUseCache] = useState(true);
   const [card, setCard] = useState<any>(null);
   const router = useRouter();
+  const { resetExpansion } = useResetExpansion();
   const { object, submit, isLoading, stop } = useObject({
     api: "/api/ai-topics",
     schema: entityCardSchema
@@ -68,7 +70,7 @@ export default function AiTopics({ q }: AiTopicsProps) {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    router.refresh();
+    resetExpansion();
     setImages(null);
     setHideImage(false);
     fetchEntityCard();

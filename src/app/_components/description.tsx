@@ -1,3 +1,4 @@
+import { useResetExpansion } from "@/hooks/reset-expansion";
 import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/20/solid";
 import { useEffect, useRef, useState } from "react";
 
@@ -15,12 +16,19 @@ export default function Description({
   const [isExpanded, setIsExpanded] = useState(false);
   const [contentHeight, setContentHeight] = useState<number | null>(null);
   const contentRef = useRef<HTMLDivElement>(null);
+  const { resetFlag } = useResetExpansion();
 
   useEffect(() => {
     if (contentRef.current) {
       setContentHeight(isExpanded ? contentRef.current.scrollHeight : 0);
     }
   }, [isExpanded]);
+
+  useEffect(() => {
+    if (resetFlag) {
+      setIsExpanded(false);
+    }
+  }, [resetFlag]);
 
   if (!description) {
     return (
