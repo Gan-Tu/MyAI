@@ -62,15 +62,13 @@ export default function Description({
         }}
       >
         <div ref={contentRef}>
-          <p>
-            {beforeHighlight}
-            {highlighting && (
-              <span className="font-semibold bg-amber-100 px-[0.15rem]">
-                {highlighting}
-              </span>
-            )}
-            {afterHighlight}
-          </p>
+          {beforeHighlight}
+          {highlighting && (
+            <span className="font-semibold bg-amber-100 px-[0.15rem]">
+              {highlighting}
+            </span>
+          )}
+          {afterHighlight}
         </div>
 
         <button
