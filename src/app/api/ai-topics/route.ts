@@ -18,6 +18,12 @@ Your task is to generate a topic card based on a user query. The card should inc
 * **Highlighting:** A short consecutive substring (3-5 words) from the description paragraph highlighting the most important attribute or topic of the description. The highlighted phrase should be exactly the same words as it occured in the description. It should not be same or similar to the title or user query.
 * **Facts:** At most 3 salient facts about the topic.
 
+## Title Guidelines
+
+**Mandatory:**
+
+* Do not include the word "overview" in the subtitle, case insensitive.
+
 ## Subtitle Guidelines
 
 **Mandatory:**
