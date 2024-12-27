@@ -20,11 +20,13 @@ const HeroCarousel: React.FC<HeroCarouselProps> = ({
   const [ref] = useKeenSlider<HTMLDivElement>(
     {
       loop: false,
-      mode: "free-snap",
+      mode: "snap",
       slides: { perView: 1.5, spacing: 5 }
     },
     [WheelControls]
   );
+  const showVideo =
+    videoUrl && !videoUrl.includes("v=example") && videoUrl !== "null";
 
   if (!images) {
     return (
@@ -39,16 +41,21 @@ const HeroCarousel: React.FC<HeroCarouselProps> = ({
       className={`relative flex bg-white text-5xl text-white font-medium overflow-x-auto cursor-pointer box-content ${className}`}
     >
       <div ref={ref} className="keen-slider">
-        {videoUrl && !videoUrl.includes("v=example") && videoUrl !== "null" && (
-          <iframe
-            className="keen-slider__slide rounded-l-lg ml-5"
-            height="200"
-            src={videoUrl}
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            referrerPolicy="strict-origin-when-cross-origin"
-            allowFullScreen
-          />
-        )}
+        <div
+          className={`keen-slider__slide rounded-l-lg ml-5 min-w-fit ${
+            showVideo ? "" : "hidden"
+          }`}
+        >
+          {showVideo && (
+            <iframe
+              height="200"
+              src={videoUrl}
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              referrerPolicy="strict-origin-when-cross-origin"
+              allowFullScreen
+            />
+          )}
+        </div>
         {capElements(10, images).map((image, index) => {
           let imageElem = (
             <SafeImage
