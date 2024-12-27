@@ -19,6 +19,17 @@ interface AiTopicsProps {
   q?: string;
 }
 
+const exampleIdeas = [
+  "luigi mangione",
+  "bench press",
+  "squid game season 2",
+  "last of us hbo season 2",
+  "sarenne black slope",
+  "willow chip by google",
+  "frankfurt ban on night flights",
+  "passion fruit martini"
+];
+
 export default function AiTopics({ q }: AiTopicsProps) {
   const [input, setInput] = useState(q);
   const [images, setImages] = useState<ImageSearchResult[] | null>(null);
@@ -122,7 +133,9 @@ export default function AiTopics({ q }: AiTopicsProps) {
         <div className="text-sm my-4">
           <MemoizedMarkdown
             id="example-prompts"
-            content={`Here are some ideas:\n\n    1. luigi mangione\n    2. bench press\n    3. squid game season 2\n    4. sarenne black slope\n    5. willow chip by google\n    6. frankfurt ban on night flights\n    7. passion fruit martini\n    `}
+            content={`Here are some ideas:\n\n    ${exampleIdeas
+              .map((item, index) => `${index + 1}. ${item}`)
+              .join("\n    ")}`}
           />
         </div>
       </div>
