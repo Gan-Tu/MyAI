@@ -93,6 +93,7 @@ export default function AiTopics({ q }: AiTopicsProps) {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setCard(null);
     resetExpansion();
     setImages(null);
     setHideImage(false);
@@ -160,7 +161,9 @@ export default function AiTopics({ q }: AiTopicsProps) {
             onChange={(e) => setModel(e.target.value)}
           >
             {supportedModels.map((model) => (
-              <option key={model} value={model}>{model}</option>
+              <option key={model} value={model}>
+                {model}
+              </option>
             ))}
           </Select>
         </Headless.Field>
