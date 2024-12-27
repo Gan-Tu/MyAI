@@ -1,11 +1,15 @@
 "use client";
 
 import { Button } from "@/components/base/button";
+import { Label } from "@/components/base/fieldset";
+import { Select } from "@/components/base/select";
 import { MemoizedMarkdown } from "@/components/memoized-markdown";
 import { useResetExpansion } from "@/hooks/reset-expansion";
+import { supportedModels } from "@/lib/models";
 import { entityCardSchema } from "@/lib/schema";
 import { ImageSearchResult } from "@/lib/types";
 import { capElements } from "@/lib/utils";
+import * as Headless from "@headlessui/react";
 import { experimental_useObject as useObject } from "ai/react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
@@ -32,14 +36,18 @@ const exampleIdeas = [
 
 export default function AiTopics({ q }: AiTopicsProps) {
   const [input, setInput] = useState(q);
+  const [model, setModel] = useState<string>("gpt-4o-mini");
   const [images, setImages] = useState<ImageSearchResult[] | null>(null);
   const [hideImage, setHideImage] = useState(false);
   const [useCache, setUseCache] = useState(true);
   const [card, setCard] = useState<any>(null);
   const { resetExpansion } = useResetExpansion();
-  const { object, submit, isLoading, stop } = useObject({
+  const { object, submit, isLoading, stop, error } = useObject({
     api: "/api/ai-topics",
-    schema: entityCardSchema
+    schema: entityCardSchema,
+    headers: {
+      "X-AI-Model": model
+    }
   });
 
   useEffect(() => {
@@ -47,6 +55,12 @@ export default function AiTopics({ q }: AiTopicsProps) {
       setCard(object);
     }
   }, [object]);
+
+  useEffect(() => {
+    if (error) {
+      toast.error(`Failed to fetch AI response: ${error}`);
+    }
+  }, [error]);
 
   const fetchImages = async () => {
     if (input) {
@@ -65,7 +79,7 @@ export default function AiTopics({ q }: AiTopicsProps) {
   const fetchEntityCard = async () => {
     if (!input) return;
     if (useCache) {
-      const { data: cache, error } = await getCachedAiTopics(input);
+      const { data: cache, error } = await getCachedAiTopics(input, model);
       if (error) {
         console.error(error);
       } else if (cache) {
@@ -138,6 +152,18 @@ export default function AiTopics({ q }: AiTopicsProps) {
               .join("\n    ")}`}
           />
         </div>
+        <Headless.Field className="flex items-baseline justift-center gap-6">
+          <Label className="flex-grow font-bold min-w-fit">Select Model:</Label>
+          <Select
+            name="model"
+            value={model}
+            onChange={(e) => setModel(e.target.value)}
+          >
+            {supportedModels.map((model) => (
+              <option key={model} value={model}>{model}</option>
+            ))}
+          </Select>
+        </Headless.Field>
       </div>
 
       <form onSubmit={handleSubmit}>

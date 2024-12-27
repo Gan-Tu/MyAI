@@ -39,7 +39,7 @@ const HeroCarousel: React.FC<HeroCarouselProps> = ({
       className={`relative flex bg-white text-5xl text-white font-medium overflow-x-auto cursor-pointer box-content ${className}`}
     >
       <div ref={ref} className="keen-slider">
-        {videoUrl && !videoUrl.includes("v=example") && (
+        {videoUrl && !videoUrl.includes("v=example") && videoUrl !== "null" && (
           <iframe
             className="keen-slider__slide rounded-l-lg ml-5"
             height="200"

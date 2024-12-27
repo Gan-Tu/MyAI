@@ -15,8 +15,9 @@ export function capElements(count: number, arr?: any[]) {
   return topElemens.concat(Array(count - topElemens.length).fill(null)); // Fill with null if fewer than 3
 };
 
-export function getAiTopicsRespCacheKey(str: string) {
-  return `ai-topics:resp:${str?.toLowerCase()?.trim()}`
+export function getAiTopicsRespCacheKey(str: string, model: string = 'gpt-4o-mini') {
+  let modelStr = model === 'gpt-4o-mini' ? '' : `${model}:`
+  return `ai-topics:resp:${modelStr}${str?.toLowerCase()?.trim()}`
 }
 
 export function getAiTopicsImagesCacheKey(str: string) {

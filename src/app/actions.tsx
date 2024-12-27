@@ -34,11 +34,12 @@ export async function searchImage(
 }
 
 export async function getCachedAiTopics(
-  query: string
+  query: string,
+  model: string
 ): Promise<{ data?: entityCardSchemaType; error?: string }> {
   try {
     const data: entityCardSchemaType | null = await redis.get(
-      getAiTopicsRespCacheKey(query)
+      getAiTopicsRespCacheKey(query, model)
     );
     if (data) {
       return { data };

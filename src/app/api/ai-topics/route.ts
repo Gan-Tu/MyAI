@@ -1,9 +1,10 @@
 import bing_search from '@/lib/agents';
+import { getLanguageModel } from '@/lib/models';
 import redis from "@/lib/redis";
 import { entityCardSchema } from '@/lib/schema';
 import { getAiTopicsRespCacheKey } from "@/lib/utils";
-import { openai } from '@ai-sdk/openai';
-import { streamObject } from 'ai';
+import { LanguageModel, streamObject } from 'ai';
+import { NextResponse } from 'next/server';
 
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;
@@ -163,6 +164,18 @@ const extractVideoSrcWithoutAutoplay = (embedHtml: string) => {
 
 export async function POST(req: Request) {
     const context = await req.json();
+    const headers = req.headers;
+    const modelChoice = headers.get('X-AI-Model') || 'gpt-4o-mini'
+
+    let model: LanguageModel | null = null;
+    try {
+        model = getLanguageModel(modelChoice)
+    } catch (error) {
+        console.error(error)
+        return NextResponse.json({ error: (error as Error).message }, { status: 400 })
+    }
+
+
     let prompt = systemPrompt
     try {
         let searchResults = await bing_search(context, 10);
@@ -190,16 +203,15 @@ export async function POST(req: Request) {
     }
 
     const result = await streamObject({
-        model: openai('gpt-4o-mini'),
+        model: model,
         schema: entityCardSchema,
         system: prompt,
         prompt: context,
         onFinish: async ({ object }) => {
             if (object && context) {
-                await redis.set(getAiTopicsRespCacheKey(context), object)
+                await redis.set(getAiTopicsRespCacheKey(context, modelChoice), object)
             }
         },
     })
-
     return result.toTextStreamResponse();
 }
