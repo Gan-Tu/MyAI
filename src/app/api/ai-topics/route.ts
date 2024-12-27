@@ -1,3 +1,4 @@
+import bing_search from '@/lib/agents';
 import redis from "@/lib/redis";
 import { entityCardSchema } from '@/lib/schema';
 import { getAiTopicsRespCacheKey } from "@/lib/utils";
@@ -138,10 +139,24 @@ function getFakeResponseStream(jsonData: object) {
 
 export async function POST(req: Request) {
     const context = await req.json();
+    let prompt = systemPrompt
+    try {
+        let searchResults = await bing_search(context, 20);
+        prompt = `${prompt}\n\n## Context\n\nUse the following web results snippets as context for the generation of both description and fact generation. Summarize snippets if they are useful:
+        `
+        searchResults.webPages?.value?.forEach(result => {
+            if (result.snippet) {
+                prompt += `\n\nTitle: ${result.name}\nSnippet: ${result.snippet}`
+            }
+        });
+    } catch (error) {
+        console.error("Failed to get bing search results: ", error)
+    }
+
     const result = await streamObject({
         model: openai('gpt-4o-mini'),
         schema: entityCardSchema,
-        system: systemPrompt,
+        system: prompt,
         prompt: context,
         onFinish({ object }) {
             if (object && context) {
