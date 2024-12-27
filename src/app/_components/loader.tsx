@@ -6,6 +6,6 @@ interface DescriptionProps {
 
 export default function Loader({ className }: DescriptionProps) {
   return (
-    <motion.div className={`${className} animate-pulse bg-blue-100 rounded`} />
+    <motion.div className={`${className} animate-pulse bg-blue-100 rounded-xl`} />
   );
 }
