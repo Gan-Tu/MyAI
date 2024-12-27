@@ -1,4 +1,5 @@
 import { ResetExpansionProvider } from "@/hooks/reset-expansion";
+import { supportedModels } from "@/lib/models";
 import AiTopics from "./ai-topics";
 
 export default async function Page({
@@ -6,12 +7,20 @@ export default async function Page({
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const { q } = await searchParams;
+  const { q, model: modelParam } = await searchParams;
+  const model = Array.isArray(modelParam)
+    ? modelParam.length > 0
+      ? modelParam[0]
+      : undefined
+    : modelParam;
   const query = Array.isArray(q) ? (q.length > 0 ? q[0] : undefined) : q;
-
+  let defaultModel: string | undefined = model;
+  if (!supportedModels.includes(defaultModel ?? "")) {
+    defaultModel = undefined;
+  }
   return (
     <ResetExpansionProvider>
-      <AiTopics q={query} />
+      <AiTopics q={query} defaultModel={defaultModel} />
     </ResetExpansionProvider>
   );
 }

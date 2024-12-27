@@ -21,6 +21,7 @@ import { getCachedAiTopics, searchImage } from "./actions";
 
 interface AiTopicsProps {
   q?: string;
+  defaultModel?: string;
 }
 
 const exampleIdeas = [
@@ -34,9 +35,9 @@ const exampleIdeas = [
   "passion fruit martini"
 ];
 
-export default function AiTopics({ q }: AiTopicsProps) {
+export default function AiTopics({ q, defaultModel }: AiTopicsProps) {
   const [input, setInput] = useState(q);
-  const [model, setModel] = useState<string>("gpt-4o-mini");
+  const [model, setModel] = useState<string>(defaultModel || "gpt-4o-mini");
   const [images, setImages] = useState<ImageSearchResult[] | null>(null);
   const [hideImage, setHideImage] = useState(false);
   const [useCache, setUseCache] = useState(true);
