@@ -194,9 +194,9 @@ export async function POST(req: Request) {
         schema: entityCardSchema,
         system: prompt,
         prompt: context,
-        onFinish({ object }) {
+        onFinish: async ({ object }) => {
             if (object && context) {
-                redis.set(getAiTopicsRespCacheKey(context), object)
+                await redis.set(getAiTopicsRespCacheKey(context), object)
             }
         },
     })
