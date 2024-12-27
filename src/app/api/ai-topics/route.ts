@@ -145,6 +145,12 @@ const extractVideoSrcWithoutAutoplay = (embedHtml: string) => {
 
     if (match && match[1]) {
         let src = match[1];
+
+        // Convert http to https if necessary
+        if (src.startsWith('http://')) {
+            src = src.replace('http://', 'https://');
+        }
+
         // Remove the autoplay parameter if it exists
         const url = new URL(src);
         url.searchParams.delete('autoplay');
@@ -164,7 +170,7 @@ export async function POST(req: Request) {
             let videoList = ''
             searchResults.videos?.value?.forEach(result => {
                 if (result.name && result.allowMobileEmbed && result.embedHtml?.includes("youtube")
-                && result.height <= result.width) {
+                    && result.height <= result.width) {
                     videoList += `\n\nName: ${result.name}\nUrl: ${extractVideoSrcWithoutAutoplay(result.embedHtml)}`
                 }
             });
