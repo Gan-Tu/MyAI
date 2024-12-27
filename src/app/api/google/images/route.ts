@@ -15,11 +15,11 @@ export async function GET(request: NextRequest) {
           .GOOGLE_SEARCH_API_KEY!}&searchType=image&num=10`
     );
     if (!response.ok) {
-      return NextResponse.json({ error: response.status }, { status: 500 })
+      return NextResponse.json({ error: `Failed to fetch images: ${response.statusText}` }, { status: response.status })
     }
     const { items } = await response.json();
     return NextResponse.json({ data: items })
   } catch (error) {
-    return NextResponse.json({ error: JSON.stringify(error) }, { status: 500 })
+    return NextResponse.json({ error: (error as Error).message }, { status: 500 })
   }
 }
