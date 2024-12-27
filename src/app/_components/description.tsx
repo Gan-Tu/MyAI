@@ -1,6 +1,7 @@
 import { useResetExpansion } from "@/hooks/reset-expansion";
 import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/20/solid";
 import { useEffect, useRef, useState } from "react";
+import Loader from "./loader";
 
 interface DescriptionProps {
   description?: string;
@@ -34,9 +35,9 @@ export default function Description({
     return (
       <div className="p-5">
         <div className="text-gray-700 text-sm inline space-y-1">
-          <div className="min-h-6 w-full animate-pulse bg-slate-200 rounded col-span-2" />
-          <div className="min-h-6 w-full animate-pulse bg-slate-200 rounded col-span-2" />
-          <div className="min-h-6 w-[200px] animate-pulse bg-slate-200 rounded col-span-2" />
+          <Loader className="min-h-6 w-full col-span-2" />
+          <Loader className="min-h-6 w-full col-span-2" />
+          <Loader className="min-h-6 w-[200px] col-span-2" />
         </div>
       </div>
     );
@@ -64,7 +65,7 @@ export default function Description({
         <div ref={contentRef}>
           {beforeHighlight}
           {highlighting && afterHighlight && (
-            <span className="font-semibold bg-amber-100 px-[0.15rem]">
+            <span className="font-semibold bg-blue-100 px-[0.15rem]">
               {highlighting}
             </span>
           )}

@@ -1,4 +1,5 @@
 import { capitalizeFirstLetter } from "@/lib/utils";
+import Loader from "./loader";
 
 interface HeaderProps {
   title?: string;
@@ -14,14 +15,14 @@ export default function Header({ title, subtitle }: HeaderProps) {
             {capitalizeFirstLetter(title)}
           </h1>
         ) : (
-          <div className="min-h-6 w-[160px] animate-pulse bg-slate-200 rounded col-span-2"></div>
+          <Loader className="min-h-6 w-[160px] col-span-2" />
         )}
         {subtitle ? (
           <p className="text-sm text-gray-600">
             {capitalizeFirstLetter(subtitle)}
           </p>
         ) : !title ? (
-          <div className="min-h-6 w-[120px] animate-pulse bg-slate-200 rounded col-span-2"></div>
+          <Loader className="min-h-6 w-[120px] col-span-2" />
         ) : null}
       </div>
     </div>

@@ -4,6 +4,7 @@ import { capElements } from "@/lib/utils";
 import "keen-slider/keen-slider.min.css";
 import { useKeenSlider } from "keen-slider/react";
 import Link from "next/link";
+import Loader from "./loader";
 import SafeImage from "./safe-image";
 
 interface HeroCarouselProps {
@@ -31,7 +32,7 @@ const HeroCarousel: React.FC<HeroCarouselProps> = ({
   if (!images) {
     return (
       <div className="px-5 py-3">
-        <div className="h-[170px] animate-pulse bg-slate-200 rounded" />
+        <Loader className="h-[170px]" />
       </div>
     );
   }

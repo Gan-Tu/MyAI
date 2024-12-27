@@ -1,7 +1,9 @@
 import { MemoizedMarkdown } from "@/components/memoized-markdown";
 import { useResetExpansion } from "@/hooks/reset-expansion";
 import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/20/solid";
+import { motion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
+import Loader from "./loader";
 
 interface FactProps {
   name?: string;
@@ -39,21 +41,17 @@ export default function Fact({
   }, [resetFlag]);
 
   if (noContent) {
-    return (
-      <div
-        className={`min-h-16 animate-pulse bg-slate-200 rounded ${className}`}
-      />
-    );
+    return <Loader className={`min-h-16 ${className}`} />;
   }
 
   return (
-    <button
+    <motion.button
       onClick={() => {
         if (!noContent) {
           setIsExpanded(!isExpanded);
         }
       }}
-      className={`${className} transition-all justify-start ease-in-out duration-300 rounded-xl ${
+      className={`${className} transition-all ease-in-out duration-300 justify-start  rounded-xl ${
         isExpanded ? "col-span-full p-2" : "bg-blue-100 p-4"
       } grid content-start`}
     >
@@ -64,9 +62,7 @@ export default function Fact({
             isExpanded ? "text-[1rem]" : "text-base"
           }`}
         >
-          {name || (
-            <div className="min-h-6 w-[100px] animate-pulse bg-slate-300 rounded" />
-          )}
+          {name || <Loader className="min-h-6 w-[100px]" />}
         </h2>
         {isExpanded ? (
           <ChevronUpIcon className="w-7 h-7 justify-end rounded-xl p-1 bg-blue-100" />
@@ -85,7 +81,7 @@ export default function Fact({
           {shortAnswer ? (
             <MemoizedMarkdown id={`${name}-short`} content={shortAnswer} />
           ) : (
-            <div className="min-h-6 w-[150px] animate-pulse bg-slate-300 rounded" />
+            <Loader className="min-h-6 w-[150px]" />
           )}
         </span>
 
@@ -105,6 +101,6 @@ export default function Fact({
           </div>
         )}
       </div>
-    </button>
+    </motion.button>
   );
 }
