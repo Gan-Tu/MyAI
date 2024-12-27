@@ -102,7 +102,7 @@ export default function AiTopics({ q }: AiTopicsProps) {
   };
 
   return (
-    <div className="flex flex-col w-full max-w-md mx-auto stretch max-h-screen min-w-[350px] md:min-w-[400px] no-scrollbar pb-20 overflow-scroll min-h-screen">
+    <div className="mt-10 flex-col w-full max-w-md mx-auto stretch max-h-screen min-w-[350px] md:min-w-[400px] no-scrollbar pb-20 overflow-scroll min-h-screen">
       <div className="my-auto">
         <div className="max-w-xl bg-white rounded-lg shadow-lg">
           <Header title={card?.title} subtitle={card?.subtitle} />

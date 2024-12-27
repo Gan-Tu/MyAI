@@ -125,7 +125,7 @@ function getFakeResponseStream(jsonData: object) {
                     // Enqueue the chunk
                     controller.enqueue(new TextEncoder().encode(chunk));
                     // Delay before sending the next chunk
-                    await new Promise((resolve) => setTimeout(resolve, 50)); // 100ms delay
+                    await new Promise((resolve) => setTimeout(resolve, 100)); // 100ms delay
                 }
             }
             // Close the stream after all chunks are sent
