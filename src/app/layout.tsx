@@ -6,7 +6,7 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "AI Knowledge",
+  title: "AI Knowledge Card",
   description: "AI Knowledge Card by Gan"
 };
 
