@@ -1,8 +1,8 @@
 import bing_search from '@/lib/agents';
-import { NextResponse } from 'next/server';
+import { NextResponse, type NextRequest } from 'next/server';
 
-export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
+export async function GET(request: NextRequest) {
+  const searchParams = request.nextUrl.searchParams
   const query = searchParams.get('query');
   const count = Number(searchParams.get('count')) || 10;
 
