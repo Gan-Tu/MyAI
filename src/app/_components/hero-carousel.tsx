@@ -64,7 +64,7 @@ const HeroCarousel: React.FC<HeroCarouselProps> = ({
               src={image?.link}
               alt={image?.title}
               className={`keen-slider__slide object-cover w-auto aspect-auto ${
-                index === 0 && !showVideo && "ml-5 rounded-l-lg"
+                index === 0 && !showVideo && "ml-4 rounded-l-lg"
               } ${index === images?.length - 1 && "rounded-r-lg"}`}
               style={{
                 width: image?.thumbnailWidth || "auto",
