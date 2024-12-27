@@ -6,13 +6,13 @@ import { useKeenSlider } from "keen-slider/react";
 import Link from "next/link";
 import SafeImage from "./safe-image";
 
-interface ImageCarouselProps {
+interface HeroCarouselProps {
   images?: ImageSearchResult[] | null;
   videoUrl?: string;
   className?: string;
 }
 
-const ImageCarousel: React.FC<ImageCarouselProps> = ({
+const HeroCarousel: React.FC<HeroCarouselProps> = ({
   images,
   videoUrl,
   className
@@ -85,4 +85,4 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({
   );
 };
 
-export default ImageCarousel;
+export default HeroCarousel;

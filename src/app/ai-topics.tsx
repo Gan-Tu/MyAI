@@ -12,7 +12,7 @@ import toast from "react-hot-toast";
 import Description from "./_components/description";
 import FactsList from "./_components/fact-list";
 import Header from "./_components/header";
-import ImageCarousel from "./_components/image-carousel";
+import HeroCarousel from "./_components/hero-carousel";
 import { getCachedAiTopics, searchImage } from "./actions";
 
 interface AiTopicsProps {
@@ -92,7 +92,7 @@ export default function AiTopics({ q }: AiTopicsProps) {
         <div className="max-w-xl bg-white rounded-lg shadow-lg">
           <Header title={card?.title} subtitle={card?.subtitle} />
           {!hideImage && (
-            <ImageCarousel images={images} videoUrl={card?.video?.url} />
+            <HeroCarousel images={images} videoUrl={card?.video?.url} />
           )}
           <Description
             className={hideImage ? "pt-0" : ""}
