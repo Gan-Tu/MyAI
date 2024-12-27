@@ -122,7 +122,7 @@ export default function AiTopics({ q }: AiTopicsProps) {
         <div className="text-sm my-4">
           <MemoizedMarkdown
             id="example-prompts"
-            content={`Here are some ideas:\n\n    1. sarenne black slope\n    2. willow chip by google\n    3. frankfurt ban on night flights\n    4. passion fruit martini`}
+            content={`Here are some ideas:\n\n    1. luigi mangione\n    2. bench press\n    3. squid game season 2\n    4. sarenne black slope\n    5. willow chip by google\n    6. frankfurt ban on night flights\n    7. passion fruit martini\n    `}
           />
         </div>
       </div>
