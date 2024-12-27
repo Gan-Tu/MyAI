@@ -163,7 +163,8 @@ export async function POST(req: Request) {
         if (searchResults.videos) {
             let videoList = ''
             searchResults.videos?.value?.forEach(result => {
-                if (result.name && result.allowMobileEmbed && result.embedHtml?.includes("youtube")) {
+                if (result.name && result.allowMobileEmbed && result.embedHtml?.includes("youtube")
+                && result.height <= result.width) {
                     videoList += `\n\nName: ${result.name}\nUrl: ${extractVideoSrcWithoutAutoplay(result.embedHtml)}`
                 }
             });
