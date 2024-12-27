@@ -76,23 +76,25 @@ export default function Fact({
 
         <motion.div className="flex flex-col justify-start items-start text-left align-middle transition-all ease-in-out duration-200">
           {/* Short Answer */}
-          <motion.span
-            className={`mt-1 font-normal text-sm text-left transition-all ease-in-out duration-200 ${
-              isExpanded ? "" : "line-clamp-2"
-            }`}
-          >
-            {shortAnswer ? (
-              <MemoizedMarkdown id={`${name}-short`} content={shortAnswer} />
-            ) : (
-              <Loader className="min-h-6 w-[150px]" />
-            )}
-          </motion.span>
+          {!isExpanded && (
+            <motion.span
+              className={`mt-1 font-normal text-sm text-left transition-all ease-in-out duration-200 ${
+                isExpanded ? "" : "line-clamp-2"
+              }`}
+            >
+              {shortAnswer ? (
+                <MemoizedMarkdown id={`${name}-short`} content={shortAnswer} />
+              ) : (
+                <Loader className="min-h-6 w-[150px]" />
+              )}
+            </motion.span>
+          )}
 
           {/* Expandable Full Answer */}
           {fullAnswer && (
             <motion.div
               ref={contentRef}
-              className="overflow-hidden transition-all ease-in-out duration-200 text-pretty mt-2"
+              className="overflow-hidden transition-all ease-in-out duration-200 text-pretty"
               style={{
                 maxHeight: contentHeight ? `${contentHeight}px` : "0px"
               }}
