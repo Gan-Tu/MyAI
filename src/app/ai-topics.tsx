@@ -7,7 +7,6 @@ import { entityCardSchema } from "@/lib/schema";
 import { ImageSearchResult } from "@/lib/types";
 import { capElements } from "@/lib/utils";
 import { experimental_useObject as useObject } from "ai/react";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import Description from "./_components/description";
@@ -26,7 +25,6 @@ export default function AiTopics({ q }: AiTopicsProps) {
   const [hideImage, setHideImage] = useState(false);
   const [useCache, setUseCache] = useState(true);
   const [card, setCard] = useState<any>(null);
-  const router = useRouter();
   const { resetExpansion } = useResetExpansion();
   const { object, submit, isLoading, stop } = useObject({
     api: "/api/ai-topics",
@@ -82,7 +80,9 @@ export default function AiTopics({ q }: AiTopicsProps) {
       <div className="my-auto">
         <div className="max-w-xl bg-white rounded-lg shadow-lg">
           <Header title={card?.title} subtitle={card?.subtitle} />
-          {!hideImage && <ImageCarousel images={images} />}
+          {!hideImage && (
+            <ImageCarousel images={images} videoUrl={card?.video?.url} />
+          )}
           <Description
             className={hideImage ? "pt-0" : ""}
             description={card?.description}

@@ -3,6 +3,10 @@ import { z } from "zod";
 export const entityCardSchema = z.object({
   title: z.string().describe("A brief, informative phrase (under 40 characters) representing the main topic of the user query."),
   subtitle: z.string().describe("A short phrase (under 5 words) that categorize or further describe the title."),
+  video: z.object({
+    name: z.string().describe("Optinoal video title to include"),
+    url: z.string().describe("The url for the video chosen, if one is chosen")
+  }),
   description: z.string().describe("One or two paragraphs (40-80 words per paragraph) summarizing the topic's key attributes."),
   highlighting: z.string().describe("A short consecutive substring (3-5 words) from the description paragraph highlighting the most important attribute or topic of the description. The highlighted phrase should be exactly as it occured in the description."),
   facts: z.array(

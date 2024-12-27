@@ -18,12 +18,13 @@ Your task is to generate a topic card based on a user query. The card should inc
 * **Description:** One or two paragraphs (40-80 words per paragraph) summarizing the topic's key attributes.
 * **Highlighting:** A short consecutive substring (roughly 3-5 words but longer is ok) from the description paragraph highlighting the most important attribute or topic of the description. The highlighted phrase should be exactly the same words as it occured in the description. It should not be same or similar to the title or user query.
 * **Facts:** At most 3 salient facts about the topic.
+* **Video** An optional video selection for the query. Only select a video if it is highly instructional to the topic. Do not select a video for static or context-rich topics best understood via text. Only select the video mentioned in the video candidates section. If it's empty, do not select a video. Do NOT select a video for topics centered on persons, events, everyday topics, news, or legal cases.
 
 ## Title Guidelines
 
 **Mandatory:**
 
-* Do not include the unnecessary oveview type of words, such as "overview" or "explained", in the title, case insensitive.
+* Do not include the unnecessary generic overview words in title, such as "overview", "explained", "details", "explained", case insensitive.
 
 ## Subtitle Guidelines
 
@@ -110,6 +111,7 @@ Your task is to generate a topic card based on a user query. The card should inc
 * Avoid backslashes before dollar sign "$". 
 * The highlighted phrase should be exactly the same words as it occured in the description.
 * Provide factual information. For numeric facts and statements, if you are not sure, do not include them.
+* Avoid using video if possible.
 `
 
 function getFakeResponseStream(jsonData: object) {
@@ -137,11 +139,38 @@ function getFakeResponseStream(jsonData: object) {
     });
 }
 
+const extractVideoSrcWithoutAutoplay = (embedHtml: string) => {
+    const regex = /src="([^"]+)"/; // Regular expression to extract the src attribute
+    const match = embedHtml.match(regex);
+
+    if (match && match[1]) {
+        let src = match[1];
+        // Remove the autoplay parameter if it exists
+        const url = new URL(src);
+        url.searchParams.delete('autoplay');
+        return url.toString();
+    }
+
+    return null; // Return null if src is not found
+};
+
+
 export async function POST(req: Request) {
     const context = await req.json();
     let prompt = systemPrompt
     try {
-        let searchResults = await bing_search(context, 20);
+        let searchResults = await bing_search(context, 10);
+        if (searchResults.videos) {
+            let videoList = ''
+            searchResults.videos?.value?.forEach(result => {
+                if (result.name && result.allowMobileEmbed && result.embedHtml?.includes("youtube")) {
+                    videoList += `\n\nName: ${result.name}\nUrl: ${extractVideoSrcWithoutAutoplay(result.embedHtml)}`
+                }
+            });
+            if (videoList) {
+                prompt = `${prompt}\n\n## Video Candidates\n\n${videoList}`
+            }
+        }
         prompt = `${prompt}\n\n## Context\n\nUse the following web results snippets as context for the generation of both description and fact generation. Summarize snippets if they are useful:
         `
         searchResults.webPages?.value?.forEach(result => {

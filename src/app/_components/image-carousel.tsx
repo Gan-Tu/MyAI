@@ -8,15 +8,20 @@ import SafeImage from "./safe-image";
 
 interface ImageCarouselProps {
   images?: ImageSearchResult[] | null;
+  videoUrl?: string;
   className?: string;
 }
 
-const ImageCarousel: React.FC<ImageCarouselProps> = ({ images, className }) => {
+const ImageCarousel: React.FC<ImageCarouselProps> = ({
+  images,
+  videoUrl,
+  className
+}) => {
   const [ref] = useKeenSlider<HTMLDivElement>(
     {
       loop: false,
       mode: "free-snap",
-      slides: { perView: 2.5, spacing: 5 }
+      slides: { perView: 1.5, spacing: 5 }
     },
     [WheelControls]
   );
@@ -34,6 +39,16 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({ images, className }) => {
       className={`relative flex bg-white text-5xl text-white font-medium overflow-x-auto cursor-pointer box-content ${className}`}
     >
       <div ref={ref} className="keen-slider">
+        {videoUrl && !videoUrl.includes("v=example") && (
+          <iframe
+            className="keen-slider__slide rounded-l-lg ml-5"
+            height="200"
+            src={videoUrl}
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            referrerPolicy="strict-origin-when-cross-origin"
+            allowFullScreen
+          />
+        )}
         {capElements(10, images).map((image, index) => {
           let imageElem = (
             <SafeImage
@@ -41,7 +56,7 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({ images, className }) => {
               src={image?.link}
               alt={image?.title}
               className={`keen-slider__slide object-cover w-auto aspect-auto ${
-                index === 0 && "ml-5 rounded-l-lg"
+                index === 0 && !videoUrl && "ml-5 rounded-l-lg"
               } ${index === images?.length - 1 && "rounded-r-lg"}`}
               style={{
                 width: image?.thumbnailWidth || "auto",
