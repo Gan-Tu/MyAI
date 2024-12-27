@@ -63,7 +63,7 @@ export default function Description({
       >
         <div ref={contentRef}>
           {beforeHighlight}
-          {highlighting && (
+          {highlighting && afterHighlight && (
             <span className="font-semibold bg-amber-100 px-[0.15rem]">
               {highlighting}
             </span>
