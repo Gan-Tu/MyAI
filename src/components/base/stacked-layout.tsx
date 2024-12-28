@@ -23,7 +23,7 @@ function CloseMenuIcon() {
 function MobileSidebar({
   open,
   close,
-  children
+  children,
 }: React.PropsWithChildren<{ open: boolean; close: () => void }>) {
   return (
     <Headless.Dialog open={open} onClose={close} className="lg:hidden">
@@ -51,7 +51,7 @@ function MobileSidebar({
 export function StackedLayout({
   navbar,
   sidebar,
-  children
+  children,
 }: React.PropsWithChildren<{
   navbar: React.ReactNode;
   sidebar: React.ReactNode;
@@ -59,7 +59,7 @@ export function StackedLayout({
   let [showSidebar, setShowSidebar] = useState(false);
 
   return (
-    <div className="relative isolate flex min-h-svh w-full flex-col bg-zinc-50 lg:bg-zinc-200 dark:bg-zinc-900 dark:lg:bg-zinc-950">
+    <div className="relative isolate flex min-h-svh w-full flex-col bg-zinc-50 dark:bg-zinc-900 lg:bg-zinc-200 dark:lg:bg-zinc-950">
       {/* Sidebar on mobile */}
       <MobileSidebar open={showSidebar} close={() => setShowSidebar(false)}>
         {sidebar}
@@ -79,9 +79,9 @@ export function StackedLayout({
       </header>
 
       {/* Content */}
-      <main className="relative flex flex-1 flex-col pb-2 lg:px-2 overflow-hidden">
-        <div className="grow p-6 lg:rounded-lg lg:bg-zinc-50 lg:shadow-sm lg:ring-1 lg:ring-zinc-950/5 dark:lg:bg-zinc-900 dark:lg:ring-white/10">
-          <div className="mx-auto max-w-6xl">{children}</div>
+      <main className="relative flex h-dvh flex-1 flex-col overflow-hidden pb-2 lg:px-2">
+        <div className="flex grow p-6 lg:rounded-lg lg:bg-zinc-50 lg:shadow-sm lg:ring-1 lg:ring-zinc-950/5 dark:lg:bg-zinc-900 dark:lg:ring-white/10">
+          {children}
         </div>
       </main>
     </div>

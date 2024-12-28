@@ -9,23 +9,23 @@ import "./globals.css";
 const inter = Inter({
   subsets: ["latin"],
   display: "swap",
-  variable: "--font-inter"
+  variable: "--font-inter",
 });
 
 const monaSans = localFont({
   src: "../fonts/Mona-Sans.var.woff2",
   display: "swap",
   variable: "--font-mona-sans",
-  weight: "200 900"
+  weight: "200 900",
 });
 
 export const metadata: Metadata = {
   title: "MyAI",
-  description: "AI applications built by Gan Tu"
+  description: "AI applications built by Gan Tu",
 };
 
 export default function RootLayout({
-  children
+  children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
@@ -35,7 +35,7 @@ export default function RootLayout({
       className={clsx("h-full antialiased", inter.variable, monaSans.variable)}
     >
       <body className="bg-muted/50">
-        <Toaster position="top-right" />
+        <Toaster position="bottom-right" />
         <div className="flex min-h-full flex-col bg-white dark:bg-gray-950">
           <ApplicationLayout>{children}</ApplicationLayout>
         </div>

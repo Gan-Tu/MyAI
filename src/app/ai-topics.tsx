@@ -12,6 +12,7 @@ import { capElements } from "@/lib/utils";
 import * as Headless from "@headlessui/react";
 import { MagnifyingGlassIcon, StopCircleIcon } from "@heroicons/react/20/solid";
 import { experimental_useObject as useObject } from "ai/react";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import Description from "./_components/description";
@@ -41,10 +42,12 @@ function SparkleIcon(props: React.ComponentPropsWithoutRef<"svg">) {
     <svg viewBox="0 0 16 16" aria-hidden="true" {...props}>
       <path
         fill="#38BDF8"
+        className="animate-pulse-sparkle delay-75"
         d="M5.338 9.805c.11.418.439.747.857.857C7.282 10.948 8 11.44 8 12s-.718 1.052-1.805 1.338c-.418.11-.747.439-.857.857C5.052 15.281 4.56 16 4 16s-1.052-.718-1.338-1.805a1.205 1.205 0 0 0-.856-.857C.718 13.052 0 12.56 0 12s.718-1.052 1.806-1.338c.417-.11.746-.439.856-.857C2.948 8.718 3.441 8 4 8c.56 0 1.052.718 1.338 1.805Z"
       />
       <path
         fill="#7DD3FC"
+        className="animate-pulse-sparkle"
         d="M12.717 2.432c.1.42.43.75.85.852C15.026 3.633 16 4.27 16 5s-.975 1.367-2.432 1.716c-.42.101-.75.432-.851.852C12.367 9.025 11.729 10 11 10c-.729 0-1.367-.975-1.716-2.432-.101-.42-.431-.75-.851-.852C6.975 6.367 6 5.73 6 5c0-.73.975-1.367 2.433-1.717.42-.1.75-.43.85-.85C9.634.974 10.272 0 11 0c.73 0 1.367.975 1.717 2.432Z"
       />
     </svg>
@@ -119,9 +122,9 @@ export default function AiTopics({ q, defaultModel }: AiTopicsProps) {
   };
 
   return (
-    <div className="font-display flex min-h-full flex-col dark:bg-gray-950 lg:flex-row">
+    <div className="font-display mx-auto my-auto flex h-full w-full max-w-6xl grow flex-col pb-4 dark:bg-gray-950 lg:flex-row">
       {/* Info Card*/}
-      <div className="relative min-w-[400px] overflow-hidden px-6 lg:pointer-events-none lg:inset-0 lg:z-40 lg:flex lg:px-0">
+      <div className="relative flex min-w-[400px] flex-grow flex-col justify-center overflow-hidden px-6 lg:pointer-events-none lg:inset-0 lg:z-40 lg:flex lg:w-1/2 lg:px-0">
         <div className="relative flex w-full lg:pointer-events-auto lg:mr-[calc(max(2rem,50%-38rem)+40rem)] lg:min-w-[32rem] lg:overflow-y-auto lg:overflow-x-hidden lg:pl-[max(4rem,calc(50%-38rem))]">
           <div className="mx-auto w-full min-w-[350px] max-w-md md:min-w-[400px] lg:mx-0 lg:flex lg:w-96 lg:flex-col lg:before:flex-1 lg:before:pt-6">
             <div className="pb-10 sm:pb-20 sm:pt-32 lg:py-20 lg:pt-20">
@@ -149,6 +152,7 @@ export default function AiTopics({ q, defaultModel }: AiTopicsProps) {
                       name="enable_cache"
                       onChange={setUseCache}
                       disabled={isLoading}
+                      className="cursor-pointer"
                     />
                   </SwitchField>
 
@@ -228,8 +232,16 @@ export default function AiTopics({ q, defaultModel }: AiTopicsProps) {
               </div>
             </div>
             <div className="hidden flex-1 items-end pb-4 lg:block lg:justify-start lg:pb-6">
-              <p className="flex items-baseline gap-x-2 text-[0.8125rem]/6 text-gray-500">
-                Brought to you by Gan Tu
+              <p className="flex items-baseline gap-1 text-[0.8125rem]/6 text-gray-500">
+                Brought to you by
+                <Link
+                  href="https://tugan.me"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline decoration-sky-500/[.33] decoration-dashed underline-offset-4"
+                >
+                  Gan Tu
+                </Link>
               </p>
             </div>
           </div>
@@ -237,9 +249,9 @@ export default function AiTopics({ q, defaultModel }: AiTopicsProps) {
       </div>
 
       {/* Knowledge Card */}
-      <div className="stretch no-scrollbar mx-auto mr-10 max-h-screen w-full min-w-[350px] max-w-md flex-col overflow-scroll pb-10 sm:pb-20 sm:pt-32 md:min-w-[400px] lg:pt-52">
+      <div className="stretch no-scrollbar mx-auto flex max-h-screen w-full min-w-[350px] max-w-md flex-grow flex-col content-center justify-center overflow-scroll pb-10 md:min-w-[400px] lg:w-1/2 lg:pt-32">
         <div className="my-auto rounded-2xl bg-white">
-          <div className="max-w-xl rounded-lg bg-white shadow-lg">
+          <div className="max-w-xl rounded-lg bg-white shadow-inner drop-shadow-md">
             <Header title={card?.title} subtitle={card?.subtitle} />
             {!hideImage && (
               <HeroCarousel images={images} videoUrl={card?.video?.url} />
@@ -256,8 +268,16 @@ export default function AiTopics({ q, defaultModel }: AiTopicsProps) {
           </div>
         </div>
 
-        <p className="mt-4 flex items-baseline justify-end gap-x-2 bg-transparent text-[0.8125rem]/6 text-gray-500 lg:hidden">
-          Brought to you by Gan Tu
+        <p className="mt-4 flex items-baseline justify-end gap-1 bg-transparent text-[0.8125rem]/6 text-gray-500 lg:hidden">
+          Brought to you by
+          <Link
+            href="https://tugan.me"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline decoration-sky-500/[.33] decoration-dashed underline-offset-4"
+          >
+            Gan Tu
+          </Link>
         </p>
       </div>
     </div>
