@@ -90,7 +90,7 @@ export default function Fact({
         )}
 
         {/* Expandable Full Answer */}
-        {fullAnswer && (
+        {isExpanded && fullAnswer && (
           <motion.div
             ref={contentRef}
             className="overflow-hidden transition-all text-left ease-in-out duration-200 text-pretty"
