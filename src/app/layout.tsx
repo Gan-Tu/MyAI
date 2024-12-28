@@ -20,8 +20,8 @@ const monaSans = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "AI Knowledge Card",
-  description: "AI Knowledge Card by Gan"
+  title: "MyAI",
+  description: "AI applications built by Gan Tu"
 };
 
 export default function RootLayout({
@@ -36,9 +36,9 @@ export default function RootLayout({
     >
       <body className="bg-muted/50">
         <Toaster position="top-right" />
-        <main className="flex h-100vh flex-1 flex-col">
+        <div className="flex min-h-full flex-col bg-white dark:bg-gray-950">
           <ApplicationLayout>{children}</ApplicationLayout>
-        </main>
+        </div>
       </body>
     </html>
   );

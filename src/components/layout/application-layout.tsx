@@ -10,4 +10,3 @@ export function ApplicationLayout({ children }: { children: ReactNode }) {
     </StackedLayout>
   );
 }
-
