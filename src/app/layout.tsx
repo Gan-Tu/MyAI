@@ -1,3 +1,4 @@
+import { ApplicationLayout } from "@/components/layout/application-layout";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { Toaster } from "react-hot-toast";
@@ -19,7 +20,9 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${inter.className} bg-muted/50`}>
         <Toaster position="top-right" />
-        <main className="flex h-100vh flex-1 flex-col">{children}</main>
+        <main className="flex h-100vh flex-1 flex-col">
+          <ApplicationLayout>{children}</ApplicationLayout>
+        </main>
       </body>
     </html>
   );
