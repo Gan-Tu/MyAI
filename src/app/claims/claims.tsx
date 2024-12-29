@@ -123,7 +123,7 @@ export default function ClaimsPage({ q, defaultModel }: ClaimsProps) {
                       disabled={isLoading}
                     >
                       <AnimatedSparkleIcon className="h-3 w-3" />
-                      {isLoading ? "Loading..." : "Analyze"}
+                      {isLoading ? "Analyzing..." : "Analyze"}
                     </Button>
                   </div>
                 </form>
