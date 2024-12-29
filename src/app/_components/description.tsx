@@ -18,15 +18,22 @@ export default function Description({
 }: DescriptionProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [contentHeight, setContentHeight] = useState<number | null>(null);
+  const [needsExpander, setNeedsExpander] = useState(false); // New state
   const contentRef = useRef<HTMLDivElement>(null);
   const { resetFlag } = useResetExpansion();
   const { colorTheme } = useColorTheme();
 
   useEffect(() => {
     if (contentRef.current) {
-      setContentHeight(isExpanded ? contentRef.current.scrollHeight : 0);
+      // Check if content overflows the initial max height
+      const scrollHeight = contentRef.current.scrollHeight;
+      const maxHeight = 7.5 * 16; // 7.5rem in pixels (assuming 16px for text-base)
+      setNeedsExpander(scrollHeight > maxHeight); // Determine if expander is needed
+      setContentHeight(
+        isExpanded ? scrollHeight : Math.min(scrollHeight, maxHeight),
+      );
     }
-  }, [isExpanded]);
+  }, [isExpanded, description]);
 
   useEffect(() => {
     if (resetFlag) {
@@ -65,7 +72,7 @@ export default function Description({
       {/* Content container with smooth height transition */}
       <div className="relative">
         <div
-          className="line-height-[1.5rem] overflow-hidden transition-all duration-300 ease-in-out"
+          className="line-height-[1.5rem] overflow-hidden text-base transition-all duration-300 ease-in-out"
           style={{
             maxHeight: contentHeight ? `${contentHeight}px` : "7.5rem",
           }}
@@ -80,19 +87,21 @@ export default function Description({
             {afterHighlight}
           </div>
         </div>
-        <button
-          className={`absolute bottom-0 right-0 flex cursor-pointer items-center rounded-xl bg-slate-100 py-[0.15rem] pl-2 pr-1 text-center text-[0.8rem] backdrop-blur-md backdrop-opacity-15 transition-all duration-300 ease-in-out ${
-            isExpanded ? "translate-y-[1.7rem]" : ""
-          }`}
-          onClick={() => setIsExpanded(!isExpanded)}
-        >
-          {isExpanded ? "Less" : "More"}
-          <ChevronDownIcon
-            className={`h-4 w-4 justify-end transition-all duration-200 ease-in-out ${
-              isExpanded ? "rotate-180" : ""
+        {needsExpander && ( // Conditionally render expander
+          <button
+            className={`absolute bottom-0 right-0 flex cursor-pointer items-center rounded-xl bg-slate-100 py-[0.15rem] pl-2 pr-1 text-center text-[0.8rem] backdrop-blur-md backdrop-opacity-15 transition-all duration-300 ease-in-out ${
+              isExpanded ? "translate-y-[1.7rem]" : ""
             }`}
-          />
-        </button>
+            onClick={() => setIsExpanded(!isExpanded)}
+          >
+            {isExpanded ? "Less" : "More"}
+            <ChevronDownIcon
+              className={`h-4 w-4 justify-end transition-all duration-200 ease-in-out ${
+                isExpanded ? "rotate-180" : ""
+              }`}
+            />
+          </button>
+        )}
       </div>
     </div>
   );
