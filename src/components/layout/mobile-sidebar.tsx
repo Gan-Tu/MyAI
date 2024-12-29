@@ -16,8 +16,8 @@ export function MobileSidebar() {
   return (
     <Sidebar>
       <SidebarHeader>
-        <SidebarLabel className="cursor-pointer font-serif font-normal">
-          MyAI
+        <SidebarLabel className="ml-2 cursor-pointer font-serif font-normal">
+          MyAI <small className="text-xs font-thin">by Gan</small>
         </SidebarLabel>
       </SidebarHeader>
       <SidebarBody>

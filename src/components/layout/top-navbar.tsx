@@ -30,7 +30,7 @@ export function TopNavbar({ showLogin = false }: NavigationProps) {
     <Navbar>
       <Link href="/" aria-label="Home">
         <NavbarLabel className="cursor-pointer pl-4 font-serif font-normal">
-          MyAI
+          MyAI <small className="text-xs font-thin">by Gan</small>
         </NavbarLabel>
       </Link>
       <NavbarDivider className="max-lg:hidden" />
