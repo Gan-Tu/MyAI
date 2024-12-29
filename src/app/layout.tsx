@@ -1,7 +1,6 @@
 import { ApplicationLayout } from "@/components/layout/application-layout";
 import { VercelToolbar } from "@vercel/toolbar/next";
 import clsx from "clsx";
-import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import localFont from "next/font/local";
 import { Toaster } from "react-hot-toast";
@@ -20,8 +19,11 @@ const monaSans = localFont({
   weight: "200 900",
 });
 
-export const metadata: Metadata = {
-  title: "MyAI",
+export const metadata = {
+  title: {
+    template: "%s - MyAI",
+    default: "MyAI",
+  },
   description: "AI applications built by Gan Tu",
 };
 
