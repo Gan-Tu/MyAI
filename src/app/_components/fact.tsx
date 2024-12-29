@@ -72,11 +72,11 @@ export default function Fact({
             {name || <Loader className="min-h-6 w-[100px]" />}
           </h2>
           <ChevronDownIcon
-            className={`transition-all duration-200 ease-in-out ${
-              isExpanded
-                ? "h-7 w-7 rotate-180 rounded-xl bg-blue-100 p-1"
-                : "h-5 w-5"
-            }`}
+            className={clsx(
+              "transition-all duration-200 ease-in-out",
+              isExpanded ? "h-7 w-7 rotate-180 rounded-xl p-1" : "h-5 w-5",
+              isExpanded && colorTheme,
+            )}
           />
         </motion.div>
 
