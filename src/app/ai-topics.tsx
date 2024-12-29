@@ -14,9 +14,9 @@ import { MagnifyingGlassIcon, StopCircleIcon } from "@heroicons/react/20/solid";
 import { experimental_useObject as useObject } from "ai/react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import AnimatedSparkleIcon from "../components/animated-sparkle";
 import CreditFooter from "../components/credit-footer";
 import AiCard from "./_components/ai-card";
-import AnimatedSparkleIcon from "./_components/animated-sparkle";
 import { getCachedAiTopics, searchImage } from "./actions";
 
 interface AiTopicsProps {
@@ -211,7 +211,7 @@ export default function AiTopics({ q, defaultModel }: AiTopicsProps) {
                     className="my-1 max-h-10 text-sm"
                     disabled={isLoading}
                   >
-                    <AnimatedSparkleIcon className="h-3 w-3" />
+                    <AnimatedSparkleIcon className="h-3 w-3 fill-sky-400" />
                     {isLoading ? "Loading..." : "Generate"}
                   </Button>
                   <div className="absolute inset-0 -z-10 rounded-lg transition peer-focus:ring-4 peer-focus:ring-sky-300/15" />

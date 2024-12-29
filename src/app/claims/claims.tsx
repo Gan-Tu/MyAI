@@ -10,8 +10,8 @@ import { StopCircleIcon } from "@heroicons/react/20/solid";
 import { experimental_useObject as useObject } from "ai/react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import AnimatedSparkleIcon from "../../components/animated-sparkle";
 import CreditFooter from "../../components/credit-footer";
-import AnimatedSparkleIcon from "../_components/animated-sparkle";
 import ClaimsTable from "./claim-table";
 
 interface ClaimsProps {
@@ -112,7 +112,7 @@ export default function ClaimsPage({ q, defaultModel }: ClaimsProps) {
                       disabled={isLoading}
                     />
                     <div className="absolute inset-0 -z-10 rounded-lg transition peer-focus:ring-4 peer-focus:ring-green-300/15" />
-                    <div className="bg-slate/2.5 ring-slate/15 absolute inset-0 -z-10 rounded-lg ring-1 transition peer-focus:ring-green-300" />
+                    <div className="bg-slate/2.5 ring-slate/15 absolute inset-0 -z-10 rounded-lg ring-1 ring-green-400/50 transition peer-focus:ring-green-300" />
                   </div>
 
                   <div className="flex items-center">
@@ -122,7 +122,7 @@ export default function ClaimsPage({ q, defaultModel }: ClaimsProps) {
                       className="my-1 ml-auto max-h-10 text-sm"
                       disabled={isLoading}
                     >
-                      <AnimatedSparkleIcon className="h-3 w-3" />
+                      <AnimatedSparkleIcon className="h-3 w-3 fill-green-400" />
                       {isLoading ? "Analyzing..." : "Analyze"}
                     </Button>
                   </div>
@@ -144,7 +144,7 @@ export default function ClaimsPage({ q, defaultModel }: ClaimsProps) {
               </div>
             </div>
             <div className="hidden flex-1 items-end pb-4 lg:block lg:justify-start lg:pb-6">
-              <CreditFooter />
+              <CreditFooter decorationColor="decoration-green-300/[.66]" />
             </div>
           </div>
         </div>

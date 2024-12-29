@@ -120,7 +120,10 @@ export default function ClaimsTable({ claims, className }: ClaimsTableProps) {
           </div>
         </nav>
       )}
-      <CreditFooter className="mt-4 justify-end bg-transparent lg:hidden" />
+      <CreditFooter
+        className="mt-4 justify-end bg-transparent lg:hidden"
+        decorationColor="decoration-green-300/[.66]"
+      />
     </div>
   );
 }
