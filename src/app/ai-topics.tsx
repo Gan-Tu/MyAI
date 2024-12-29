@@ -43,7 +43,7 @@ export default function AiTopics({ q, defaultModel }: AiTopicsProps) {
   const [useCache, setUseCache] = useState(true);
   const [card, setCard] = useState<any>(null);
   const { resetExpansion } = useResetExpansion();
-  const { colorTheme } = useColorTheme();
+  const { colorTheme, setColorTheme, allThemes } = useColorTheme();
   const { object, submit, isLoading, stop, error } = useObject({
     api: "/api/ai-topics",
     schema: entityCardSchema,
@@ -157,6 +157,29 @@ export default function AiTopics({ q, defaultModel }: AiTopicsProps) {
                           className="text-end text-sm"
                         >
                           {model}
+                        </option>
+                      ))}
+                    </Select>
+                  </Headless.Field>
+
+                  <Headless.Field className="justift-center flex items-baseline gap-6">
+                    <Label className="flex-grow text-sm font-semibold">
+                      Color Theme
+                    </Label>
+                    <Select
+                      name="color_theme"
+                      value={colorTheme}
+                      onChange={(e) => setColorTheme(e.target.value)}
+                      className="max-w-fit text-sm"
+                      disabled={isLoading}
+                    >
+                      {allThemes.map((theme) => (
+                        <option
+                          key={theme}
+                          value={theme}
+                          className="text-end text-sm"
+                        >
+                          {theme}
                         </option>
                       ))}
                     </Select>
