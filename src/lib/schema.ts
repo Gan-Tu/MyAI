@@ -17,3 +17,10 @@ export const entityCardSchema = z.object({
     })
   ).describe("At most 3 salient facts about the topic."),
 });
+
+
+export const claimsSchema = z.object({
+  facts: z.array(
+    z.string().describe("A single factoid claim")
+  ).describe("A list of indiviual factoid sentences.")
+})

@@ -14,9 +14,9 @@ import { MagnifyingGlassIcon, StopCircleIcon } from "@heroicons/react/20/solid";
 import { experimental_useObject as useObject } from "ai/react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import CreditFooter from "../components/credit-footer";
 import AiCard from "./_components/ai-card";
 import AnimatedSparkleIcon from "./_components/animated-sparkle";
-import CreditFooter from "./_components/credit-footer";
 import { getCachedAiTopics, searchImage } from "./actions";
 
 interface AiTopicsProps {

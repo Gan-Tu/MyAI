@@ -178,32 +178,6 @@ Generate a informative, glanceable, knowledge topic card based on a user query w
 * Use provided today's date as context to reword response. Avoid forward looking terms ("tomorrow", "next week", "upcoming", etc.) for events that has happened.
 `
 
-
-function getFakeResponseStream(jsonData: object) {
-    const stream = new ReadableStream({
-        async start(controller) {
-            // Split into chunks of 50 characters
-            const chunks = JSON.stringify(jsonData).match(/.{1,50}/g);
-            if (chunks) {
-                for (const chunk of chunks) {
-                    // Enqueue the chunk
-                    controller.enqueue(new TextEncoder().encode(chunk));
-                    // Delay before sending the next chunk
-                    await new Promise((resolve) => setTimeout(resolve, 100)); // 100ms delay
-                }
-            }
-            // Close the stream after all chunks are sent
-            controller.close();
-        },
-    });
-
-    return new Response(stream, {
-        headers: {
-            "Content-Type": "application/json", // Or "text/plain"
-        },
-    });
-}
-
 const extractVideoSrcWithoutAutoplay = (embedHtml: string) => {
     const regex = /src="([^"]+)"/; // Regular expression to extract the src attribute
     const match = embedHtml.match(regex);

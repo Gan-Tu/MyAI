@@ -1,7 +1,7 @@
+import CreditFooter from "@/components/credit-footer";
 import { entityCardSchemaType, ImageSearchResult } from "@/lib/types";
 import { capElements } from "@/lib/utils";
 import clsx from "clsx";
-import CreditFooter from "./credit-footer";
 import Description from "./description";
 import FactsList from "./fact-list";
 import Header from "./header";

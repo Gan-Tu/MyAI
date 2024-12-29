@@ -1,4 +1,4 @@
-import { entityCardSchema } from "@/lib/types";
+import { claimsSchema, entityCardSchema } from "@/lib/types";
 import { z } from "zod";
 
 export type ImageSearchResult = {
@@ -11,8 +11,8 @@ export type ImageSearchResult = {
   };
 }
 
-
 export type entityCardSchemaType = z.infer<typeof entityCardSchema>
+export type claimsSchemaType = z.infer<typeof claimsSchema>
 
 export type NavigationProps = {
   showLogin?: boolean
