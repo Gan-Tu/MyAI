@@ -6,7 +6,7 @@ import {
   NavbarItem,
   NavbarLabel,
   NavbarSection,
-  NavbarSpacer
+  NavbarSpacer,
 } from "@/components/base/navbar";
 import { usePathname } from "next/navigation";
 import { navItems } from "./nav-items";
@@ -15,7 +15,9 @@ export function DesktopNavbar() {
   let pathname = usePathname();
   return (
     <Navbar>
-      <NavbarLabel className="font-normal font-serif pl-4">MyAI</NavbarLabel>
+      <NavbarLabel className="cursor-pointer pl-4 font-serif font-normal">
+        MyAI
+      </NavbarLabel>
       <NavbarDivider className="max-lg:hidden" />
       {/* Left Nav Items */}
       <NavbarSection className="max-lg:hidden">

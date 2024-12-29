@@ -6,7 +6,7 @@ import {
   SidebarHeader,
   SidebarItem,
   SidebarLabel,
-  SidebarSection
+  SidebarSection,
 } from "@/components/base/sidebar";
 import { usePathname } from "next/navigation";
 import { navItems } from "./nav-items";
@@ -16,7 +16,9 @@ export function MobileSidebar() {
   return (
     <Sidebar>
       <SidebarHeader>
-        <SidebarLabel className="font-normal font-serif">MyAI</SidebarLabel>
+        <SidebarLabel className="cursor-pointer font-serif font-normal">
+          MyAI
+        </SidebarLabel>
       </SidebarHeader>
       <SidebarBody>
         <SidebarSection>
