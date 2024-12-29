@@ -1,11 +1,17 @@
 import { StackedLayout } from "@/components/base/stacked-layout";
+import { getShowLogin } from "@/lib/flags";
 import { ReactNode } from "react";
-import { DesktopNavbar } from "./desktop-navbar";
 import { MobileSidebar } from "./mobile-sidebar";
+import { TopNavbar } from "./top-navbar";
 
-export function ApplicationLayout({ children }: { children: ReactNode }) {
+export async function ApplicationLayout({ children }: { children: ReactNode }) {
+  // Flags
+  const showLogin = await getShowLogin();
   return (
-    <StackedLayout navbar={<DesktopNavbar />} sidebar={<MobileSidebar />}>
+    <StackedLayout
+      navbar={<TopNavbar showLogin={showLogin} />}
+      sidebar={<MobileSidebar />}
+    >
       {children}
     </StackedLayout>
   );

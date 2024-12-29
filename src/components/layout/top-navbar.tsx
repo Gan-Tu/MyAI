@@ -8,16 +8,31 @@ import {
   NavbarSection,
   NavbarSpacer,
 } from "@/components/base/navbar";
+import { type NavigationProps } from "@/lib/types";
+import { ArrowRightStartOnRectangleIcon } from "@heroicons/react/20/solid";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Avatar } from "../base/avatar";
+import {
+  Dropdown,
+  DropdownButton,
+  DropdownItem,
+  DropdownLabel,
+  DropdownMenu,
+} from "../base/dropdown";
 import { navItems } from "./nav-items";
 
-export function DesktopNavbar() {
+export function TopNavbar({ showLogin = false }: NavigationProps) {
   let pathname = usePathname();
+  let showRightNav = showLogin;
+
   return (
     <Navbar>
-      <NavbarLabel className="cursor-pointer pl-4 font-serif font-normal">
-        MyAI
-      </NavbarLabel>
+      <Link href="/" aria-label="Home">
+        <NavbarLabel className="cursor-pointer pl-4 font-serif font-normal">
+          MyAI
+        </NavbarLabel>
+      </Link>
       <NavbarDivider className="max-lg:hidden" />
       {/* Left Nav Items */}
       <NavbarSection className="max-lg:hidden">
@@ -29,19 +44,20 @@ export function DesktopNavbar() {
       </NavbarSection>
       <NavbarSpacer />
       {/* Right Nav Items */}
-      {/* <NavbarSection>
-        <NavbarItem href="/search" aria-label="Search">
+      {showRightNav && (
+        <NavbarSection>
+          {/* <NavbarItem href="/search" aria-label="Search">
           <MagnifyingGlassIcon />
         </NavbarItem>
         <NavbarItem href="/inbox" aria-label="Inbox">
           <InboxIcon />
-        </NavbarItem>
-        <Dropdown>
-          <DropdownButton as={NavbarItem}>
-            <Avatar src="/profile-photo.jpg" square />
-          </DropdownButton>
-          <DropdownMenu className="min-w-64" anchor="bottom end">
-            <DropdownItem href="/my-profile">
+        </NavbarItem> */}
+          <Dropdown>
+            <DropdownButton as={NavbarItem}>
+              <Avatar src="/favicon.ico" className="cursor-pointer" />
+            </DropdownButton>
+            <DropdownMenu className="min-w-32 max-w-fit" anchor="bottom end">
+              {/* <DropdownItem href="/my-profile">
               <UserIcon />
               <DropdownLabel>My profile</DropdownLabel>
             </DropdownItem>
@@ -58,14 +74,17 @@ export function DesktopNavbar() {
               <LightBulbIcon />
               <DropdownLabel>Share feedback</DropdownLabel>
             </DropdownItem>
-            <DropdownDivider />
-            <DropdownItem href="/logout">
-              <ArrowRightStartOnRectangleIcon />
-              <DropdownLabel>Sign out</DropdownLabel>
-            </DropdownItem>
-          </DropdownMenu>
-        </Dropdown>
-      </NavbarSection> */}
+            <DropdownDivider /> */}
+              {showLogin && (
+                <DropdownItem href="/login" className="cursor-pointer">
+                  <ArrowRightStartOnRectangleIcon />
+                  <DropdownLabel>Log In</DropdownLabel>
+                </DropdownItem>
+              )}
+            </DropdownMenu>
+          </Dropdown>
+        </NavbarSection>
+      )}
     </Navbar>
   );
 }

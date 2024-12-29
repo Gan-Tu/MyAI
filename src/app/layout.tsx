@@ -1,4 +1,5 @@
 import { ApplicationLayout } from "@/components/layout/application-layout";
+import { VercelToolbar } from "@vercel/toolbar/next";
 import clsx from "clsx";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
@@ -24,11 +25,12 @@ export const metadata: Metadata = {
   description: "AI applications built by Gan Tu",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const shouldInjectToolbar = process.env.NODE_ENV === "development";
   return (
     <html
       lang="en"
@@ -39,6 +41,7 @@ export default function RootLayout({
         <div className="flex min-h-full flex-col bg-white dark:bg-gray-950">
           <ApplicationLayout>{children}</ApplicationLayout>
         </div>
+        {shouldInjectToolbar && <VercelToolbar />}
       </body>
     </html>
   );

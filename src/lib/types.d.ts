@@ -13,3 +13,7 @@ export type ImageSearchResult = {
 
 
 export type entityCardSchemaType = z.infer<typeof entityCardSchema>
+
+export type NavigationProps = {
+  showLogin?: boolean
+}
