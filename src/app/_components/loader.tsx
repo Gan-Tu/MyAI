@@ -1,3 +1,5 @@
+import { useColorTheme } from "@/hooks/color-theme";
+import clsx from "clsx";
 import { motion } from "motion/react";
 
 interface DescriptionProps {
@@ -5,7 +7,10 @@ interface DescriptionProps {
 }
 
 export default function Loader({ className }: DescriptionProps) {
+  const { colorTheme } = useColorTheme();
   return (
-    <motion.div className={`${className} animate-pulse bg-blue-100 rounded-xl`} />
+    <motion.div
+      className={clsx(className, "animate-pulse rounded-xl", colorTheme)}
+    />
   );
 }

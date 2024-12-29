@@ -4,6 +4,7 @@ import { Button } from "@/components/base/button";
 import { Label } from "@/components/base/fieldset";
 import { Select } from "@/components/base/select";
 import { Switch, SwitchField } from "@/components/base/switch";
+import { useColorTheme } from "@/hooks/color-theme";
 import { useResetExpansion } from "@/hooks/reset-expansion";
 import { supportedModels } from "@/lib/models";
 import { entityCardSchema } from "@/lib/schema";
@@ -42,6 +43,7 @@ export default function AiTopics({ q, defaultModel }: AiTopicsProps) {
   const [useCache, setUseCache] = useState(true);
   const [card, setCard] = useState<any>(null);
   const { resetExpansion } = useResetExpansion();
+  const { colorTheme } = useColorTheme();
   const { object, submit, isLoading, stop, error } = useObject({
     api: "/api/ai-topics",
     schema: entityCardSchema,
@@ -113,7 +115,7 @@ export default function AiTopics({ q, defaultModel }: AiTopicsProps) {
                 {/* Intro */}
                 <h1 className="text-slate mt-14 text-pretty text-4xl/tight font-light">
                   AI Knowledge{" "}
-                  <span className="text-sky-500">for every topic</span>
+                  <span className="text-blue-500">for every topic</span>
                 </h1>
                 <p className="mt-4 text-sm/6 text-slate-700">
                   AI Knowledge is your on-demand LLM-powered topic card
@@ -173,6 +175,7 @@ export default function AiTopics({ q, defaultModel }: AiTopicsProps) {
                     type="text"
                     autoFocus={true}
                     name="query"
+                    value={input}
                     placeholder="Enter something here..."
                     className="peer w-0 flex-auto cursor-text bg-transparent px-4 py-2.5 text-base text-slate-800 placeholder:text-zinc-400 focus:outline-none disabled:text-gray-500 lg:text-sm"
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
@@ -220,7 +223,7 @@ export default function AiTopics({ q, defaultModel }: AiTopicsProps) {
       </div>
 
       {/* Knowledge Card */}
-      {(isLoading || card) && (
+      {(isLoading || card || true) && (
         <AiCard
           className="stretch no-scrollbar mx-auto max-h-screen w-full min-w-[350px] max-w-md flex-grow pb-10 md:min-w-[400px] lg:mx-6 lg:w-1/2 lg:pt-32"
           card={card}

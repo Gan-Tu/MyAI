@@ -1,9 +1,10 @@
+import { ColorThemeProvider } from "@/hooks/color-theme";
 import { ResetExpansionProvider } from "@/hooks/reset-expansion";
 import { supportedModels } from "@/lib/models";
 import AiTopics from "./ai-topics";
 
 export default async function Page({
-  searchParams
+  searchParams,
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
@@ -20,7 +21,9 @@ export default async function Page({
   }
   return (
     <ResetExpansionProvider>
-      <AiTopics q={query} defaultModel={defaultModel} />
+      <ColorThemeProvider>
+        <AiTopics q={query} defaultModel={defaultModel} />
+      </ColorThemeProvider>
     </ResetExpansionProvider>
   );
 }

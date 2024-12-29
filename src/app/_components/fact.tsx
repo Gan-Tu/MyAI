@@ -1,6 +1,8 @@
 import { MemoizedMarkdown } from "@/components/memoized-markdown";
+import { useColorTheme } from "@/hooks/color-theme";
 import { useResetExpansion } from "@/hooks/reset-expansion";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
+import clsx from "clsx";
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import Loader from "./loader";
@@ -20,12 +22,13 @@ export default function Fact({
   name,
   shortAnswer,
   fullAnswer,
-  className
+  className,
 }: FactProps) {
   const noContent = !(name && shortAnswer);
   const contentRef = useRef<HTMLDivElement>(null);
   const [contentHeight, setContentHeight] = useState<number | null>(null);
   const { resetFlag } = useResetExpansion();
+  const { colorTheme } = useColorTheme();
 
   useEffect(() => {
     // Calculate the full content height dynamically
@@ -52,24 +55,27 @@ export default function Fact({
             setIsExpanded(!isExpanded);
           }
         }}
-        className={`${className} transition-all ease-in-out duration-200 justify-start rounded-xl flex flex-col items-start ${
-          isExpanded ? "col-span-full p-2" : "bg-blue-100 p-4"
-        }`}
+        className={clsx(
+          className,
+          "flex flex-col items-start justify-start rounded-xl transition-all duration-200 ease-in-out",
+          isExpanded ? "col-span-full p-2" : "p-4",
+          !isExpanded && colorTheme,
+        )}
       >
         {/* Header */}
-        <motion.div className="flex min-w-full justify-between transition-all ease-in-out duration-200">
+        <motion.div className="flex min-w-full justify-between transition-all duration-200 ease-in-out">
           <h2
-            className={`text-sm font-semibold text-gray-900 text-left ${
+            className={`text-left text-sm font-semibold text-gray-900 ${
               isExpanded ? "text-[1.125rem]" : "text-base"
             }`}
           >
             {name || <Loader className="min-h-6 w-[100px]" />}
           </h2>
           <ChevronDownIcon
-            className={`transition-all ease-in-out duration-200 ${
+            className={`transition-all duration-200 ease-in-out ${
               isExpanded
-                ? "w-7 h-7 rounded-xl p-1 bg-blue-100 rotate-180"
-                : "w-5 h-5"
+                ? "h-7 w-7 rotate-180 rounded-xl bg-blue-100 p-1"
+                : "h-5 w-5"
             }`}
           />
         </motion.div>
@@ -77,7 +83,7 @@ export default function Fact({
         {/* Short Answer */}
         {!isExpanded && (
           <motion.span
-            className={`mt-1 font-normal text-sm text-left transition-all ease-in-out duration-200 text-pretty ${
+            className={`mt-1 text-pretty text-left text-sm font-normal transition-all duration-200 ease-in-out ${
               isExpanded ? "" : "line-clamp-2"
             }`}
           >
@@ -93,9 +99,9 @@ export default function Fact({
         {isExpanded && fullAnswer && (
           <motion.div
             ref={contentRef}
-            className="overflow-hidden transition-all text-left ease-in-out duration-200 text-pretty"
+            className="overflow-hidden text-pretty text-left transition-all duration-200 ease-in-out"
             style={{
-              maxHeight: contentHeight ? `${contentHeight}px` : "0px"
+              maxHeight: contentHeight ? `${contentHeight}px` : "0px",
             }}
           >
             <motion.span className="mt-1 text-sm font-normal">
