@@ -162,6 +162,7 @@ Generate a informative, glanceable, knowledge topic card based on a user query w
     * Full answer should mention the short answer used as well for consistency.
   * When outputing facts, order fact with longest short answer aa the last fact.
   * PREFER outputing numerical facts, but only if they are highgly factual, or grounded in he given web snippets.
+  * For exercises, prefer generating facts like "muscles worked". For sports queries, prefer outputting most relevant statistic or categorization for the sport.
   * PREFER outputting one short fact, one listy fact, one long fact, whenever possible.
 * **Video** Optional. 
   * ONLY select videos that are instructional, or adds significant value, from provided candidates section. 
