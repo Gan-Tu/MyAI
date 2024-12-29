@@ -18,6 +18,14 @@ const HeroCarousel: React.FC<HeroCarouselProps> = ({
   videoUrl,
   className,
 }) => {
+  const [ref] = useKeenSlider<HTMLDivElement>(
+    {
+      loop: false,
+      mode: "snap",
+      slides: { perView: 1.5, spacing: 5 },
+    },
+    [WheelControls],
+  );
   const showVideo =
     videoUrl && !videoUrl.includes("v=example") && videoUrl !== "null";
   const showImages = images && images.length > 0;
@@ -30,14 +38,6 @@ const HeroCarousel: React.FC<HeroCarouselProps> = ({
       </div>
     );
   }
-  const [ref] = useKeenSlider<HTMLDivElement>(
-    {
-      loop: false,
-      mode: "snap",
-      slides: { perView: 1.5, spacing: 5 },
-    },
-    [WheelControls],
-  );
 
   return (
     <div
