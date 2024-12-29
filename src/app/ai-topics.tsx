@@ -246,7 +246,7 @@ export default function AiTopics({ q, defaultModel }: AiTopicsProps) {
       </div>
 
       {/* Knowledge Card */}
-      {(isLoading || card || true) && (
+      {(isLoading || card) && (
         <AiCard
           className="stretch no-scrollbar mx-auto max-h-screen w-full min-w-[350px] max-w-md flex-grow pb-10 md:min-w-[400px] lg:mx-6 lg:w-1/2 lg:pt-32"
           card={card}
