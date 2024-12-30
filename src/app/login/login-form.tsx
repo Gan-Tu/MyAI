@@ -1,7 +1,7 @@
 "use client";
 
-import { Avatar } from "@/components/base/avatar";
 import { Link } from "@/components/base/link";
+import { Mark } from "@/components/logo";
 import { useSession } from "@/hooks/session";
 import { LoginOption, loginWithProvider } from "@/lib/session";
 import { type LogInButtonProps } from "@/lib/types";
@@ -59,7 +59,7 @@ export function LoginForm() {
     <div className="p-10">
       <div className="flex items-start">
         <Link href="/" title="Home">
-          <Avatar src="/favicon.ico" className="h-8 w-8" />
+          <Mark className="h-8 fill-black" />
         </Link>
       </div>
       <h1 className="mt-8 text-base/6 font-medium dark:text-zinc-950">
