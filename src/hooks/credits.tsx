@@ -29,11 +29,13 @@ const CreditsContext = createContext<CreditsContextTypeValue | undefined>(
 
 // Define the Props type for the provider
 interface CreditsProviderProps {
+  enableCredits?: boolean;
   children: ReactNode;
 }
 
 // Create the Provider component
 export const CreditsProvider: React.FC<CreditsProviderProps> = ({
+  enableCredits = false,
   children,
 }) => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -41,6 +43,9 @@ export const CreditsProvider: React.FC<CreditsProviderProps> = ({
   const [balance, setBalance] = useState<number>(0);
 
   const deduct = async (credit: number = 1) => {
+    if (!enableCredits) {
+      return true;
+    }
     if (!uid) {
       toast.error("Sign in to use your credits!");
       return false;
@@ -63,17 +68,20 @@ export const CreditsProvider: React.FC<CreditsProviderProps> = ({
 
   useEffect(() => {
     return onAuthStateChanged(auth, async (user) => {
-      if (user && user.uid) {
-        setUid(user.uid);
-        const { balance, error } = await getOrInitCreditsBalance(user.uid);
-        if (error) {
-          console.error(`Failed to get credit balance: ${error}`);
-          setBalance(0);
+      if (enableCredits) {
+        if (user && user.uid) {
+          setUid(user.uid);
+          const { balance, error } = await getOrInitCreditsBalance(user.uid);
+          if (error) {
+            console.error(`Failed to get credit balance: ${error}`);
+            setBalance(0);
+          } else {
+            setBalance(balance || 0);
+          }
         } else {
-          setBalance(balance || 0);
+          setUid(null);
+          setBalance(0);
         }
-      } else {
-        setUid(null);
       }
       setIsLoading(false);
     });

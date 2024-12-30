@@ -15,6 +15,13 @@ export async function GET(request: NextRequest) {
           { value: false, label: 'on' },
           { value: true, label: 'off' },
         ],
+      },
+      "enable-credits": {
+        description: 'Whether to enable credits usage tracking/limiting',
+        options: [
+          { value: false, label: 'on' },
+          { value: true, label: 'off' },
+        ],
       }
     }
   });

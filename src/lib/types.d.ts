@@ -16,6 +16,7 @@ export type claimsSchemaType = z.infer<typeof claimsSchema>
 
 export type NavigationProps = {
   enableLogin?: boolean
+  enableCredits?: boolean
 }
 
 export type LogInButtonProps = {

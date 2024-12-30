@@ -69,7 +69,7 @@ export default function AiTopics({ q, defaultModel }: AiTopicsProps) {
   const fetchTopicCard = async () => {
     if (!input) return;
 
-    if (!(await deduct(15))) {
+    if (!(await deduct(1))) {
       return;
     }
 

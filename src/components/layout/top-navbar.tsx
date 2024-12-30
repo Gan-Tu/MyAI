@@ -30,10 +30,15 @@ import {
 } from "../base/dropdown";
 import { navItems } from "./nav-items";
 
-export function TopNavbar({ enableLogin = false }: NavigationProps) {
+export function TopNavbar({
+  enableLogin = false,
+  enableCredits = false,
+}: NavigationProps) {
   let pathname = usePathname();
   const { user, gravatarUrl, signOut } = useSession();
-  const { balance, isLoading: isCreditsLoading } = useCredits();
+  const { balance, isLoading: isCreditsLoading } = enableCredits
+    ? useCredits()
+    : { balance: 0, isLoading: false };
   let showLogin = enableLogin && !user;
   let showLogout = user; // always allow user to sign out, if logged in
   let showDropDown = showLogin || showLogout;
@@ -84,7 +89,7 @@ export function TopNavbar({ enableLogin = false }: NavigationProps) {
                   <DropdownDivider />
                 </DropdownSection>
               )}
-              {!isCreditsLoading && (
+              {!isCreditsLoading && enableCredits && (
                 <DropdownSection>
                   <DropdownHeader>
                     <div className="text-pretty text-sm text-zinc-500 dark:text-zinc-400">

@@ -1,6 +1,7 @@
 import { ApplicationLayout } from "@/components/layout/application-layout";
 import { CreditsProvider } from "@/hooks/credits";
 import { SessionProvider } from "@/hooks/session";
+import { getEnableCredits } from "@/lib/flags";
 import { VercelToolbar } from "@vercel/toolbar/next";
 import clsx from "clsx";
 import { Inter } from "next/font/google";
@@ -35,6 +36,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const shouldInjectToolbar = process.env.NODE_ENV === "development";
+  const enableCredits = await getEnableCredits();
   return (
     <html
       lang="en"
@@ -44,7 +46,7 @@ export default async function RootLayout({
         <Toaster position="bottom-right" />
         <div className="flex min-h-full flex-col bg-white dark:bg-gray-950">
           <SessionProvider>
-            <CreditsProvider>
+            <CreditsProvider enableCredits={enableCredits}>
               <ApplicationLayout>{children}</ApplicationLayout>
             </CreditsProvider>
           </SessionProvider>
