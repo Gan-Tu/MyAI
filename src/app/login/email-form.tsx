@@ -10,6 +10,7 @@ import { Field, Label } from "@/components/base/fieldset";
 import { Input } from "@/components/base/input";
 import { loginWithEmail } from "@/lib/session";
 import { useState } from "react";
+import toast from "react-hot-toast";
 
 interface EmailFormProps {
   isOpen: boolean;
@@ -21,9 +22,15 @@ export function EmailForm({ isOpen, setIsOpen }: EmailFormProps) {
   const [password, setPassword] = useState<string>("");
 
   const onClick = async () => {
-    const { error } = await loginWithEmail(email, password);
-    if (!error) {
-      setIsOpen(false);
+    if (!email) {
+      toast.error("Email is required");
+    } else if (!password) {
+      toast.error("Password is required");
+    } else {
+      const { error } = await loginWithEmail(email, password);
+      if (!error) {
+        setIsOpen(false);
+      }
     }
   };
 
