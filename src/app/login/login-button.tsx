@@ -1,3 +1,5 @@
+"use client";
+
 import { type LogInButtonProps } from "@/lib/types";
 
 export function LogInButton({

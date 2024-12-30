@@ -1,11 +1,11 @@
 import { unstable_flag as flag } from '@vercel/flags/next';
 
-export const getShowLogin = flag<boolean>({
-  key: 'show-login',
+export const getEnableLogin = flag<boolean>({
+  key: 'enable-login',
   async decide() {
     return false;
   },
-  description: 'Whether to show login endpoint',
+  description: 'Whether to enable login/logout',
   defaultValue: false,
   options: [
     { value: false, label: 'on' },

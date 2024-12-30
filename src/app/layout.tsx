@@ -1,4 +1,5 @@
 import { ApplicationLayout } from "@/components/layout/application-layout";
+import { SessionProvider } from "@/hooks/session";
 import { VercelToolbar } from "@vercel/toolbar/next";
 import clsx from "clsx";
 import { Inter } from "next/font/google";
@@ -41,7 +42,9 @@ export default async function RootLayout({
       <body className="bg-muted/50">
         <Toaster position="bottom-right" />
         <div className="flex min-h-full flex-col bg-white dark:bg-gray-950">
-          <ApplicationLayout>{children}</ApplicationLayout>
+          <SessionProvider>
+            <ApplicationLayout>{children}</ApplicationLayout>
+          </SessionProvider>
         </div>
         {shouldInjectToolbar && <VercelToolbar />}
       </body>

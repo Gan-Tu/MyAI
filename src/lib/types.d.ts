@@ -15,7 +15,7 @@ export type entityCardSchemaType = z.infer<typeof entityCardSchema>
 export type claimsSchemaType = z.infer<typeof claimsSchema>
 
 export type NavigationProps = {
-  showLogin?: boolean
+  enableLogin?: boolean
 }
 
 export type LogInButtonProps = {
@@ -23,6 +23,6 @@ export type LogInButtonProps = {
   textColor: string;
   bgColor: string;
   buttonText: string;
-  provider: string;
-  onClick?: () => void;
+  provider?: LoginOption;
+  onClick: () => void
 }

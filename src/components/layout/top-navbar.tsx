@@ -8,8 +8,12 @@ import {
   NavbarSection,
   NavbarSpacer,
 } from "@/components/base/navbar";
+import { useSession } from "@/hooks/session";
 import { type NavigationProps } from "@/lib/types";
-import { ArrowRightStartOnRectangleIcon } from "@heroicons/react/20/solid";
+import {
+  ArrowLeftEndOnRectangleIcon,
+  ArrowRightStartOnRectangleIcon,
+} from "@heroicons/react/20/solid";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Avatar } from "../base/avatar";
@@ -22,9 +26,12 @@ import {
 } from "../base/dropdown";
 import { navItems } from "./nav-items";
 
-export function TopNavbar({ showLogin = false }: NavigationProps) {
+export function TopNavbar({ enableLogin = false }: NavigationProps) {
   let pathname = usePathname();
-  let showRightNav = showLogin;
+  const { user, signOut } = useSession();
+  let showLogin = enableLogin && !user;
+  let showLogout = enableLogin && user;
+  let showDropDown = showLogin || showLogout;
 
   return (
     <Navbar>
@@ -43,42 +50,29 @@ export function TopNavbar({ showLogin = false }: NavigationProps) {
         ))}
       </NavbarSection>
       <NavbarSpacer />
+
       {/* Right Nav Items */}
-      {showRightNav && (
+      {showDropDown && (
         <NavbarSection>
-          {/* <NavbarItem href="/search" aria-label="Search">
-          <MagnifyingGlassIcon />
-        </NavbarItem>
-        <NavbarItem href="/inbox" aria-label="Inbox">
-          <InboxIcon />
-        </NavbarItem> */}
           <Dropdown>
             <DropdownButton as={NavbarItem}>
-              <Avatar src="/favicon.ico" className="cursor-pointer" />
+              <Avatar
+                src={user?.photoURL || "/favicon.ico"}
+                className="cursor-pointer"
+              />
             </DropdownButton>
             <DropdownMenu className="min-w-32 max-w-fit" anchor="bottom end">
-              {/* <DropdownItem href="/my-profile">
-              <UserIcon />
-              <DropdownLabel>My profile</DropdownLabel>
-            </DropdownItem>
-            <DropdownItem href="/settings">
-              <Cog8ToothIcon />
-              <DropdownLabel>Settings</DropdownLabel>
-            </DropdownItem>
-            <DropdownDivider />
-            <DropdownItem href="/privacy-policy">
-              <ShieldCheckIcon />
-              <DropdownLabel>Privacy policy</DropdownLabel>
-            </DropdownItem>
-            <DropdownItem href="/share-feedback">
-              <LightBulbIcon />
-              <DropdownLabel>Share feedback</DropdownLabel>
-            </DropdownItem>
-            <DropdownDivider /> */}
+              {/* DropdownDivider */}
               {showLogin && (
                 <DropdownItem href="/login" className="cursor-pointer">
-                  <ArrowRightStartOnRectangleIcon />
+                  <ArrowLeftEndOnRectangleIcon />
                   <DropdownLabel>Log In</DropdownLabel>
+                </DropdownItem>
+              )}
+              {showLogout && (
+                <DropdownItem onClick={signOut} className="cursor-pointer">
+                  <ArrowRightStartOnRectangleIcon />
+                  <DropdownLabel>Sign Out</DropdownLabel>
                 </DropdownItem>
               )}
             </DropdownMenu>

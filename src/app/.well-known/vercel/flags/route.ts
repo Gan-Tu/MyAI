@@ -8,8 +8,8 @@ export async function GET(request: NextRequest) {
 
   return NextResponse.json<ApiData>({
     definitions: {
-      "show-login": {
-        description: 'Whether to show login endpoint',
+      "enable-login": {
+        description: 'Whether to enable login/logout',
         // origin: 'https://app.launchdarkly.com/projects/default/flags/myai_show_login',
         options: [
           { value: false, label: 'on' },
