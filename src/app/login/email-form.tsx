@@ -11,6 +11,7 @@ import { ErrorMessage, Field, Label } from "@/components/base/fieldset";
 import { Input } from "@/components/base/input";
 import { createAccount, loginWithEmail, resetPassword } from "@/lib/session";
 import { CheckIcon } from "@heroicons/react/20/solid";
+import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
@@ -41,6 +42,7 @@ export function EmailForm({ isOpen, setIsOpen }: EmailFormProps) {
   const [rememberMe, setRememberMe] = useState<boolean>(true);
   const [isCreateAccount, setIsCreateAccount] = useState<boolean>(false);
   const [pwdError, setPwdError] = useState<string>("");
+  const [showPassword, setShowPassword] = useState<boolean>(false);
 
   useEffect(() => {
     if (isCreateAccount && password) {
@@ -68,6 +70,7 @@ export function EmailForm({ isOpen, setIsOpen }: EmailFormProps) {
     setPassword("");
     setRememberMe(true);
     setPwdError("");
+    setShowPassword(false);
   };
 
   const onClose = () => {
@@ -117,13 +120,25 @@ export function EmailForm({ isOpen, setIsOpen }: EmailFormProps) {
             <Label className="text-sm/5 font-medium dark:text-zinc-950">
               Password
             </Label>
-            <Input
-              required
-              type="password"
-              name="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
+            <div className="relative flex items-center">
+              <Input
+                required
+                type={showPassword ? "text" : "password"}
+                name="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              <button
+                className="absolute right-3 h-5 w-5 cursor-pointer bg-white px-4"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? (
+                  <EyeSlashIcon className="cursor-potiner h-4 w-4" />
+                ) : (
+                  <EyeIcon className="cursor-potiner h-4 w-4" />
+                )}
+              </button>
+            </div>
             {pwdError && <ErrorMessage>{pwdError}</ErrorMessage>}
           </Field>
         )}
