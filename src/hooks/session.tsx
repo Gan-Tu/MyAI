@@ -15,6 +15,7 @@ import toast from "react-hot-toast";
 
 // Define the type for the context value
 interface SessionContextTypeValue {
+  isLoading: boolean;
   user: User | null;
   setUser: Dispatch<SetStateAction<User | null>>;
   token: string | null;
@@ -35,19 +36,21 @@ interface SessionProviderProps {
 export const SessionProvider: React.FC<SessionProviderProps> = ({
   children,
 }) => {
+  const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
 
   useEffect(() => {
-    return onAuthStateChanged(auth, (user) => {
+    return onAuthStateChanged(auth, async (user) => {
       if (user) {
         toast.success("Successfully signed in!");
         setUser(user);
-        getIdToken(user).then(setToken).catch(console.error);
+        await getIdToken(user).then(setToken).catch(console.error);
       } else {
         setUser(null);
         setToken(null);
       }
+      setIsLoading(false);
     });
   }, [auth]);
 
@@ -64,7 +67,7 @@ export const SessionProvider: React.FC<SessionProviderProps> = ({
 
   return (
     <SessionContext.Provider
-      value={{ user, setUser, token, signOut: handleSignOut }}
+      value={{ isLoading, user, setUser, token, signOut: handleSignOut }}
     >
       {children}
     </SessionContext.Provider>
