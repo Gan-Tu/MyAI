@@ -3,7 +3,7 @@ import { unstable_flag as flag } from '@vercel/flags/next';
 export const getEnableLogin = flag<boolean>({
   key: 'enable-login',
   async decide() {
-    return false;
+    return true;
   },
   description: 'Whether to enable login/logout',
   defaultValue: false,
