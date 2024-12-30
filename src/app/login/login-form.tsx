@@ -2,15 +2,25 @@
 
 import { Avatar } from "@/components/base/avatar";
 import { Link } from "@/components/base/link";
+import { useSession } from "@/hooks/session";
 import { LoginOption, loginWithProvider } from "@/lib/session";
 import { type LogInButtonProps } from "@/lib/types";
 import { GithubAuthProvider, GoogleAuthProvider } from "firebase/auth";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { EmailForm } from "./email-form";
 import { LogInButton } from "./login-button";
 
 export function LoginForm() {
   const [openEmailForm, setOpenEmailForm] = useState(false);
+  const { isLoading, user } = useSession();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!isLoading && user) {
+      router.push("/");
+    }
+  }, [isLoading, user]);
 
   const loginProviders: LogInButtonProps[] = [
     {

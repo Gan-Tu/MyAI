@@ -11,7 +11,6 @@ import React, {
   useEffect,
   useState,
 } from "react";
-import toast from "react-hot-toast";
 
 // Define the type for the context value
 interface SessionContextTypeValue {
@@ -43,7 +42,6 @@ export const SessionProvider: React.FC<SessionProviderProps> = ({
   useEffect(() => {
     return onAuthStateChanged(auth, async (user) => {
       if (user) {
-        toast.success("Successfully signed in!");
         setUser(user);
         await getIdToken(user).then(setToken).catch(console.error);
       } else {

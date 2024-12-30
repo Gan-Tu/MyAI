@@ -24,6 +24,7 @@ export async function loginWithProvider(provider: AuthProvider): Promise<LoginRe
     const result = await signInWithPopup(auth, provider);
     const user = result.user;
     console.log(`Signed in user: ${user.displayName || user.email}`);
+    toast.success("Successfully signed in!")
     return { success: true, user };
   } catch (error: any) {
     toast.error(`Failed to sign in: ${error.message}`);
@@ -39,6 +40,7 @@ export async function loginWithEmail(email: string, password: string): Promise<L
     const result = await signInWithEmailAndPassword(auth, email, password)
     const user = result.user;
     console.log(`Signed in user: ${user.displayName || user.email}`);
+    toast.success("Successfully signed in!")
     return { success: true, user };
   } catch (error: any) {
     toast.error(`Failed to sign in: ${error.message}`);
