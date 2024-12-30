@@ -28,7 +28,9 @@ export default async function Page({
   return (
     <ResetExpansionProvider>
       <ColorThemeProvider>
-        <AiTopics q={query} defaultModel={defaultModel} />
+        <div className="flex place-content-center p-6">
+          <AiTopics q={query} defaultModel={defaultModel} />
+        </div>
       </ColorThemeProvider>
     </ResetExpansionProvider>
   );

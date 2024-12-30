@@ -90,7 +90,7 @@ export function StackedLayout({
 
       {/* Content */}
       <main className="relative flex h-dvh flex-1 flex-col overflow-hidden pb-2 lg:px-2">
-        <div className="flex grow place-content-center p-6 lg:rounded-lg lg:bg-zinc-50 lg:shadow-sm lg:ring-1 lg:ring-zinc-950/5 dark:lg:bg-zinc-900 dark:lg:ring-white/10">
+        <div className="grow lg:rounded-lg lg:bg-zinc-50 lg:shadow-sm lg:ring-1 lg:ring-zinc-950/5 dark:lg:bg-zinc-900 dark:lg:ring-white/10">
           {children}
         </div>
       </main>

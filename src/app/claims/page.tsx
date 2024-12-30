@@ -26,7 +26,9 @@ export default async function Page({
   }
   return (
     <ResetExpansionProvider>
-      <ClaimsPage q={query} defaultModel={defaultModel} />
+      <div className="place-content-center p-6">
+        <ClaimsPage q={query} defaultModel={defaultModel} />
+      </div>
     </ResetExpansionProvider>
   );
 }

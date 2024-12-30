@@ -52,6 +52,13 @@ const config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        "twitter-blue": "#1DA1F2",
+        "google-blue": "#4285F4",
+        "google-red": "#DB4437",
+        "google-yellow": "#F4B400",
+        "google-green": "#0F9D58",
+        "facebook-blue": "#4267B2",
+        "github-black": "#171515"
       },
       borderRadius: {
         lg: "var(--radius)",

@@ -17,3 +17,12 @@ export type claimsSchemaType = z.infer<typeof claimsSchema>
 export type NavigationProps = {
   showLogin?: boolean
 }
+
+export type LogInButtonProps = {
+  logo: string;
+  textColor: string;
+  bgColor: string;
+  buttonText: string;
+  provider: string;
+  onClick?: () => void;
+}
