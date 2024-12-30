@@ -20,15 +20,18 @@ import { Avatar } from "../base/avatar";
 import {
   Dropdown,
   DropdownButton,
+  DropdownDivider,
+  DropdownHeader,
   DropdownItem,
   DropdownLabel,
   DropdownMenu,
+  DropdownSection,
 } from "../base/dropdown";
 import { navItems } from "./nav-items";
 
 export function TopNavbar({ enableLogin = false }: NavigationProps) {
   let pathname = usePathname();
-  const { user, signOut } = useSession();
+  const { user, gravatarUrl, signOut } = useSession();
   let showLogin = enableLogin && !user;
   let showLogout = user; // always allow user to sign out, if logged in
   let showDropDown = showLogin || showLogout;
@@ -57,24 +60,42 @@ export function TopNavbar({ enableLogin = false }: NavigationProps) {
           <Dropdown>
             <DropdownButton as={NavbarItem}>
               <Avatar
-                src={user?.photoURL || "/favicon.ico"}
+                src={user?.photoURL || gravatarUrl || "/favicon.ico"}
                 className="cursor-pointer"
               />
             </DropdownButton>
             <DropdownMenu className="min-w-32 max-w-fit" anchor="bottom end">
-              {/* DropdownDivider */}
-              {showLogin && (
-                <DropdownItem href="/login" className="cursor-pointer">
-                  <ArrowLeftEndOnRectangleIcon />
-                  <DropdownLabel>Log In</DropdownLabel>
-                </DropdownItem>
+              {user && (
+                <DropdownSection>
+                  <DropdownHeader>
+                    <div className="pr-6">
+                      <div className="text-xs text-zinc-500 dark:text-zinc-400">
+                        Signed in as {user.displayName && `${user.displayName}`}
+                      </div>
+                      {user.email && (
+                        <div className="text-sm/7 font-semibold text-zinc-800 dark:text-white">
+                          {user.email}
+                        </div>
+                      )}
+                    </div>
+                  </DropdownHeader>
+                  <DropdownDivider />
+                </DropdownSection>
               )}
-              {showLogout && (
-                <DropdownItem onClick={signOut} className="cursor-pointer">
-                  <ArrowRightStartOnRectangleIcon />
-                  <DropdownLabel>Sign Out</DropdownLabel>
-                </DropdownItem>
-              )}
+              <DropdownSection>
+                {showLogin && (
+                  <DropdownItem href="/login" className="cursor-pointer">
+                    <ArrowLeftEndOnRectangleIcon />
+                    <DropdownLabel>Log In</DropdownLabel>
+                  </DropdownItem>
+                )}
+                {showLogout && (
+                  <DropdownItem onClick={signOut} className="cursor-pointer">
+                    <ArrowRightStartOnRectangleIcon />
+                    <DropdownLabel>Sign Out</DropdownLabel>
+                  </DropdownItem>
+                )}
+              </DropdownSection>
             </DropdownMenu>
           </Dropdown>
         </NavbarSection>

@@ -1,6 +1,7 @@
 "use client";
 
 import { auth } from "@/lib/firebase/client";
+import crypto from "crypto";
 import { getIdToken, onAuthStateChanged, signOut, User } from "firebase/auth";
 import React, {
   createContext,
@@ -17,6 +18,7 @@ interface SessionContextTypeValue {
   isLoading: boolean;
   user: User | null;
   setUser: Dispatch<SetStateAction<User | null>>;
+  gravatarUrl: string | null;
   token: string | null;
   signOut: () => Promise<void>;
 }
@@ -31,6 +33,12 @@ interface SessionProviderProps {
   children: ReactNode;
 }
 
+function getGravatarUrl(email: string, size = 24) {
+  const trimmedEmail = email.trim().toLowerCase();
+  const hash = crypto.createHash("sha256").update(trimmedEmail).digest("hex");
+  return `https://www.gravatar.com/avatar/${hash}?s=${size}&d=identicon`;
+}
+
 // Create the Provider component
 export const SessionProvider: React.FC<SessionProviderProps> = ({
   children,
@@ -38,15 +46,20 @@ export const SessionProvider: React.FC<SessionProviderProps> = ({
   const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
+  const [gravatarUrl, setGravatarUrl] = useState<string | null>(null);
 
   useEffect(() => {
     return onAuthStateChanged(auth, async (user) => {
       if (user) {
         setUser(user);
+        if (user.email) {
+          setGravatarUrl(getGravatarUrl(user.email));
+        }
         await getIdToken(user).then(setToken).catch(console.error);
       } else {
         setUser(null);
         setToken(null);
+        setGravatarUrl(null)
       }
       setIsLoading(false);
     });
@@ -65,7 +78,14 @@ export const SessionProvider: React.FC<SessionProviderProps> = ({
 
   return (
     <SessionContext.Provider
-      value={{ isLoading, user, setUser, token, signOut: handleSignOut }}
+      value={{
+        isLoading,
+        user,
+        setUser,
+        gravatarUrl,
+        token,
+        signOut: handleSignOut,
+      }}
     >
       {children}
     </SessionContext.Provider>
