@@ -36,9 +36,7 @@ export function TopNavbar({
 }: NavigationProps) {
   let pathname = usePathname();
   const { user, gravatarUrl, signOut } = useSession();
-  const { balance, isLoading: isCreditsLoading } = enableCredits
-    ? useCredits()
-    : { balance: 0, isLoading: false };
+  const { balance, isLoading: isCreditsLoading } = useCredits();
   let showLogin = enableLogin && !user;
   let showLogout = user; // always allow user to sign out, if logged in
   let showDropDown = showLogin || showLogout;
