@@ -3,6 +3,7 @@
 import { Button } from "@/components/base/button";
 import { Label } from "@/components/base/fieldset";
 import { Select } from "@/components/base/select";
+import { useCredits } from "@/hooks/credits";
 import { supportedModels } from "@/lib/models";
 import { claimsSchema } from "@/lib/schema";
 import * as Headless from "@headlessui/react";
@@ -23,6 +24,7 @@ export default function ClaimsPage({ q, defaultModel }: ClaimsProps) {
   const [input, setInput] = useState(q);
   const [model, setModel] = useState<string>(defaultModel || "gpt-4o-mini");
   const [claims, setClaims] = useState<any>(null);
+  const { deduct } = useCredits();
   const { object, submit, isLoading, stop, error } = useObject({
     api: "/api/ai-claims",
     schema: claimsSchema,
@@ -43,10 +45,18 @@ export default function ClaimsPage({ q, defaultModel }: ClaimsProps) {
     }
   }, [error]);
 
+  const fetchClaims = async () => {
+    if (!input) return;
+    if (!(await deduct(1))) {
+      return;
+    }
+    submit(input);
+  };
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setClaims(null);
-    submit(input);
+    fetchClaims();
   };
 
   return (

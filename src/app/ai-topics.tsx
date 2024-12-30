@@ -5,6 +5,7 @@ import { Label } from "@/components/base/fieldset";
 import { Select } from "@/components/base/select";
 import { Switch, SwitchField } from "@/components/base/switch";
 import { useColorTheme } from "@/hooks/color-theme";
+import { useCredits } from "@/hooks/credits";
 import { useResetExpansion } from "@/hooks/reset-expansion";
 import { supportedModels } from "@/lib/models";
 import { entityCardSchema } from "@/lib/schema";
@@ -43,6 +44,7 @@ export default function AiTopics({ q, defaultModel }: AiTopicsProps) {
   const [useCache, setUseCache] = useState(true);
   const [card, setCard] = useState<any>(null);
   const { resetExpansion } = useResetExpansion();
+  const { deduct } = useCredits();
   const { colorTheme, setColorTheme, allThemes } = useColorTheme();
   const { object, submit, isLoading, stop, error } = useObject({
     api: "/api/ai-topics",
@@ -64,22 +66,14 @@ export default function AiTopics({ q, defaultModel }: AiTopicsProps) {
     }
   }, [error]);
 
-  const fetchImages = async () => {
-    if (input) {
-      const { data, error } = await searchImage(input);
-      if (error) {
-        console.error(error);
-        setImages([]);
-        setHideImage(true);
-      } else if (data) {
-        setImages(data);
-        setHideImage(false);
-      }
-    }
-  };
-
-  const fetchEntityCard = async () => {
+  const fetchTopicCard = async () => {
     if (!input) return;
+
+    if (!(await deduct(15))) {
+      return;
+    }
+
+    // Fetch Entity Card
     if (useCache) {
       const { data: cache, error } = await getCachedAiTopics(input, model);
       if (error) {
@@ -91,6 +85,17 @@ export default function AiTopics({ q, defaultModel }: AiTopicsProps) {
       }
     }
     submit(input);
+
+    // Fetch Images
+    const { data, error } = await searchImage(input);
+    if (error) {
+      console.error(error);
+      setImages([]);
+      setHideImage(true);
+    } else if (data) {
+      setImages(data);
+      setHideImage(false);
+    }
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -100,8 +105,7 @@ export default function AiTopics({ q, defaultModel }: AiTopicsProps) {
     resetExpansion();
     setImages(null);
     setHideImage(false);
-    fetchEntityCard();
-    fetchImages();
+    fetchTopicCard();
   };
 
   return (

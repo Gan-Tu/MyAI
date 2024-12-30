@@ -1,6 +1,6 @@
 "use client";
 
-import { getOrInitCreditsBalance } from "@/app/actions";
+import { getOrInitCreditsBalance, setCreditsBalance } from "@/app/actions";
 import { auth } from "@/lib/firebase/client";
 import { onAuthStateChanged } from "firebase/auth";
 import React, {
@@ -12,12 +12,14 @@ import React, {
   useEffect,
   useState,
 } from "react";
+import toast from "react-hot-toast";
 
 // Define the type for the context value
 interface CreditsContextTypeValue {
   isLoading: boolean;
   balance: number;
   setBalance: Dispatch<SetStateAction<number>>;
+  deduct: (credit: number) => Promise<boolean>;
 }
 
 // Create the Context with a default undefined value
@@ -34,12 +36,35 @@ interface CreditsProviderProps {
 export const CreditsProvider: React.FC<CreditsProviderProps> = ({
   children,
 }) => {
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [uid, setUid] = useState<string | null>(null);
   const [balance, setBalance] = useState<number>(0);
+
+  const deduct = async (credit: number = 1) => {
+    if (!uid) {
+      toast.error("Sign in to use your credits!");
+      return false;
+    }
+    const newBalance = balance - credit;
+    if (newBalance < 0) {
+      toast.error(
+        `You have insufficient balance!\n${credit} credits needed, you have ${balance}`,
+      );
+      return false;
+    }
+    setBalance(newBalance);
+    const { error } = await setCreditsBalance(uid, newBalance);
+    if (error) {
+      toast.error(error);
+      return false;
+    }
+    return true;
+  };
 
   useEffect(() => {
     return onAuthStateChanged(auth, async (user) => {
       if (user && user.uid) {
+        setUid(user.uid);
         const { balance, error } = await getOrInitCreditsBalance(user.uid);
         if (error) {
           console.error(`Failed to get credit balance: ${error}`);
@@ -48,14 +73,14 @@ export const CreditsProvider: React.FC<CreditsProviderProps> = ({
           setBalance(balance || 0);
         }
       } else {
-        setBalance(0);
+        setUid(null);
       }
       setIsLoading(false);
     });
   }, [auth]);
 
   return (
-    <CreditsContext.Provider value={{ isLoading, balance, setBalance }}>
+    <CreditsContext.Provider value={{ isLoading, balance, setBalance, deduct }}>
       {children}
     </CreditsContext.Provider>
   );

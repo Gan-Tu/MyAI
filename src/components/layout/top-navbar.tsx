@@ -90,7 +90,7 @@ export function TopNavbar({ enableLogin = false }: NavigationProps) {
                     <div className="text-pretty text-sm text-zinc-500 dark:text-zinc-400">
                       You have{" "}
                       <span className="font-semibold text-slate-800 dark:text-white">
-                        {balance}{" "}
+                        {Math.max(balance, 0)}{" "}
                       </span>
                       credit{balance > 1 && "s"} left
                       <br />

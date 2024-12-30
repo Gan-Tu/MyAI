@@ -72,3 +72,17 @@ export async function getOrInitCreditsBalance(
     return { error: JSON.stringify(error) };
   }
 }
+
+export async function setCreditsBalance(
+  uid: string,
+  balance: number,
+): Promise<{ balance?: number; error?: string }> {
+  try {
+    const key = `myai:credits:${uid}`;
+    await redis.set(key, balance);
+    return { balance };
+  } catch (error) {
+    console.error(error);
+    return { error: JSON.stringify(error) };
+  }
+}
