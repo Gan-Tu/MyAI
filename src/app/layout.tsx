@@ -1,4 +1,5 @@
 import { ApplicationLayout } from "@/components/layout/application-layout";
+import { CreditsProvider } from "@/hooks/credits";
 import { SessionProvider } from "@/hooks/session";
 import { VercelToolbar } from "@vercel/toolbar/next";
 import clsx from "clsx";
@@ -43,7 +44,9 @@ export default async function RootLayout({
         <Toaster position="bottom-right" />
         <div className="flex min-h-full flex-col bg-white dark:bg-gray-950">
           <SessionProvider>
-            <ApplicationLayout>{children}</ApplicationLayout>
+            <CreditsProvider>
+              <ApplicationLayout>{children}</ApplicationLayout>
+            </CreditsProvider>
           </SessionProvider>
         </div>
         {shouldInjectToolbar && <VercelToolbar />}
