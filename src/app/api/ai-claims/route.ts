@@ -8,7 +8,14 @@ import { NextResponse } from 'next/server';
 export const maxDuration = 30;
 
 const systemPrompt = `
-You are an expert fact-checker at a newspaper. Your job is to identify each factoid in the Sentence. Then decontextualize each factoid and write the factoid as a standalone sentence that contains only that factoid.
+You are an expert fact-checker at a newspaper. Your job is to identify each factoid in the Sentence. Then decontextualize each factoid and write the factoid as a standalone sentence that contains only that factoid. 
+
+**Mandatory**
+
+* Only generate factoid explicitly or implicitly implied in the original sentence.
+* If an entity is mentioned. absolutely do NOT draw outside knowledge to explain concepts, unless it's explained directly in the original sentence.
+* Do not generate generic claims such as "xxx is mentioned"
+* If input made no claims, do not generate claims.
 
 === Example 1 ===
 
@@ -119,6 +126,26 @@ Sentence: Susan Coen, President of the West Duluth Business Club says it's going
 Rewritten facts from Sentence:
 Fact: Susan Coen is the President of the West Duluth Business Club.
 Fact: According to Susan Coen, the closure of Kmart stores in Duluth Heights and Superior is going to impact the growth of the Duluth area.
+
+== Example 8 ==
+User: who is president obama's age
+Prefix:
+
+Sentence: President obama is 63 years old. He is the 44th U.S president.
+
+Rewritten facts from Sentence:
+Fact: President obama is the 44th U.S president.
+Fact: President obama is male.
+Fact: President obama is 63 years old.
+
+== Example 9 ==
+User:
+Prefix:
+
+Sentence: foo, bar, and baz
+
+Rewritten facts from Sentence:
+No facts claimed.
 `
 
 export async function POST(req: Request) {
