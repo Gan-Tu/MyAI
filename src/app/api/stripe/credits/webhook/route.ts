@@ -1,3 +1,4 @@
+import redis from '@/lib/redis';
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 
@@ -14,17 +15,22 @@ export async function POST(req: NextRequest) {
     const event = stripe.webhooks.constructEvent(
       payload,
       sig,
-      "whsec_5b9d2d3b725e493da74d6a4211aa4c4f7e70e93f1b3625bdc8998dba0d7b65f8"
+      process.env.STRIPE_WEBHOOK_SECRET!
     );
 
     if (event.type === 'checkout.session.completed') {
       const session = event.data.object;
       const userId = session.metadata?.userId;
       const creditsPurchased = parseInt(session.metadata?.creditsPurchased || '0');
-      console.log("session", session)
-      console.log("userId", userId)
-      console.log("creditsPurchased", creditsPurchased)
-      console.log("event", event)
+      if (!userId) {
+        return NextResponse.json({ error: `Missing user id` }, { status: 500 });
+      } else if (!creditsPurchased) {
+        return NextResponse.json({ error: `Missing credits purchased` }, { status: 500 });
+      }
+      const processed = await redis.sadd(`myai:payments:${userId}`, session.payment_intent)
+      if (processed > 0) {
+        await redis.incrby(`myai:credits:${userId}`, creditsPurchased)
+      }
     }
 
     return NextResponse.json({ received: true });

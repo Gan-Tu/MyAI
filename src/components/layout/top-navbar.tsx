@@ -17,11 +17,7 @@ import {
 } from "@heroicons/react/20/solid";
 import { CurrencyDollarIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
-<<<<<<< HEAD
 import { usePathname, useRouter } from "next/navigation";
-=======
-import { usePathname } from "next/navigation";
->>>>>>> main
 import toast from "react-hot-toast";
 import { Avatar } from "../base/avatar";
 import {
