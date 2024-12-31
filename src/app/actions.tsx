@@ -60,9 +60,9 @@ export async function getOrInitCreditsBalance(
   try {
     const key = `myai:credits:${uid}`;
     if (!(await redis.exists(key))) {
-      // Initialize with 30 credits for new accounts
-      await redis.set(key, 30);
-      return { balance: 30 };
+      // Initialize with 15 credits for new accounts
+      await redis.set(key, 15);
+      return { balance: 15 };
     } else {
       let value = await redis.get(key);
       return { balance: Number(value) };

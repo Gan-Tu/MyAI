@@ -144,7 +144,7 @@ export function TopNavbar({
                       className="cursor-pointer"
                     >
                       <CurrencyDollarIcon className="h-6 w-6" />
-                      <DropdownLabel>Buy Credits</DropdownLabel>
+                      <DropdownLabel>Buy 100 Credits</DropdownLabel>
                     </DropdownItem>
                   )}
                   <DropdownDivider />
