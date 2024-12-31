@@ -85,7 +85,7 @@ export const CreditsProvider: React.FC<CreditsProviderProps> = ({
       }
       setIsLoading(false);
     });
-  }, [auth]);
+  }, [enableCredits]);
 
   return (
     <CreditsContext.Provider value={{ isLoading, balance, setBalance, deduct }}>

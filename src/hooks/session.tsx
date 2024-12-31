@@ -59,11 +59,11 @@ export const SessionProvider: React.FC<SessionProviderProps> = ({
       } else {
         setUser(null);
         setToken(null);
-        setGravatarUrl(null)
+        setGravatarUrl(null);
       }
       setIsLoading(false);
     });
-  }, [auth]);
+  }, []);
 
   const handleSignOut = async () => {
     try {
