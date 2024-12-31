@@ -15,8 +15,10 @@ import {
   ArrowLeftEndOnRectangleIcon,
   ArrowRightStartOnRectangleIcon,
 } from "@heroicons/react/20/solid";
+import { CurrencyDollarIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 import { Avatar } from "../base/avatar";
 import {
   Dropdown,
@@ -37,9 +39,41 @@ export function TopNavbar({
   let pathname = usePathname();
   const { user, gravatarUrl, signOut } = useSession();
   const { balance, isLoading: isCreditsLoading } = useCredits();
+  const router = useRouter();
   let showLogin = enableLogin && !user;
   let showLogout = user; // always allow user to sign out, if logged in
   let showDropDown = showLogin || showLogout;
+
+  const onBuyCredits = async () => {
+    if (!user) {
+      toast.error("Please sign in before buying credits");
+      return;
+    }
+    try {
+      const response = await fetch("/api/stripe/credits/checkout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId: user.uid,
+        }),
+      });
+
+      const { checkoutUrl, error } = await response.json();
+      if (error) {
+        toast.error(error);
+      } else if (!checkoutUrl) {
+        toast.error("Internal error");
+        console.log("Missing checkout url from checkout api");
+      } else {
+        router.push(checkoutUrl);
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error(`Failed to buy credits: ${(error as Error).message}`);
+    }
+  };
 
   return (
     <Navbar>
@@ -104,6 +138,15 @@ export function TopNavbar({
                       )}
                     </div>
                   </DropdownHeader>
+                  {enableCredits && user && (
+                    <DropdownItem
+                      onClick={onBuyCredits}
+                      className="cursor-pointer"
+                    >
+                      <CurrencyDollarIcon className="h-6 w-6" />
+                      <DropdownLabel>Buy Credits</DropdownLabel>
+                    </DropdownItem>
+                  )}
                   <DropdownDivider />
                 </DropdownSection>
               )}
