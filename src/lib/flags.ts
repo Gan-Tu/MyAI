@@ -16,7 +16,7 @@ export const getEnableLogin = flag<boolean>({
 export const getEnableCredits = flag<boolean>({
   key: 'enable-credits',
   async decide() {
-    return false;
+    return true;
   },
   description: 'Whether to enable credits usage tracking/limiting',
   defaultValue: false,
