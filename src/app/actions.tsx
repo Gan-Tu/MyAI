@@ -73,6 +73,37 @@ export async function getOrInitCreditsBalance(
   }
 }
 
+export async function deductCreditsBalanceBy(
+  uid: string,
+  amount: number,
+): Promise<{ balance?: number; error?: string }> {
+  try {
+    const key = `myai:credits:${uid}`;
+    let curBalance = Number((await redis.get(key)) || "0");
+    if (!curBalance) {
+      return { error: "Insufficient balance" };
+    }
+    if (curBalance < amount) {
+      return {
+        error: `You have insufficient balance!\n${amount} credits needed, you have ${curBalance}`,
+      };
+    }
+    let balance = await redis.decrby(key, amount);
+    if (balance < 0) {
+      // Race condition hit. Deposit money back.
+      balance = await redis.incrby(key, amount);
+      return {
+        error: `You have insufficient balance!\n${amount} credits needed, you have ${balance}`,
+        balance,
+      };
+    }
+    return { balance };
+  } catch (error) {
+    console.error(error);
+    return { error: JSON.stringify(error) };
+  }
+}
+
 export async function setCreditsBalance(
   uid: string,
   balance: number,

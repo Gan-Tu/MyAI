@@ -1,6 +1,6 @@
 "use client";
 
-import { getOrInitCreditsBalance, setCreditsBalance } from "@/app/actions";
+import { deductCreditsBalanceBy, getOrInitCreditsBalance } from "@/app/actions";
 import { auth } from "@/lib/firebase/client";
 import { onAuthStateChanged } from "firebase/auth";
 import React, {
@@ -50,15 +50,13 @@ export const CreditsProvider: React.FC<CreditsProviderProps> = ({
       toast.error("Sign in to use your credits!");
       return false;
     }
-    const newBalance = balance - credit;
-    if (newBalance < 0) {
-      toast.error(
-        `You have insufficient balance!\n${credit} credits needed, you have ${balance}`,
-      );
-      return false;
+    const { balance: newBalance, error } = await deductCreditsBalanceBy(
+      uid,
+      credit,
+    );
+    if (newBalance !== undefined) {
+      setBalance(newBalance);
     }
-    setBalance(newBalance);
-    const { error } = await setCreditsBalance(uid, newBalance);
     if (error) {
       toast.error(error);
       return false;
