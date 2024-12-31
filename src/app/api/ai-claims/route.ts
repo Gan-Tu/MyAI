@@ -1,4 +1,5 @@
 import { getLanguageModel } from '@/lib/models';
+import { checkRateLimit } from '@/lib/redis';
 import { claimsSchema } from '@/lib/schema';
 import { LanguageModel, streamObject } from 'ai';
 import { NextResponse } from 'next/server';
@@ -124,6 +125,13 @@ export async function POST(req: Request) {
   const context = await req.json();
   const headers = req.headers;
   const modelChoice = headers.get('X-AI-Model') || 'gpt-4o-mini'
+
+  let { passed, secondsLeft } = await checkRateLimit("/api/ai-claims")
+  if (!passed) {
+    return NextResponse.json({
+      error: `Rate Limited. ${secondsLeft && `${secondsLeft}s left`}.`
+    }, { status: 429 })
+  }
 
   let model: LanguageModel | null = null;
   try {
