@@ -15,8 +15,10 @@ import {
   ArrowLeftEndOnRectangleIcon,
   ArrowRightStartOnRectangleIcon,
 } from "@heroicons/react/20/solid";
+import { CurrencyDollarIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import toast from "react-hot-toast";
 import { Avatar } from "../base/avatar";
 import {
   Dropdown,
@@ -40,6 +42,10 @@ export function TopNavbar({
   let showLogin = enableLogin && !user;
   let showLogout = user; // always allow user to sign out, if logged in
   let showDropDown = showLogin || showLogout;
+
+  const onBuyCredits = async () => {
+    toast.error("Credits purchase is coming soon!");
+  };
 
   return (
     <Navbar>
@@ -104,6 +110,15 @@ export function TopNavbar({
                       )}
                     </div>
                   </DropdownHeader>
+                  {enableCredits && user && (
+                    <DropdownItem
+                      onClick={onBuyCredits}
+                      className="cursor-pointer"
+                    >
+                      <CurrencyDollarIcon className="h-6 w-6" />
+                      <DropdownLabel>Buy Credits</DropdownLabel>
+                    </DropdownItem>
+                  )}
                   <DropdownDivider />
                 </DropdownSection>
               )}
