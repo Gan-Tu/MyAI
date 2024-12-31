@@ -176,7 +176,7 @@ export function EmailForm({ isOpen, setIsOpen }: EmailFormProps) {
         </div>
       ) : (
         <div className="mt-6 rounded-lg bg-gray-50 py-4 text-center text-sm/5 tracking-normal ring-1 ring-black/5">
-          Already an member?{" "}
+          Already a member?{" "}
           <span
             className="cursor-pointer font-medium hover:text-gray-600"
             onClick={toggleMode}
