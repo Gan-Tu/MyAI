@@ -5,7 +5,6 @@ import Stripe from 'stripe';
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
 
 export async function POST(req: NextRequest) {
-
   try {
     const sig = req.headers.get('stripe-signature');
     if (!sig) {

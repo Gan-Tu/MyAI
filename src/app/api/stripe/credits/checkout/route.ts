@@ -16,17 +16,12 @@ export async function POST(req: NextRequest) {
           price: 'price_1Qbup9D5g0q25W3DUsFU7nuH',
           quantity: 1,
           adjustable_quantity: {
-            enabled: true,
-            minimum: 0,
-            maximum: 99
+            enabled: false,
           }
         },
       ],
       mode: 'payment',
-      metadata: {
-        userId: userId,
-        creditsPurchased: 100,
-      },
+      metadata: { userId: userId, creditsPurchased: 100 },
       success_url: `${req.headers.get('origin')}/?success=true&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${req.headers.get('origin')}/?canceled=true&session_id={CHECKOUT_SESSION_ID}`,
     });
