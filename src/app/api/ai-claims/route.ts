@@ -172,7 +172,7 @@ export async function POST(req: Request) {
     model: model,
     schema: claimsSchema,
     system: systemPrompt,
-    prompt: context,
+    prompt: context.trim(),
   })
   return result.toTextStreamResponse();
 }
