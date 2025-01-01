@@ -118,12 +118,7 @@ export default function PixelsPage({ q, defaultModel }: ImagesPageProps) {
                   images in any style. From hyper-realistic designs to artistic
                   masterpieces, PixelCrafter brings your imagination to life
                   effortlessly.
-                  {JSON.stringify({
-                    prompt: input,
-                    ...extraInputs,
-                  })}
                 </p>
-
                 {/* Controls */}
                 <div className="text-slate flex flex-col gap-6 text-pretty py-4 md:gap-4">
                   <Headless.Field className="justift-center flex items-baseline gap-6">

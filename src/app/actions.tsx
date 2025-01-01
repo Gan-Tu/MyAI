@@ -128,10 +128,6 @@ export async function predictWithReplicate(
   model?: string,
   version?: string,
 ): Promise<{ prediction?: PredictionWithInput; error?: unknown }> {
-  const prediction = await replicate.predictions.get(
-    "1fbnn4x3j9rme0cm4ghv2zfe3w",
-  );
-  return { prediction };
   if (!model && !version) {
     return { error: "At least model or version is required" };
   } else if (!process.env.REPLICATE_WEBHOOK_URL) {
