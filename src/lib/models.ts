@@ -34,17 +34,39 @@ export const getLanguageModel = (model: string): LanguageModel => {
   throw Error(`Unsupported model: ${model}`)
 }
 
-export const supportedVisionModels = [
-  'recraft-ai/recraft-20b',
-  'black-forest-labs/flux-1.1-pro-ultra'
-]
-
-export const getVisionModelExtraInputs = (model: string): VisionModelParameter[] => {
-  if (!supportedVisionModels.includes(model)) {
-    return []
+export const VISION_MODELS: {
+  [key: string]: {
+    model?: string,
+    version?: string,
+    parameters: VisionModelParameter[]
   }
-  if (model === 'black-forest-labs/flux-1.1-pro-ultra') {
-    return [
+} = {
+  'AI Emoji': {
+    version: '2489b7892129c47ec8590fd3e86270b8804f2ff07faeae8c306342fad2f48df6',
+    parameters: [
+      {
+        name: "aspect_ratio",
+        displayName: "Aspect Ratio",
+        default: "1:1",
+        options: [
+          '1:1',
+          '16:9',
+          '21:9',
+          '3:2',
+          '2:3',
+          '4:5',
+          '5:4',
+          '3:4',
+          '4:3',
+          '9:16',
+          '9:21',
+        ]
+      }
+    ]
+  },
+  'Black Forest Labs - High Res Photo': {
+    model: 'black-forest-labs/flux-1.1-pro-ultra',
+    parameters: [
       {
         name: "aspect_ratio",
         displayName: "Aspect Ratio",
@@ -64,9 +86,10 @@ export const getVisionModelExtraInputs = (model: string): VisionModelParameter[]
         ]
       }
     ]
-  }
-  if (model === 'recraft-ai/recraft-20b') {
-    return [
+  },
+  'Recraft AI - Fast Image': {
+    model: 'recraft-ai/recraft-20b',
+    parameters: [
       {
         name: "style",
         displayName: "Style",
@@ -101,6 +124,5 @@ export const getVisionModelExtraInputs = (model: string): VisionModelParameter[]
         ]
       }
     ]
-  }
-  return []
+  },
 }

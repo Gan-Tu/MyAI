@@ -4,7 +4,7 @@ import { Button } from "@/components/base/button";
 import { Label } from "@/components/base/fieldset";
 import { Select } from "@/components/base/select";
 import { useCredits } from "@/hooks/credits";
-import { getVisionModelExtraInputs, supportedVisionModels } from "@/lib/models";
+import { VISION_MODELS } from "@/lib/models";
 import { capitalizeFirstLetter } from "@/lib/utils";
 import * as Headless from "@headlessui/react";
 import { sleep } from "openai/core.mjs";
@@ -13,7 +13,7 @@ import toast from "react-hot-toast";
 import { type Prediction } from "replicate";
 import AnimatedSparkleIcon from "../../components/animated-sparkle";
 import CreditFooter from "../../components/credit-footer";
-import { predictWithModel } from "../actions";
+import { predictWithReplicate } from "../actions";
 import OutputGallery from "./output-gallery";
 
 interface ImagesPageProps {
@@ -35,7 +35,7 @@ export default function PixelsPage({ q, defaultModel }: ImagesPageProps) {
 
   useEffect(() => {
     let params = {};
-    getVisionModelExtraInputs(model).forEach((element) => {
+    VISION_MODELS[model]?.parameters?.forEach((element) => {
       params = { ...params, [element.name]: element.default };
     });
     setExtraInputs(params);
@@ -48,12 +48,13 @@ export default function PixelsPage({ q, defaultModel }: ImagesPageProps) {
     if (!(await deduct(creditsCost))) {
       return;
     }
-    let { error, prediction } = await predictWithModel(
+    let { error, prediction } = await predictWithReplicate(
       {
         prompt: input,
         ...extraInputs,
       },
-      model,
+      /*model*/ VISION_MODELS[model]?.model,
+      /*version*/ VISION_MODELS[model]?.version,
     );
     if (error) {
       throw new Error(error as string);
@@ -117,6 +118,10 @@ export default function PixelsPage({ q, defaultModel }: ImagesPageProps) {
                   images in any style. From hyper-realistic designs to artistic
                   masterpieces, PixelCrafter brings your imagination to life
                   effortlessly.
+                  {JSON.stringify({
+                    prompt: input,
+                    ...extraInputs,
+                  })}
                 </p>
 
                 {/* Controls */}
@@ -132,7 +137,7 @@ export default function PixelsPage({ q, defaultModel }: ImagesPageProps) {
                       className="max-w-fit text-sm"
                       disabled={isLoading}
                     >
-                      {supportedVisionModels.map((model) => (
+                      {Object.keys(VISION_MODELS).map((model) => (
                         <option
                           key={model}
                           value={model}
@@ -143,7 +148,7 @@ export default function PixelsPage({ q, defaultModel }: ImagesPageProps) {
                       ))}
                     </Select>
                   </Headless.Field>
-                  {getVisionModelExtraInputs(model).map((param) => (
+                  {VISION_MODELS[model]?.parameters?.map((param) => (
                     <Headless.Field
                       key={param.name}
                       className="justift-center flex items-baseline gap-6"

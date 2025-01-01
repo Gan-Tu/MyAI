@@ -1,5 +1,5 @@
 import { ResetExpansionProvider } from "@/hooks/reset-expansion";
-import { supportedVisionModels } from "@/lib/models";
+import { VISION_MODELS } from "@/lib/models";
 import PixelsPage from "./pixels";
 
 export const metadata = {
@@ -21,7 +21,7 @@ export default async function Page({
     : modelParam;
   const query = Array.isArray(q) ? (q.length > 0 ? q[0] : undefined) : q;
   let defaultModel: string | undefined = model;
-  if (!supportedVisionModels.includes(defaultModel ?? "")) {
+  if (!VISION_MODELS.hasOwnProperty(defaultModel ?? "")) {
     defaultModel = undefined;
   }
   return (

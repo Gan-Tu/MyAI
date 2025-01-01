@@ -6,14 +6,11 @@ import {
   ImageSearchResult,
   PredictionWithInput,
   entityCardSchemaType,
-  type PredictModelOptions,
-  type PredictVersionOptions,
 } from "@/lib/types";
 import {
   getAiTopicsImagesCacheKey,
   getAiTopicsRespCacheKey,
 } from "@/lib/utils";
-import { sleep } from "openai/core.mjs";
 
 export async function searchImage(
   query: string,
@@ -126,54 +123,48 @@ export async function setCreditsBalance(
   }
 }
 
-export async function predictWithModel(
+export async function predictWithReplicate(
   input: object,
-  model: string,
+  model?: string,
+  version?: string,
 ): Promise<{ prediction?: PredictionWithInput; error?: unknown }> {
-  await sleep(1000)
   const prediction = await replicate.predictions.get(
-    input.prompt || "xhcbzv2f91rga0cm3xpapka480",
+    "1fbnn4x3j9rme0cm4ghv2zfe3w",
   );
   return { prediction };
-  try {
-    let options: PredictModelOptions = { model, input };
-    if (process.env.REPLICATE_WEBHOOK_URL) {
-      options.webhook = process.env.REPLICATE_WEBHOOK_URL;
-      options.webhook_events_filter = ["completed"];
-    }
-    const prediction = await replicate.predictions.create(options);
-    if (prediction?.error) {
-      return { error: prediction.error };
-    }
-    await redis.json.set(`myai:replicate:${prediction.id}`, "$", {
-      input,
-      prediction,
-    });
-    return { prediction };
-  } catch (error) {
-    return { error: (error as Error).message };
+  if (!model && !version) {
+    return { error: "At least model or version is required" };
+  } else if (!process.env.REPLICATE_WEBHOOK_URL) {
+    return { error: "Missing REPLICATE_WEBHOOK_URL" };
   }
-}
-
-export async function predictWithVersion(
-  input: object,
-  version: string,
-): Promise<{ prediction?: PredictionWithInput; error?: unknown }> {
   try {
-    let options: PredictVersionOptions = { version, input };
-    if (process.env.REPLICATE_WEBHOOK_URL) {
-      options.webhook = process.env.REPLICATE_WEBHOOK_URL;
-      options.webhook_events_filter = ["completed"];
+    let prediction = null;
+    if (model) {
+      prediction = await replicate.predictions.create({
+        model,
+        input,
+        webhook: process.env.REPLICATE_WEBHOOK_URL,
+        webhook_events_filter: ["completed"],
+      });
+    } else if (version) {
+      prediction = await replicate.predictions.create({
+        version,
+        input,
+        webhook: process.env.REPLICATE_WEBHOOK_URL,
+        webhook_events_filter: ["completed"],
+      });
     }
-    const prediction = await replicate.predictions.create(options);
-    if (prediction?.error) {
-      return { error: prediction.error };
+    if (prediction) {
+      if (prediction?.error) {
+        return { error: prediction.error };
+      }
+      await redis.json.set(`myai:replicate:${prediction.id}`, "$", {
+        input,
+        prediction,
+      });
+      return { prediction };
     }
-    await redis.json.set(`myai:replicate:${prediction.id}`, "$", {
-      input,
-      prediction,
-    });
-    return { prediction };
+    return { error: "Failed to create prediction" };
   } catch (error) {
     return { error: (error as Error).message };
   }
