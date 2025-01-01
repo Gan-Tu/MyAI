@@ -43,10 +43,33 @@ export const getVisionModelExtraInputs = (model: string): VisionModelParameter[]
   if (!supportedVisionModels.includes(model)) {
     return []
   }
+  if (model === 'black-forest-labs/flux-1.1-pro-ultra') {
+    return [
+      {
+        name: "aspect_ratio",
+        displayName: "Aspect Ratio",
+        default: "1:1",
+        options: [
+          '21:9',
+          '16:9',
+          '3:2',
+          '4:3',
+          '5:4',
+          '1:11',
+          '4:5',
+          '3:4',
+          '2:3',
+          '9:16',
+          '9:21',
+        ]
+      }
+    ]
+  }
   if (model === 'recraft-ai/recraft-20b') {
     return [
       {
         name: "style",
+        displayName: "Style",
         default: "digital_illustration",
         options: [
           'realistic_image',

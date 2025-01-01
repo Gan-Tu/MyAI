@@ -149,7 +149,7 @@ export default function PixelsPage({ q, defaultModel }: ImagesPageProps) {
                       className="justift-center flex items-baseline gap-6"
                     >
                       <Label className="flex-grow text-sm font-semibold">
-                        {capitalizeFirstLetter(param.name)}
+                        {param.displayName || capitalizeFirstLetter(param.name)}
                       </Label>
                       <Select
                         name={param.name}

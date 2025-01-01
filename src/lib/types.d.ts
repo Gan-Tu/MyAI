@@ -52,7 +52,8 @@ export interface PredictionWithInput extends Prediction {
 }
 
 export type VisionModelParameter = {
-  name: string
+  name: string,
+  displayName?: string,
   default: string,
   options: string[]
 }
