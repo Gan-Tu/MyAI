@@ -27,9 +27,7 @@ export default function PixelsPage({ q, defaultModel }: ImagesPageProps) {
   const [input, setInput] = useState(q);
   const [extraInputs, setExtraInputs] = useState({});
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [model, setModel] = useState<string>(
-    defaultModel || "recraft-ai/recraft-20b",
-  );
+  const [model, setModel] = useState<string>(defaultModel || "AI Emoji");
   const [curPrediction, setCurPrediction] = useState<Prediction | null>(null);
   const { deduct } = useCredits();
 
@@ -67,9 +65,10 @@ export default function PixelsPage({ q, defaultModel }: ImagesPageProps) {
       prediction.status !== "succeeded" &&
       prediction.status !== "failed"
     ) {
-      await sleep(1500);
+      await sleep(2000);
       const response = await fetch(
         "/api/replicate/predictions/" + prediction.id,
+        { cache: "no-store" },
       );
       let body = await response.json();
       if (response.status !== 200) {
