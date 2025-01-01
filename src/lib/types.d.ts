@@ -27,3 +27,19 @@ export type LogInButtonProps = {
   provider?: LoginOption;
   onClick: () => void
 }
+
+export type PredictModelOptions = {
+  model: string;
+  input: object;
+  webhook?: string;
+  webhook_events_filter?: WebhookEventType[];
+  wait?: boolean | number;
+}
+
+export type PredictVersionOptions = {
+  version: string;
+  input: object;
+  webhook?: string;
+  webhook_events_filter?: WebhookEventType[];
+  wait?: boolean | number;
+}

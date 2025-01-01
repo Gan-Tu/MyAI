@@ -1,11 +1,18 @@
 "use server";
 
 import redis from "@/lib/redis";
-import { ImageSearchResult, entityCardSchemaType } from "@/lib/types";
+import replicate from "@/lib/replicate";
+import {
+  ImageSearchResult,
+  entityCardSchemaType,
+  type PredictModelOptions,
+  type PredictVersionOptions,
+} from "@/lib/types";
 import {
   getAiTopicsImagesCacheKey,
   getAiTopicsRespCacheKey,
 } from "@/lib/utils";
+import { type Prediction } from "replicate";
 
 export async function searchImage(
   query: string,
@@ -115,5 +122,53 @@ export async function setCreditsBalance(
   } catch (error) {
     console.error(error);
     return { error: JSON.stringify(error) };
+  }
+}
+
+export async function predictWithModel(
+  input: object,
+  model: string,
+): Promise<{ prediction?: Prediction; error?: unknown }> {
+  try {
+    let options: PredictModelOptions = { model, input };
+    if (process.env.REPLICATE_WEBHOOK_URL) {
+      options.webhook = process.env.REPLICATE_WEBHOOK_URL;
+      options.webhook_events_filter = ["completed"];
+    }
+    const prediction = await replicate.predictions.create(options);
+    if (prediction?.error) {
+      return { error: prediction.error };
+    }
+    await redis.json.set(`myai:replicate:${prediction.id}`, "$", {
+      input,
+      prediction,
+    });
+    return { prediction };
+  } catch (error) {
+    return { error: (error as Error).message };
+  }
+}
+
+export async function predictWithVersion(
+  input: object,
+  version: string,
+): Promise<{ prediction?: Prediction; error?: unknown }> {
+  try {
+    let options: PredictVersionOptions = { version, input };
+    if (process.env.REPLICATE_WEBHOOK_URL) {
+      options.webhook = process.env.REPLICATE_WEBHOOK_URL;
+      options.webhook_events_filter = ["completed"];
+    }
+    const prediction = await replicate.predictions.create(options);
+    if (prediction?.error) {
+      return { error: prediction.error };
+    }
+    await redis.json.set(`myai:replicate:${prediction.id}`, "$", {
+      input,
+      prediction,
+    });
+    return { prediction };
+  } catch (error) {
+    return { error: (error as Error).message };
   }
 }
