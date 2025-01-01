@@ -16,5 +16,5 @@ export async function GET(request: Request, { params }: { params: { id: string }
   if (prediction?.error) {
     return NextResponse.json({ error: prediction.error }, { status: 500 });
   }
-  return NextResponse.json(prediction);
+  return NextResponse.json({ prediction });
 }

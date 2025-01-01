@@ -7,7 +7,7 @@ import { Switch, SwitchField } from "@/components/base/switch";
 import { useColorTheme } from "@/hooks/color-theme";
 import { useCredits } from "@/hooks/credits";
 import { useResetExpansion } from "@/hooks/reset-expansion";
-import { supportedModels } from "@/lib/models";
+import { supportedLanguageModels } from "@/lib/models";
 import { entityCardSchema } from "@/lib/schema";
 import { ImageSearchResult } from "@/lib/types";
 import * as Headless from "@headlessui/react";
@@ -154,7 +154,7 @@ export default function AiTopics({ q, defaultModel }: AiTopicsProps) {
                       className="max-w-fit text-sm"
                       disabled={isLoading}
                     >
-                      {supportedModels.map((model) => (
+                      {supportedLanguageModels.map((model) => (
                         <option
                           key={model}
                           value={model}

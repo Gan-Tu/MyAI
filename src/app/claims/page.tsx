@@ -1,5 +1,5 @@
 import { ResetExpansionProvider } from "@/hooks/reset-expansion";
-import { supportedModels } from "@/lib/models";
+import { supportedLanguageModels } from "@/lib/models";
 import ClaimsPage from "./claims";
 
 export const metadata = {
@@ -21,7 +21,7 @@ export default async function Page({
     : modelParam;
   const query = Array.isArray(q) ? (q.length > 0 ? q[0] : undefined) : q;
   let defaultModel: string | undefined = model;
-  if (!supportedModels.includes(defaultModel ?? "")) {
+  if (!supportedLanguageModels.includes(defaultModel ?? "")) {
     defaultModel = undefined;
   }
   return (

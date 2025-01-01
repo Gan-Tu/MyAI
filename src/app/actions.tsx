@@ -4,6 +4,7 @@ import redis from "@/lib/redis";
 import replicate from "@/lib/replicate";
 import {
   ImageSearchResult,
+  PredictionWithInput,
   entityCardSchemaType,
   type PredictModelOptions,
   type PredictVersionOptions,
@@ -12,7 +13,7 @@ import {
   getAiTopicsImagesCacheKey,
   getAiTopicsRespCacheKey,
 } from "@/lib/utils";
-import { type Prediction } from "replicate";
+import { sleep } from "openai/core.mjs";
 
 export async function searchImage(
   query: string,
@@ -128,7 +129,12 @@ export async function setCreditsBalance(
 export async function predictWithModel(
   input: object,
   model: string,
-): Promise<{ prediction?: Prediction; error?: unknown }> {
+): Promise<{ prediction?: PredictionWithInput; error?: unknown }> {
+  await sleep(1000)
+  const prediction = await replicate.predictions.get(
+    input.prompt || "xhcbzv2f91rga0cm3xpapka480",
+  );
+  return { prediction };
   try {
     let options: PredictModelOptions = { model, input };
     if (process.env.REPLICATE_WEBHOOK_URL) {
@@ -152,7 +158,7 @@ export async function predictWithModel(
 export async function predictWithVersion(
   input: object,
   version: string,
-): Promise<{ prediction?: Prediction; error?: unknown }> {
+): Promise<{ prediction?: PredictionWithInput; error?: unknown }> {
   try {
     let options: PredictVersionOptions = { version, input };
     if (process.env.REPLICATE_WEBHOOK_URL) {

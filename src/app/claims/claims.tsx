@@ -4,7 +4,7 @@ import { Button } from "@/components/base/button";
 import { Label } from "@/components/base/fieldset";
 import { Select } from "@/components/base/select";
 import { useCredits } from "@/hooks/credits";
-import { supportedModels } from "@/lib/models";
+import { supportedLanguageModels } from "@/lib/models";
 import { claimsSchema } from "@/lib/schema";
 import * as Headless from "@headlessui/react";
 import { StopCircleIcon } from "@heroicons/react/20/solid";
@@ -91,7 +91,7 @@ export default function ClaimsPage({ q, defaultModel }: ClaimsProps) {
                       className="max-w-fit text-sm"
                       disabled={isLoading}
                     >
-                      {supportedModels.map((model) => (
+                      {supportedLanguageModels.map((model) => (
                         <option
                           key={model}
                           value={model}

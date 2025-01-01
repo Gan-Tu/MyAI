@@ -1,4 +1,5 @@
 import { claimsSchema, entityCardSchema } from "@/lib/types";
+import { type Prediction } from "replicate";
 import { z } from "zod";
 
 export type ImageSearchResult = {
@@ -42,4 +43,16 @@ export type PredictVersionOptions = {
   webhook?: string;
   webhook_events_filter?: WebhookEventType[];
   wait?: boolean | number;
+}
+
+export interface PredictionWithInput extends Prediction {
+  input: {
+    prompt?: string;
+  };
+}
+
+export type VisionModelParameter = {
+  name: string
+  default: string,
+  options: string[]
 }
