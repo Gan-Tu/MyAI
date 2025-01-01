@@ -61,6 +61,15 @@ export const VISION_MODELS: {
           '9:16',
           '9:21',
         ]
+      },
+      {
+        name: "output_format",
+        displayName: "Output Format",
+        default: "jpg",
+        options: [
+          'jpg',
+          'png',
+        ]
       }
     ]
   },
