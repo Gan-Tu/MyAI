@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import Replicate from "replicate";
 
+export const fetchCache = 'force-no-store'
+
 const replicate = new Replicate({
   auth: process.env.REPLICATE_API_TOKEN,
 });

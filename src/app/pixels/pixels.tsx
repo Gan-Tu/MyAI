@@ -68,7 +68,7 @@ export default function PixelsPage({ q, defaultModel }: ImagesPageProps) {
       await sleep(2000);
       const response = await fetch(
         "/api/replicate/predictions/" + prediction.id,
-        { cache: "no-store" },
+        { cache: "no-store", next: { revalidate: 0 }},
       );
       let body = await response.json();
       if (response.status !== 200) {
