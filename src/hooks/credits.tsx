@@ -3,6 +3,7 @@
 import { deductCreditsBalanceBy, getOrInitCreditsBalance } from "@/app/actions";
 import { auth } from "@/lib/firebase/client";
 import { onAuthStateChanged } from "firebase/auth";
+import { useRouter } from "next/navigation";
 import React, {
   createContext,
   Dispatch,
@@ -41,12 +42,14 @@ export const CreditsProvider: React.FC<CreditsProviderProps> = ({
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [uid, setUid] = useState<string | null>(null);
   const [balance, setBalance] = useState<number>(0);
+  const router = useRouter();
 
   const deduct = async (credit: number = 1) => {
     if (!enableCredits) {
       return true;
     }
     if (!uid) {
+      router.push("/login");
       toast.error("Sign in to use your credits!");
       return false;
     }
