@@ -83,6 +83,11 @@ export function LoginForm() {
             </li>
           ))}
         </ul>
+        <div className="w-full rounded-md bg-green-50 p-4">
+          <h3 className="text-center text-sm font-medium text-green-800">
+            New members get 20 free credits!
+          </h3>
+        </div>
       </div>
     </div>
   );
