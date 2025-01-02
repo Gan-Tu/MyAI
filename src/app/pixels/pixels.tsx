@@ -63,7 +63,6 @@ export default function PixelsPage({ q, defaultModel }: ImagesPageProps) {
     if (!(await deduct(creditsCost, input))) {
       return;
     }
-    console.log(VISION_MODELS[model]);
     let { error, prediction } = await predictWithReplicate(
       {
         prompt: input,
