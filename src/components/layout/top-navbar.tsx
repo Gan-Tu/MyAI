@@ -164,7 +164,10 @@ export function TopNavbar({
               )}
               <DropdownSection>
                 {showLogin && (
-                  <DropdownItem href="/login" className="cursor-pointer">
+                  <DropdownItem
+                    href={`/login?redirect_to=${encodeURIComponent(pathname)}`}
+                    className="cursor-pointer"
+                  >
                     <ArrowLeftEndOnRectangleIcon />
                     <DropdownLabel>Log In</DropdownLabel>
                   </DropdownItem>

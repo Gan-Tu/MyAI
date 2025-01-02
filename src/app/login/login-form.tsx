@@ -18,7 +18,7 @@ import { useSession } from "@/hooks/session";
 import { LoginOption, loginWithProvider } from "@/lib/session";
 import { type LogInButtonProps } from "@/lib/types";
 import { GithubAuthProvider, GoogleAuthProvider } from "firebase/auth";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { EmailForm } from "./email-form";
 import { LogInButton } from "./login-button";
@@ -27,10 +27,12 @@ export function LoginForm() {
   const [openEmailForm, setOpenEmailForm] = useState(false);
   const { isLoading, user } = useSession();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const nextPath = searchParams.get("redirect_to") || "/";
 
   useEffect(() => {
     if (!isLoading && user) {
-      router.push("/");
+      router.push(nextPath);
     }
   }, [isLoading, user, router]);
 
