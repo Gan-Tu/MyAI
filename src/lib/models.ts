@@ -82,7 +82,7 @@ export const VISION_MODELS: {
       {
         name: "style",
         displayName: "Style",
-        default: "digital_illustration",
+        default: "realistic_image",
         options: [
           'realistic_image',
           'realistic_image/b_and_w',

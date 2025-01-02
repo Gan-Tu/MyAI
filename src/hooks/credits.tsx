@@ -57,7 +57,7 @@ export const CreditsProvider: React.FC<CreditsProviderProps> = ({
       uid,
       credit,
     );
-    toast(`Used ${credit} credit${credit > 1 ? "s" : ""}.`);
+    toast.success(`Used ${credit} credit${credit > 1 ? "s" : ""}.`);
     if (newBalance !== undefined) {
       setBalance(newBalance);
     }

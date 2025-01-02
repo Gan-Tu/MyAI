@@ -208,9 +208,11 @@ export default function PixelsPage({ q, defaultModel }: ImagesPageProps) {
                     >
                       <AnimatedSparkleIcon className="h-3 w-3 fill-purple-400" />
                       {isLoading ? "Imagining..." : "Imagine"}
-                      <span className="text-xs font-light">
-                        ({creditsCost} Credit{creditsCost > 1 && "s"})
-                      </span>
+                      {creditsCost > 1 && (
+                        <span className="text-xs font-light">
+                          ({creditsCost} Credits)
+                        </span>
+                      )}
                     </Button>
                   </div>
                 </form>

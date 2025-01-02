@@ -217,7 +217,6 @@ export default function AiTopics({ q, defaultModel }: AiTopicsProps) {
                   >
                     <AnimatedSparkleIcon className="h-3 w-3 fill-sky-400" />
                     {isLoading ? "Loading..." : "Generate"}
-                    <span className="text-xs font-light">(1 Credit)</span>
                   </Button>
                   <div className="absolute inset-0 -z-10 rounded-lg transition peer-focus:ring-4 peer-focus:ring-sky-300/15" />
                   <div className="bg-slate/2.5 ring-slate/15 absolute inset-0 -z-10 rounded-lg ring-1 transition peer-focus:ring-sky-300" />
