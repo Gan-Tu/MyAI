@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import { MemoizedMarkdown } from "@/components/memoized-markdown";
 import { useColorTheme } from "@/hooks/color-theme";
 import { useResetExpansion } from "@/hooks/reset-expansion";
@@ -41,7 +42,7 @@ export default function Fact({
     if (resetFlag) {
       setIsExpanded(false);
     }
-  }, [resetFlag]);
+  }, [resetFlag, setIsExpanded]);
 
   if (noContent) {
     return <Loader className={`min-h-16 ${className}`} />;

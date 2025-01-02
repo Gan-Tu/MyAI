@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import React, { useState } from "react";
 
 interface SafeImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
