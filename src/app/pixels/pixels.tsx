@@ -21,22 +21,25 @@ interface ImagesPageProps {
   defaultModel?: string;
 }
 
-const creditsCost = 10;
-
 export default function PixelsPage({ q, defaultModel }: ImagesPageProps) {
   const [input, setInput] = useState(q);
   const [extraInputs, setExtraInputs] = useState({});
+  const [creditsCost, setCreditsCost] = useState<number>(1);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [model, setModel] = useState<string>(defaultModel || "AI Emoji");
   const [curPrediction, setCurPrediction] = useState<Prediction | null>(null);
   const { deduct } = useCredits();
 
   useEffect(() => {
-    let params = {};
-    VISION_MODELS[model]?.parameters?.forEach((element) => {
-      params = { ...params, [element.name]: element.default };
-    });
-    setExtraInputs(params);
+    let modelConfig = VISION_MODELS[model];
+    if (modelConfig) {
+      setCreditsCost(modelConfig.creditsCost);
+      let params = {};
+      modelConfig.parameters?.forEach((element) => {
+        params = { ...params, [element.name]: element.default };
+      });
+      setExtraInputs(params);
+    }
   }, [model]);
 
   const fetchPrediction = async () => {
@@ -68,7 +71,7 @@ export default function PixelsPage({ q, defaultModel }: ImagesPageProps) {
       await sleep(2000);
       const response = await fetch(
         "/api/replicate/predictions/" + prediction.id,
-        { cache: "no-store", next: { revalidate: 0 }},
+        { cache: "no-store", next: { revalidate: 0 } },
       );
       let body = await response.json();
       if (response.status !== 200) {
@@ -205,8 +208,8 @@ export default function PixelsPage({ q, defaultModel }: ImagesPageProps) {
                     >
                       <AnimatedSparkleIcon className="h-3 w-3 fill-purple-400" />
                       {isLoading ? "Imagining..." : "Imagine"}
-                      <span className="text-xs font-light italic">
-                        ({creditsCost} Credits)
+                      <span className="text-xs font-light">
+                        ({creditsCost} Credit{creditsCost > 1 && "s"})
                       </span>
                     </Button>
                   </div>

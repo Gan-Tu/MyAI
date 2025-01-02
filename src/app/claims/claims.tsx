@@ -134,6 +134,7 @@ export default function ClaimsPage({ q, defaultModel }: ClaimsProps) {
                     >
                       <AnimatedSparkleIcon className="h-3 w-3 fill-green-400" />
                       {isLoading ? "Analyzing..." : "Analyze"}
+                      <span className="text-xs font-light">(1 Credit)</span>
                     </Button>
                   </div>
                 </form>
@@ -147,7 +148,7 @@ export default function ClaimsPage({ q, defaultModel }: ClaimsProps) {
                       onClick={() => stop()}
                     >
                       <StopCircleIcon className="h-3 w-3 animate-pulse text-white" />
-                      Stop Analyzing
+                      Stop Analysis
                     </Button>
                   </div>
                 )}

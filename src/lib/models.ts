@@ -38,11 +38,13 @@ export const VISION_MODELS: {
   [key: string]: {
     model?: string,
     version?: string,
+    creditsCost: number,
     parameters: VisionModelParameter[]
   }
 } = {
-  'AI Emoji': {
+  'AI Generated Emoji': {
     version: '2489b7892129c47ec8590fd3e86270b8804f2ff07faeae8c306342fad2f48df6',
+    creditsCost: 1,
     parameters: [
       {
         name: "aspect_ratio",
@@ -73,31 +75,9 @@ export const VISION_MODELS: {
       }
     ]
   },
-  'Black Forest Labs - High Res Photo': {
-    model: 'black-forest-labs/flux-1.1-pro-ultra',
-    parameters: [
-      {
-        name: "aspect_ratio",
-        displayName: "Aspect Ratio",
-        default: "1:1",
-        options: [
-          '21:9',
-          '16:9',
-          '3:2',
-          '4:3',
-          '5:4',
-          '1:11',
-          '4:5',
-          '3:4',
-          '2:3',
-          '9:16',
-          '9:21',
-        ]
-      }
-    ]
-  },
-  'Recraft AI - Fast Image': {
+  'Recraft AI - Affordable & Fast Image': {
     model: 'recraft-ai/recraft-20b',
+    creditsCost: 5,
     parameters: [
       {
         name: "style",
@@ -130,6 +110,30 @@ export const VISION_MODELS: {
           'digital_illustration/seamless',
           'digital_illustration/voxel',
           'digital_illustration/watercolor',
+        ]
+      }
+    ]
+  },
+  'Flux 1.1 Pro Ultra - High Res Photo': {
+    model: 'black-forest-labs/flux-1.1-pro-ultra',
+    creditsCost: 10,
+    parameters: [
+      {
+        name: "aspect_ratio",
+        displayName: "Aspect Ratio",
+        default: "1:1",
+        options: [
+          '21:9',
+          '16:9',
+          '3:2',
+          '4:3',
+          '5:4',
+          '1:11',
+          '4:5',
+          '3:4',
+          '2:3',
+          '9:16',
+          '9:21',
         ]
       }
     ]
