@@ -8,144 +8,7 @@ import { NextResponse } from 'next/server';
 export const maxDuration = 30;
 
 const systemPrompt = `
-You are an expert fact-checker at a newspaper. Your job is to identify each factoid in the Sentence. Then decontextualize each factoid and write the factoid as a standalone sentence that contains only that factoid. 
-
-**Mandatory**
-
-* Only generate factoid explicitly or implicitly implied in the original sentence.
-* If an entity is mentioned. absolutely do NOT draw outside knowledge to explain concepts, unless it's explained directly in the original sentence.
-* Do not generate generic claims such as "xxx is mentioned"
-* If input made no claims, do not generate claims.
-
-=== Example 1 ===
-
-User: can you give me some examples of science fiction movies?
-Prefix: Sure! Here are some examples:
-
-* Back to the Future (1985) directed by Robert Zemeckis.
-* The Fly (1988) directed by David Cronenberg.
-
-Sentence: * Interstellar (2014) directed by Christopher Nolan.
-
-Rewritten facts from Sentence:
-Fact: Interstellar is a science fiction movie.
-Fact: Interstellar was released in 2014.
-Fact: Christopher Nolan directed Interstellar.
-
-=== Example 2 ===
-
-User: What shows has Courtney Cox acted on?
-Prefix: Courteney Cox has acted on a variety of shows over the years, including:
-
-* Misfits of Science (1985): Cox starred as Gloria Dinallo in this short-lived NBC science fiction fantasy series.
-* Family Ties (1987–1989): Cox had a recurring role as Lauren Miller.
-
-Sentence: * Friends (1994–2004): Cox is best known for her role as Monica Geller in this NBC sitcom.
-
-Rewritten facts from Sentence:
-Fact: Courtney Cox acted on the TV show Friends.
-Fact: Courtney Cox played the role of Monica Geller on Friends.
-Fact: Friends aired from 1994 to 2004.
-Fact: Friends is a sitcom.
-Fact: Friends was produced by NBC.
-
-=== Example 3 ===
-
-User: Tell me about Charles Leclerc.
-Prefix: Charles Leclerc is a Monégasque racing driver who currently races in Formula One for Scuderia Ferrari. He won the GP3 Series championship in 2016 and the FIA Formula 2 Championship in 2017. He made his Formula One debut in 2018 for Sauber, a team affiliated with Ferrari, for which he was part of the Ferrari Driver Academy.
-
-Sentence: With Sauber having finished last the year before, Leclerc led the charge to improve its finishing position in the Constructors' Championship to eighth, and was the higher ranked of the two Sauber drivers.
-
-Rewritten facts from Sentence:
-Fact: Sauber finished last in the 2017 Formula One Constructors’ Championship.
-Fact: In 2018, Charles Leclerc led the charge to improve Sauber's finishing position in the Constructors' Championship.
-Fact: Sauber finished eighth in the 2018 Formula One Constructors’ Championship.
-Fact: In 2018, Sauber had two drivers.
-Fact: In 2018, Charles Leclerc was the higher ranked of two Sauber drivers.
-
-=== Example 4 ===
-
-User: Give me the steps to activate location preferences on the iphone.
-Prefix: Sure, here are the steps on how to activate location preferences on your iPhone:
-
-1. Open the Settings app.
-2. Tap on Privacy.
-
-Sentence: 3. Tap on Location Services.
-
-Rewritten facts from Sentence:
-Fact: The third step to activate location preferences on the iphone is to tap on Location Services.
-Fact: Location Services is located in Privacy in the Settings app on the iphone.
-
-=== Example 5 ===
-
-User: What are good dietary sources of zinc?
-Prefix: Zinc is an essential mineral that your body needs for many important functions, including:
-
-* Immune system function
-* Cell growth and division
-* Wound healing * Metabolism
-* Fertility
-* Smell and taste
-
-Zinc is not stored in the body, so it is important to get it from your diet on a regular basis. Good dietary sources of zinc include:
-
-* **Meat:** Beef, lamb, pork, chicken, and turkey.
-* **Seafood:** Oysters, crab, lobster, and shrimp.
-
-Sentence: * **Legumes:** Beans, lentils, and peas.
-
-Rewritten facts from Sentence:
-Fact: Legumes are a good dietary source of zinc.
-Fact: Beans are a good dietary source of zinc.
-Fact: Lentils are a good dietary source of zinc.
-Fact: Peas are a good dietary source of zinc.
-Fact: Beans are legumes.
-Fact: Lentils are legumes.
-Fact: Peas are legumes.
-
-=== Example 6 ===
-
-User: who is nehru?
-Prefix: Jawaharlal Nehru - Indian statesman and political leader. One of the most prominent political figures in the world, he was the leader of the left wing of the Indian national liberation movement. Under the mentorship of Mahatma Gandhi, Nehru became chairman of the Indian National Congress, and later, after the country gained independence on August 15, 1947, the first prime minister of India.
-
-Sentence: He remained in this post until May 27, 1964, when he died of a heart attack.
-
-Rewritten facts from Sentence:
-Fact: Jawaharlal Nehru remained the prime minister of India until May 27, 1964.
-Fact: Jawaharlal Nehru died of a heart attack.
-Fact: Jawaharlal Nehru died on May 27, 1964.
-
-=== Example 7 ===
-
-User: tell me about sears
-Prefix: Sears Holdings, based in Hoffman Estates, Illinois, lost $424 million, or $3.93 per share, in its first quarter. The West Duluth Kmart is the chain's last location in the Twin Ports area after the closure of stores in Duluth Heights and Superior. "It is going to be a big loss," said Loretta Olsen, who shops at both stores. "The stores are slowly closing and where am I going to go shopping. I don't want to shop online."
-
-Sentence: Susan Coen, President of the West Duluth Business Club says it's going to impact the growth of the area as well.
-
-Rewritten facts from Sentence:
-Fact: Susan Coen is the President of the West Duluth Business Club.
-Fact: According to Susan Coen, the closure of Kmart stores in Duluth Heights and Superior is going to impact the growth of the Duluth area.
-
-== Example 8 ==
-User: who is president obama's age
-Prefix:
-
-Sentence: President obama is 63 years old. He is the 44th U.S president.
-
-Rewritten facts from Sentence:
-Fact: President obama is the 44th U.S president.
-Fact: President obama is male.
-Fact: President obama is 63 years old.
-
-== Example 9 ==
-User:
-Prefix:
-
-Sentence: foo, bar, and baz
-
-Rewritten facts from Sentence:
-No facts claimed.
+WW91IGFyZSBhbiBleHBlcnQgZmFjdC1jaGVja2VyIGF0IGEgbmV3c3BhcGVyLiBZb3VyIGpvYiBpcyB0byBpZGVudGlmeSBlYWNoIGZhY3RvaWQgaW4gdGhlIFNlbnRlbmNlLiBUaGVuIGRlY29udGV4dHVhbGl6ZSBlYWNoIGZhY3RvaWQgYW5kIHdyaXRlIHRoZSBmYWN0b2lkIGFzIGEgc3RhbmRhbG9uZSBzZW50ZW5jZSB0aGF0IGNvbnRhaW5zIG9ubHkgdGhhdCBmYWN0b2lkLiAKCioqTWFuZGF0b3J5KioKCiogT25seSBnZW5lcmF0ZSBmYWN0b2lkIGV4cGxpY2l0bHkgb3IgaW1wbGljaXRseSBpbXBsaWVkIGluIHRoZSBvcmlnaW5hbCBzZW50ZW5jZS4KKiBJZiBhbiBlbnRpdHkgaXMgbWVudGlvbmVkLiBhYnNvbHV0ZWx5IGRvIE5PVCBkcmF3IG91dHNpZGUga25vd2xlZGdlIHRvIGV4cGxhaW4gY29uY2VwdHMsIHVubGVzcyBpdCdzIGV4cGxhaW5lZCBkaXJlY3RseSBpbiB0aGUgb3JpZ2luYWwgc2VudGVuY2UuCiogRG8gbm90IGdlbmVyYXRlIGdlbmVyaWMgY2xhaW1zIHN1Y2ggYXMgInh4eCBpcyBtZW50aW9uZWQiCiogSWYgaW5wdXQgbWFkZSBubyBjbGFpbXMsIGRvIG5vdCBnZW5lcmF0ZSBjbGFpbXMuCgo9PT0gRXhhbXBsZSAxID09PQoKVXNlcjogY2FuIHlvdSBnaXZlIG1lIHNvbWUgZXhhbXBsZXMgb2Ygc2NpZW5jZSBmaWN0aW9uIG1vdmllcz8KUHJlZml4OiBTdXJlISBIZXJlIGFyZSBzb21lIGV4YW1wbGVzOgoKKiBCYWNrIHRvIHRoZSBGdXR1cmUgKDE5ODUpIGRpcmVjdGVkIGJ5IFJvYmVydCBaZW1lY2tpcy4KKiBUaGUgRmx5ICgxOTg4KSBkaXJlY3RlZCBieSBEYXZpZCBDcm9uZW5iZXJnLgoKU2VudGVuY2U6ICogSW50ZXJzdGVsbGFyICgyMDE0KSBkaXJlY3RlZCBieSBDaHJpc3RvcGhlciBOb2xhbi4KClJld3JpdHRlbiBmYWN0cyBmcm9tIFNlbnRlbmNlOgpGYWN0OiBJbnRlcnN0ZWxsYXIgaXMgYSBzY2llbmNlIGZpY3Rpb24gbW92aWUuCkZhY3Q6IEludGVyc3RlbGxhciB3YXMgcmVsZWFzZWQgaW4gMjAxNC4KRmFjdDogQ2hyaXN0b3BoZXIgTm9sYW4gZGlyZWN0ZWQgSW50ZXJzdGVsbGFyLgoKPT09IEV4YW1wbGUgMiA9PT0KClVzZXI6IFdoYXQgc2hvd3MgaGFzIENvdXJ0bmV5IENveCBhY3RlZCBvbj8KUHJlZml4OiBDb3VydGVuZXkgQ294IGhhcyBhY3RlZCBvbiBhIHZhcmlldHkgb2Ygc2hvd3Mgb3ZlciB0aGUgeWVhcnMsIGluY2x1ZGluZzoKCiogTWlzZml0cyBvZiBTY2llbmNlICgxOTg1KTogQ294IHN0YXJyZWQgYXMgR2xvcmlhIERpbmFsbG8gaW4gdGhpcyBzaG9ydC1saXZlZCBOQkMgc2NpZW5jZSBmaWN0aW9uIGZhbnRhc3kgc2VyaWVzLgoqIEZhbWlseSBUaWVzICgxOTg34oCTMTk4OSk6IENveCBoYWQgYSByZWN1cnJpbmcgcm9sZSBhcyBMYXVyZW4gTWlsbGVyLgoKU2VudGVuY2U6ICogRnJpZW5kcyAoMTk5NOKAkzIwMDQpOiBDb3ggaXMgYmVzdCBrbm93biBmb3IgaGVyIHJvbGUgYXMgTW9uaWNhIEdlbGxlciBpbiB0aGlzIE5CQyBzaXRjb20uCgpSZXdyaXR0ZW4gZmFjdHMgZnJvbSBTZW50ZW5jZToKRmFjdDogQ291cnRuZXkgQ294IGFjdGVkIG9uIHRoZSBUViBzaG93IEZyaWVuZHMuCkZhY3Q6IENvdXJ0bmV5IENveCBwbGF5ZWQgdGhlIHJvbGUgb2YgTW9uaWNhIEdlbGxlciBvbiBGcmllbmRzLgpGYWN0OiBGcmllbmRzIGFpcmVkIGZyb20gMTk5NCB0byAyMDA0LgpGYWN0OiBGcmllbmRzIGlzIGEgc2l0Y29tLgpGYWN0OiBGcmllbmRzIHdhcyBwcm9kdWNlZCBieSBOQkMuCgo9PT0gRXhhbXBsZSAzID09PQoKVXNlcjogVGVsbCBtZSBhYm91dCBDaGFybGVzIExlY2xlcmMuClByZWZpeDogQ2hhcmxlcyBMZWNsZXJjIGlzIGEgTW9uw6lnYXNxdWUgcmFjaW5nIGRyaXZlciB3aG8gY3VycmVudGx5IHJhY2VzIGluIEZvcm11bGEgT25lIGZvciBTY3VkZXJpYSBGZXJyYXJpLiBIZSB3b24gdGhlIEdQMyBTZXJpZXMgY2hhbXBpb25zaGlwIGluIDIwMTYgYW5kIHRoZSBGSUEgRm9ybXVsYSAyIENoYW1waW9uc2hpcCBpbiAyMDE3LiBIZSBtYWRlIGhpcyBGb3JtdWxhIE9uZSBkZWJ1dCBpbiAyMDE4IGZvciBTYXViZXIsIGEgdGVhbSBhZmZpbGlhdGVkIHdpdGggRmVycmFyaSwgZm9yIHdoaWNoIGhlIHdhcyBwYXJ0IG9mIHRoZSBGZXJyYXJpIERyaXZlciBBY2FkZW15LgoKU2VudGVuY2U6IFdpdGggU2F1YmVyIGhhdmluZyBmaW5pc2hlZCBsYXN0IHRoZSB5ZWFyIGJlZm9yZSwgTGVjbGVyYyBsZWQgdGhlIGNoYXJnZSB0byBpbXByb3ZlIGl0cyBmaW5pc2hpbmcgcG9zaXRpb24gaW4gdGhlIENvbnN0cnVjdG9ycycgQ2hhbXBpb25zaGlwIHRvIGVpZ2h0aCwgYW5kIHdhcyB0aGUgaGlnaGVyIHJhbmtlZCBvZiB0aGUgdHdvIFNhdWJlciBkcml2ZXJzLgoKUmV3cml0dGVuIGZhY3RzIGZyb20gU2VudGVuY2U6CkZhY3Q6IFNhdWJlciBmaW5pc2hlZCBsYXN0IGluIHRoZSAyMDE3IEZvcm11bGEgT25lIENvbnN0cnVjdG9yc+KAmSBDaGFtcGlvbnNoaXAuCkZhY3Q6IEluIDIwMTgsIENoYXJsZXMgTGVjbGVyYyBsZWQgdGhlIGNoYXJnZSB0byBpbXByb3ZlIFNhdWJlcidzIGZpbmlzaGluZyBwb3NpdGlvbiBpbiB0aGUgQ29uc3RydWN0b3JzJyBDaGFtcGlvbnNoaXAuCkZhY3Q6IFNhdWJlciBmaW5pc2hlZCBlaWdodGggaW4gdGhlIDIwMTggRm9ybXVsYSBPbmUgQ29uc3RydWN0b3Jz4oCZIENoYW1waW9uc2hpcC4KRmFjdDogSW4gMjAxOCwgU2F1YmVyIGhhZCB0d28gZHJpdmVycy4KRmFjdDogSW4gMjAxOCwgQ2hhcmxlcyBMZWNsZXJjIHdhcyB0aGUgaGlnaGVyIHJhbmtlZCBvZiB0d28gU2F1YmVyIGRyaXZlcnMuCgo9PT0gRXhhbXBsZSA0ID09PQoKVXNlcjogR2l2ZSBtZSB0aGUgc3RlcHMgdG8gYWN0aXZhdGUgbG9jYXRpb24gcHJlZmVyZW5jZXMgb24gdGhlIGlwaG9uZS4KUHJlZml4OiBTdXJlLCBoZXJlIGFyZSB0aGUgc3RlcHMgb24gaG93IHRvIGFjdGl2YXRlIGxvY2F0aW9uIHByZWZlcmVuY2VzIG9uIHlvdXIgaVBob25lOgoKMS4gT3BlbiB0aGUgU2V0dGluZ3MgYXBwLgoyLiBUYXAgb24gUHJpdmFjeS4KClNlbnRlbmNlOiAzLiBUYXAgb24gTG9jYXRpb24gU2VydmljZXMuCgpSZXdyaXR0ZW4gZmFjdHMgZnJvbSBTZW50ZW5jZToKRmFjdDogVGhlIHRoaXJkIHN0ZXAgdG8gYWN0aXZhdGUgbG9jYXRpb24gcHJlZmVyZW5jZXMgb24gdGhlIGlwaG9uZSBpcyB0byB0YXAgb24gTG9jYXRpb24gU2VydmljZXMuCkZhY3Q6IExvY2F0aW9uIFNlcnZpY2VzIGlzIGxvY2F0ZWQgaW4gUHJpdmFjeSBpbiB0aGUgU2V0dGluZ3MgYXBwIG9uIHRoZSBpcGhvbmUuCgo9PT0gRXhhbXBsZSA1ID09PQoKVXNlcjogV2hhdCBhcmUgZ29vZCBkaWV0YXJ5IHNvdXJjZXMgb2YgemluYz8KUHJlZml4OiBaaW5jIGlzIGFuIGVzc2VudGlhbCBtaW5lcmFsIHRoYXQgeW91ciBib2R5IG5lZWRzIGZvciBtYW55IGltcG9ydGFudCBmdW5jdGlvbnMsIGluY2x1ZGluZzoKCiogSW1tdW5lIHN5c3RlbSBmdW5jdGlvbgoqIENlbGwgZ3Jvd3RoIGFuZCBkaXZpc2lvbgoqIFdvdW5kIGhlYWxpbmcgKiBNZXRhYm9saXNtCiogRmVydGlsaXR5CiogU21lbGwgYW5kIHRhc3RlCgpaaW5jIGlzIG5vdCBzdG9yZWQgaW4gdGhlIGJvZHksIHNvIGl0IGlzIGltcG9ydGFudCB0byBnZXQgaXQgZnJvbSB5b3VyIGRpZXQgb24gYSByZWd1bGFyIGJhc2lzLiBHb29kIGRpZXRhcnkgc291cmNlcyBvZiB6aW5jIGluY2x1ZGU6CgoqICoqTWVhdDoqKiBCZWVmLCBsYW1iLCBwb3JrLCBjaGlja2VuLCBhbmQgdHVya2V5LgoqICoqU2VhZm9vZDoqKiBPeXN0ZXJzLCBjcmFiLCBsb2JzdGVyLCBhbmQgc2hyaW1wLgoKU2VudGVuY2U6ICogKipMZWd1bWVzOioqIEJlYW5zLCBsZW50aWxzLCBhbmQgcGVhcy4KClJld3JpdHRlbiBmYWN0cyBmcm9tIFNlbnRlbmNlOgpGYWN0OiBMZWd1bWVzIGFyZSBhIGdvb2QgZGlldGFyeSBzb3VyY2Ugb2YgemluYy4KRmFjdDogQmVhbnMgYXJlIGEgZ29vZCBkaWV0YXJ5IHNvdXJjZSBvZiB6aW5jLgpGYWN0OiBMZW50aWxzIGFyZSBhIGdvb2QgZGlldGFyeSBzb3VyY2Ugb2YgemluYy4KRmFjdDogUGVhcyBhcmUgYSBnb29kIGRpZXRhcnkgc291cmNlIG9mIHppbmMuCkZhY3Q6IEJlYW5zIGFyZSBsZWd1bWVzLgpGYWN0OiBMZW50aWxzIGFyZSBsZWd1bWVzLgpGYWN0OiBQZWFzIGFyZSBsZWd1bWVzLgoKPT09IEV4YW1wbGUgNiA9PT0KClVzZXI6IHdobyBpcyBuZWhydT8KUHJlZml4OiBKYXdhaGFybGFsIE5laHJ1IC0gSW5kaWFuIHN0YXRlc21hbiBhbmQgcG9saXRpY2FsIGxlYWRlci4gT25lIG9mIHRoZSBtb3N0IHByb21pbmVudCBwb2xpdGljYWwgZmlndXJlcyBpbiB0aGUgd29ybGQsIGhlIHdhcyB0aGUgbGVhZGVyIG9mIHRoZSBsZWZ0IHdpbmcgb2YgdGhlIEluZGlhbiBuYXRpb25hbCBsaWJlcmF0aW9uIG1vdmVtZW50LiBVbmRlciB0aGUgbWVudG9yc2hpcCBvZiBNYWhhdG1hIEdhbmRoaSwgTmVocnUgYmVjYW1lIGNoYWlybWFuIG9mIHRoZSBJbmRpYW4gTmF0aW9uYWwgQ29uZ3Jlc3MsIGFuZCBsYXRlciwgYWZ0ZXIgdGhlIGNvdW50cnkgZ2FpbmVkIGluZGVwZW5kZW5jZSBvbiBBdWd1c3QgMTUsIDE5NDcsIHRoZSBmaXJzdCBwcmltZSBtaW5pc3RlciBvZiBJbmRpYS4KClNlbnRlbmNlOiBIZSByZW1haW5lZCBpbiB0aGlzIHBvc3QgdW50aWwgTWF5IDI3LCAxOTY0LCB3aGVuIGhlIGRpZWQgb2YgYSBoZWFydCBhdHRhY2suCgpSZXdyaXR0ZW4gZmFjdHMgZnJvbSBTZW50ZW5jZToKRmFjdDogSmF3YWhhcmxhbCBOZWhydSByZW1haW5lZCB0aGUgcHJpbWUgbWluaXN0ZXIgb2YgSW5kaWEgdW50aWwgTWF5IDI3LCAxOTY0LgpGYWN0OiBKYXdhaGFybGFsIE5laHJ1IGRpZWQgb2YgYSBoZWFydCBhdHRhY2suCkZhY3Q6IEphd2FoYXJsYWwgTmVocnUgZGllZCBvbiBNYXkgMjcsIDE5NjQuCgo9PT0gRXhhbXBsZSA3ID09PQoKVXNlcjogdGVsbCBtZSBhYm91dCBzZWFycwpQcmVmaXg6IFNlYXJzIEhvbGRpbmdzLCBiYXNlZCBpbiBIb2ZmbWFuIEVzdGF0ZXMsIElsbGlub2lzLCBsb3N0ICQ0MjQgbWlsbGlvbiwgb3IgJDMuOTMgcGVyIHNoYXJlLCBpbiBpdHMgZmlyc3QgcXVhcnRlci4gVGhlIFdlc3QgRHVsdXRoIEttYXJ0IGlzIHRoZSBjaGFpbidzIGxhc3QgbG9jYXRpb24gaW4gdGhlIFR3aW4gUG9ydHMgYXJlYSBhZnRlciB0aGUgY2xvc3VyZSBvZiBzdG9yZXMgaW4gRHVsdXRoIEhlaWdodHMgYW5kIFN1cGVyaW9yLiAiSXQgaXMgZ29pbmcgdG8gYmUgYSBiaWcgbG9zcywiIHNhaWQgTG9yZXR0YSBPbHNlbiwgd2hvIHNob3BzIGF0IGJvdGggc3RvcmVzLiAiVGhlIHN0b3JlcyBhcmUgc2xvd2x5IGNsb3NpbmcgYW5kIHdoZXJlIGFtIEkgZ29pbmcgdG8gZ28gc2hvcHBpbmcuIEkgZG9uJ3Qgd2FudCB0byBzaG9wIG9ubGluZS4iCgpTZW50ZW5jZTogU3VzYW4gQ29lbiwgUHJlc2lkZW50IG9mIHRoZSBXZXN0IER1bHV0aCBCdXNpbmVzcyBDbHViIHNheXMgaXQncyBnb2luZyB0byBpbXBhY3QgdGhlIGdyb3d0aCBvZiB0aGUgYXJlYSBhcyB3ZWxsLgoKUmV3cml0dGVuIGZhY3RzIGZyb20gU2VudGVuY2U6CkZhY3Q6IFN1c2FuIENvZW4gaXMgdGhlIFByZXNpZGVudCBvZiB0aGUgV2VzdCBEdWx1dGggQnVzaW5lc3MgQ2x1Yi4KRmFjdDogQWNjb3JkaW5nIHRvIFN1c2FuIENvZW4sIHRoZSBjbG9zdXJlIG9mIEttYXJ0IHN0b3JlcyBpbiBEdWx1dGggSGVpZ2h0cyBhbmQgU3VwZXJpb3IgaXMgZ29pbmcgdG8gaW1wYWN0IHRoZSBncm93dGggb2YgdGhlIER1bHV0aCBhcmVhLgoKPT0gRXhhbXBsZSA4ID09ClVzZXI6IHdobyBpcyBwcmVzaWRlbnQgb2JhbWEncyBhZ2UKUHJlZml4OgoKU2VudGVuY2U6IFByZXNpZGVudCBvYmFtYSBpcyA2MyB5ZWFycyBvbGQuIEhlIGlzIHRoZSA0NHRoIFUuUyBwcmVzaWRlbnQuCgpSZXdyaXR0ZW4gZmFjdHMgZnJvbSBTZW50ZW5jZToKRmFjdDogUHJlc2lkZW50IG9iYW1hIGlzIHRoZSA0NHRoIFUuUyBwcmVzaWRlbnQuCkZhY3Q6IFByZXNpZGVudCBvYmFtYSBpcyBtYWxlLgpGYWN0OiBQcmVzaWRlbnQgb2JhbWEgaXMgNjMgeWVhcnMgb2xkLgoKPT0gRXhhbXBsZSA5ID09ClVzZXI6ClByZWZpeDoKClNlbnRlbmNlOiBmb28sIGJhciwgYW5kIGJhegoKUmV3cml0dGVuIGZhY3RzIGZyb20gU2VudGVuY2U6Ck5vIGZhY3RzIGNsYWltZWQu
 `
 
 export async function POST(req: Request) {
@@ -171,7 +34,7 @@ export async function POST(req: Request) {
   const result = await streamObject({
     model: model,
     schema: claimsSchema,
-    system: systemPrompt,
+    system: Buffer.from(systemPrompt.trim(), 'base64').toString('utf-8'),
     prompt: context.trim(),
   })
   return result.toTextStreamResponse();
