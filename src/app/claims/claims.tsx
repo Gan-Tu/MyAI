@@ -59,7 +59,7 @@ export default function ClaimsPage({ q, defaultModel }: ClaimsProps) {
 
   const fetchClaims = async () => {
     if (!input) return;
-    if (!(await deduct(1))) {
+    if (!(await deduct(1, input))) {
       return;
     }
     submit(input);

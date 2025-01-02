@@ -32,7 +32,7 @@ interface CreditsContextTypeValue {
   isLoading: boolean;
   balance: number;
   setBalance: Dispatch<SetStateAction<number>>;
-  deduct: (credit: number) => Promise<boolean>;
+  deduct: (credit: number, query?: string) => Promise<boolean>;
 }
 
 // Create the Context with a default undefined value
@@ -57,12 +57,14 @@ export const CreditsProvider: React.FC<CreditsProviderProps> = ({
   const router = useRouter();
   const pathname = usePathname();
 
-  const deduct = async (credit: number = 1) => {
+  const deduct = async (credit: number = 1, query?: string) => {
     if (!enableCredits) {
       return true;
     }
     if (!uid) {
-      router.push(`/login?redirect_to=${encodeURIComponent(pathname)}`);
+      router.push(
+        `/login?redirect_to=${encodeURIComponent(pathname)}${query ? `?q=${query}` : ""}`,
+      );
       toast.error("Sign in to use your credits!");
       return false;
     }

@@ -58,7 +58,7 @@ export default function PixelsPage({ q, defaultModel }: ImagesPageProps) {
     if (!input) {
       return;
     }
-    if (!(await deduct(creditsCost))) {
+    if (!(await deduct(creditsCost, input))) {
       return;
     }
     let { error, prediction } = await predictWithReplicate(
@@ -236,7 +236,6 @@ export default function PixelsPage({ q, defaultModel }: ImagesPageProps) {
           </div>
         </div>
       </div>
-      
 
       {/* Output Gallery */}
       {(isLoading || curPrediction) && (
