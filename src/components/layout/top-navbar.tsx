@@ -69,6 +69,7 @@ export function TopNavbar({
         },
         body: JSON.stringify({
           userId: user.uid,
+          returnPathname: pathname,
         }),
       });
 

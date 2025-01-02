@@ -17,7 +17,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
 export async function POST(req: NextRequest) {
   try {
-    const { userId } = await req.json();
+    const { userId, returnPathname } = await req.json();
     if (!userId) {
       return NextResponse.json({ error: "Missing user id" }, { status: 400 })
     }
@@ -34,8 +34,8 @@ export async function POST(req: NextRequest) {
       ],
       mode: 'payment',
       metadata: { userId: userId, creditsPurchased: 100 },
-      success_url: `${req.headers.get('origin')}/?success=true&session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${req.headers.get('origin')}/?canceled=true&session_id={CHECKOUT_SESSION_ID}`,
+      success_url: `${req.headers.get('origin')}/${returnPathname || ''}?success=true&session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${req.headers.get('origin')}/${returnPathname || ''}?canceled=true&session_id={CHECKOUT_SESSION_ID}`,
     });
 
     // Return the session URL to the client
