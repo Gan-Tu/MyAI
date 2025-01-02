@@ -38,7 +38,9 @@ export default function PixelsPage({ q, defaultModel }: ImagesPageProps) {
   const [extraInputs, setExtraInputs] = useState({});
   const [creditsCost, setCreditsCost] = useState<number>(1);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [model, setModel] = useState<string>(defaultModel || "AI Emoji");
+  const [model, setModel] = useState<string>(
+    defaultModel || Object.keys(VISION_MODELS)[0],
+  );
   const [curPrediction, setCurPrediction] = useState<Prediction | null>(null);
   const { deduct } = useCredits();
 
@@ -61,6 +63,7 @@ export default function PixelsPage({ q, defaultModel }: ImagesPageProps) {
     if (!(await deduct(creditsCost, input))) {
       return;
     }
+    console.log(VISION_MODELS[model]);
     let { error, prediction } = await predictWithReplicate(
       {
         prompt: input,
