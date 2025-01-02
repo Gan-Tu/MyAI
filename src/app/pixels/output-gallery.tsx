@@ -16,6 +16,7 @@ import CreditFooter from "@/components/credit-footer";
 import { PredictionWithInput } from "@/lib/types";
 import clsx from "clsx";
 import Image from "next/image";
+import Link from "next/link";
 
 interface OutputGalleryProps {
   isLoading: boolean;
@@ -39,18 +40,20 @@ export default function OutputGallery({
     <div
       className={clsx(
         className,
-        "lg:w-3/8 relative flex min-w-[400px] flex-grow flex-col justify-center overflow-hidden px-7 lg:pointer-events-none lg:inset-0 lg:z-40 lg:flex lg:px-0",
+        "lg:w-3/8 relative flex min-w-[400px] flex-grow flex-col justify-center overflow-hidden px-7 lg:inset-0 lg:z-40 lg:flex lg:px-0",
       )}
     >
       {imageUrl && (
-        <Image
-          src={imageUrl}
-          height={768}
-          width={768}
-          sizes="100vw"
-          className="aspect-auto rounded-lg object-cover"
-          alt={prediction?.input?.prompt || "output image"}
-        />
+        <Link href={imageUrl} target="_blank" rel="noopener noreferrer">
+          <Image
+            src={imageUrl}
+            height={768}
+            width={768}
+            sizes="100vw"
+            className="aspect-auto rounded-lg object-cover"
+            alt={prediction?.input?.prompt || "output image"}
+          />
+        </Link>
       )}
 
       {isLoading && (
