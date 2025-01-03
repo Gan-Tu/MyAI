@@ -15,7 +15,6 @@
 import CreditFooter from "@/components/credit-footer";
 import { PredictionWithInput } from "@/lib/types";
 import clsx from "clsx";
-import Image from "next/image";
 import Link from "next/link";
 
 interface OutputGalleryProps {
@@ -24,6 +23,7 @@ interface OutputGalleryProps {
   className?: string;
 }
 
+/* eslint-disable @next/next/no-img-element */
 export default function OutputGallery({
   isLoading,
   prediction,
@@ -45,7 +45,7 @@ export default function OutputGallery({
     >
       {imageUrl && (
         <Link href={imageUrl} target="_blank" rel="noopener noreferrer">
-          <Image
+          <img
             src={imageUrl}
             height={768}
             width={768}
