@@ -54,7 +54,21 @@ export const VISION_MODELS: {
     parameters: VisionModelParameter[]
   }
 } = {
-  'AI Generated Emoji': {
+  'AI Stickers': {
+    version: '4acb778eb059772225ec213948f0660867b2e03f277448f18cf1800b96a65a1a',
+    creditsCost: 1,
+    parameters: [
+      {
+        name: "output_format",
+        displayName: "Output Format",
+        default: "png",
+        options: [
+          'png',
+        ]
+      }
+    ]
+  },
+  'AI Emoji': {
     version: '2489b7892129c47ec8590fd3e86270b8804f2ff07faeae8c306342fad2f48df6',
     creditsCost: 1,
     parameters: [
@@ -126,7 +140,39 @@ export const VISION_MODELS: {
       }
     ]
   },
-  'Flux 1.1 Pro Ultra - High Res Photo': {
+  'Recraft AI - SOTA Image Generation': {
+    model: 'recraft-ai/recraft-v3',
+    creditsCost: 10,
+    parameters: [
+      {
+        name: "style",
+        displayName: "Style",
+        default: "any",
+        options: [
+          'any',
+          'realistic_image',
+          'digital_illustration',
+          'digital_illustration/pixel_art',
+          'digital_illustration/hand_drawn',
+          'digital_illustration/grain',
+          'digital _illustration/infantile_sketch',
+          'digital_illustration/2d_art_poster',
+          'digital_illustration/handmade_3d',
+          'digital_illustration/hand_drawn_out/',
+          'digital_illustration/engraving_color',
+          'digital_illustration/2d_art_poster_2',
+          'realistic_image/b_and_w',
+          'realistic_image/hard_flash',
+          'realistic_image/hdr',
+          'realistic_image/natural_light',
+          'realistic_image/studio_portrait',
+          'realistic_image/enterprise',
+          'realistic_image/motion_blur',
+        ]
+      }
+    ]
+  },
+  'Stable Diffusion - High Res Photo': {
     model: 'black-forest-labs/flux-1.1-pro-ultra',
     creditsCost: 10,
     parameters: [
