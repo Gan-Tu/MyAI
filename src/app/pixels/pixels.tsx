@@ -65,7 +65,7 @@ export default function PixelsPage({ q, defaultModel }: ImagesPageProps) {
     }
     let { error, prediction } = await predictWithReplicate(
       {
-        prompt: input,
+        prompt: `${input}${VISION_MODELS[model]?.promptSuffix || ""}`,
         ...extraInputs,
       },
       /*model*/ VISION_MODELS[model]?.model,

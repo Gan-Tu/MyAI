@@ -50,6 +50,7 @@ export const VISION_MODELS: {
   [key: string]: {
     model?: string,
     version?: string,
+    promptSuffix?: string,
     creditsCost: number,
     parameters: VisionModelParameter[]
   }
@@ -97,6 +98,40 @@ export const VISION_MODELS: {
         options: [
           'jpg',
           'png',
+        ]
+      }
+    ]
+  },
+  'Flux - Watercolor': {
+    version: '846d1eb37059ed2ed268ff8dd4aa1531487fcdc3425a7a44c2a0a10723ef8383',
+    creditsCost: 5,
+    promptSuffix: ' in the style of TOK',
+    parameters: [
+      {
+        name: "aspect_ratio",
+        displayName: "Aspect Ratio",
+        default: "1:1",
+        options: [
+          '1:1',
+          '16:9',
+          '21:9',
+          '3:2',
+          '2:3',
+          '4:5',
+          '5:4',
+          '3:4',
+          '4:3',
+          '9:16',
+          '9:21',
+        ]
+      },
+      {
+        name: "output_format",
+        displayName: "Output Format",
+        default: "png",
+        options: [
+          'png',
+          'jpg',
         ]
       }
     ]
