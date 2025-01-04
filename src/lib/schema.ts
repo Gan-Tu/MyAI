@@ -36,3 +36,13 @@ export const claimsSchema = z.object({
     z.string().describe("A single factoid claim")
   ).describe("A list of indiviual factoid sentences.")
 })
+
+export const citationNeedsClassficationSchema = z.object({
+  classifications: z.array(
+    z.object({
+      sentence: z.string().describe("The sentence being examined"),
+      verdict: z.string().describe("The verdict on what type of citation is needed"),
+      reason: z.string().describe("Reason for the classification of this sentence"),
+    })
+  )
+})

@@ -10,7 +10,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { claimsSchema, entityCardSchema } from "@/lib/types";
+import { citationNeedsClassficationSchema, claimsSchema, entityCardSchema } from "@/lib/types";
 import { type Prediction } from "replicate";
 import { z } from "zod";
 
@@ -26,6 +26,7 @@ export type ImageSearchResult = {
 
 export type entityCardSchemaType = z.infer<typeof entityCardSchema>
 export type claimsSchemaType = z.infer<typeof claimsSchema>
+export type citationNeedsClassficationSchemaType = z.infer<typeof citationNeedsClassficationSchema>
 
 export type NavigationProps = {
   enableLogin?: boolean

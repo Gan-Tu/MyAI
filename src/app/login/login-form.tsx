@@ -34,7 +34,7 @@ export function LoginForm() {
     if (!isLoading && user) {
       router.push(nextPath);
     }
-  }, [isLoading, user, router]);
+  }, [isLoading, user, router, nextPath]);
 
   const loginProviders: LogInButtonProps[] = [
     {
