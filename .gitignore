@@ -38,3 +38,6 @@ next-env.d.ts
 
 # Visual Studio Code
 .vscode
+
+# Local files
+encrypt-prompt-utils.mjs
