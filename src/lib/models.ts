@@ -12,6 +12,7 @@
 
 import { type VisionModelParameter } from "@/lib/types";
 import { anthropic } from '@ai-sdk/anthropic';
+import { createDeepSeek } from '@ai-sdk/deepseek';
 import { google } from '@ai-sdk/google';
 import { groq } from '@ai-sdk/groq';
 import { openai } from '@ai-sdk/openai';
@@ -23,6 +24,7 @@ export const supportedLanguageModels = [
   'gemini-1.5-flash-8b',
   'llama-3.1-8b-instant',
   'claude-3-5-haiku-20241022',
+  'deepseek-chat',
 ]
 
 export const getLanguageModel = (model: string): LanguageModel => {
@@ -38,6 +40,11 @@ export const getLanguageModel = (model: string): LanguageModel => {
     return google(model)
   } else if (model.startsWith('llama')) {
     return groq(model)
+  } else if (model.startsWith('deepseek')) {
+    const deepseek = createDeepSeek({
+      apiKey: process.env.DEEPSEEK_API_KEY ?? '',
+    });
+    return deepseek(model)
   } else if (model.startsWith('claude')) {
     return anthropic(model, {
       cacheControl: true,
