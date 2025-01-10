@@ -17,6 +17,7 @@ export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams
   const query = searchParams.get('query');
   const count = Number(searchParams.get('count')) || 10;
+  const isSimple = searchParams.get("simple") === 'true' || searchParams.get("simple") === '1';
 
   if (!query) {
     return NextResponse.json({ error: 'Missing query parameter' }, { status: 400 })
@@ -26,15 +27,23 @@ export async function GET(request: NextRequest) {
 
   try {
     const searchResults = await bing_search(query, count);
-    return NextResponse.json(searchResults.webPages?.value?.map((result) => {
-      return {
-        name: result.name,
-        url: result.url,
-        displayUrl: result.displayUrl,
-        language: result.language,
-        snippet: result.snippet || ''
-      }
-    }))
+    if (isSimple) {
+      return NextResponse.json({
+        summary: searchResults.webPages?.value?.map((result) => {
+          return `Web Title: ${result.name || 'N/A'}\nWeb Snippet:${result.snippet || 'N/A'}`
+        }).join("\n\n")
+      })
+    } else {
+      return NextResponse.json(searchResults.webPages?.value?.map((result) => {
+        return {
+          name: result.name,
+          url: result.url,
+          displayUrl: result.displayUrl,
+          language: result.language,
+          snippet: result.snippet || ''
+        }
+      }))
+    }
   } catch (error) {
     return NextResponse.json({ error: JSON.stringify(error) }, { status: 500 })
   }
