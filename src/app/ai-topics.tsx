@@ -259,6 +259,7 @@ export default function AiTopics({ q, defaultModel }: AiTopicsProps) {
             </div>
           </div>
         </div>
+
       </div>
 
       {/* Knowledge Card */}
