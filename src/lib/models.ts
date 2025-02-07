@@ -20,8 +20,8 @@ import { LanguageModel } from 'ai';
 
 export const supportedLanguageModels = [
   'gpt-4o-mini',
+  'gemini-2.0-flash-001',
   'gemini-1.5-flash',
-  'gemini-1.5-flash-8b',
   'llama-3.1-8b-instant',
   'claude-3-5-haiku-20241022',
   'deepseek-chat',
