@@ -38,7 +38,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: (error as Error).message }, { status: 400 })
   }
 
-  const scrapeResponse = await fetch(`https://urlreader.tugan.app/api/scrape?url=${encodeURIComponent(prompt)}&json=1`);
+  const scrapeResponse = await fetch(`https://urlreader.tugan.app/api/scrape?waitForTimeoutSeconds=15&url=${encodeURIComponent(prompt)}&json=1`);
   if (!scrapeResponse.ok) {
     return NextResponse.json(
       { error: `Failed to fetch URL content: ${scrapeResponse.statusText}` }, {
