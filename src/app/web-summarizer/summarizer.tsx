@@ -78,9 +78,10 @@ export default function SummarizerPage({ defaultModel }: SummarizerPageProps) {
                   <span className="text-orange-500">for any URL</span>
                 </h1>
                 <p className="mt-4 text-sm/6 text-slate-700">
-                  Web Summarizer is an AI-powered tool for summarizing web
-                  pages. Input any URL, and it summarizes the page in clear and
-                  concise sentences for review.
+                  Summarize any web page in seconds with Web Summarizer, the
+                  AI-powered tool that extracts the most important information
+                  from any URL. Get clear, concise summaries for quick review
+                  and understanding.
                 </p>
 
                 {/* Controls */}

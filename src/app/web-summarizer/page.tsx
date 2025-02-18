@@ -17,7 +17,7 @@ import SummarizerPage from "./summarizer";
 export const metadata = {
   title: "Web Summarizer",
   description:
-    "Web Summarizer is an AI-powered tool for summarizing web pages. Input any URL, and it summarizes the page in clear and concise sentences for review.",
+    "Summarize any web page in seconds with Web Summarizer, the AI-powered tool that extracts the most important information from any URL. Get clear, concise summaries for quick review and understanding.",
 };
 
 export default async function Page({
