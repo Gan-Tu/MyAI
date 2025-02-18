@@ -15,5 +15,6 @@ export const navItems = [
   { label: "AI Knowledge", url: "/" },
   { label: "Claims Extractor", url: "/claims" },
   { label: "Citation Necessity", url: "/citations" },
-  { label: "Pixel Crafter", url: "/pixels" }
+  { label: "Pixel Crafter", url: "/pixels" },
+  { label: "Web Summarizer", url: "/web-summarizer" },
 ];
