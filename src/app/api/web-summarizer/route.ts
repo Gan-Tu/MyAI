@@ -15,8 +15,8 @@ import { checkRateLimit } from '@/lib/redis';
 import { LanguageModel, streamText } from 'ai';
 import { NextResponse } from 'next/server';
 
-// Allow streaming responses up to 30 seconds
-export const maxDuration = 30;
+// Allow streaming responses up to 45 seconds
+export const maxDuration = 45;
 
 export async function POST(req: Request) {
   const { prompt }: { prompt: string } = await req.json();
