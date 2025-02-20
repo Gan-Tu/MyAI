@@ -59,8 +59,9 @@ export default function HighlighterPage({ q }: HighlighterPageProps) {
     if (!input) {
       setInput("");
       setCalledApi(false);
+      setCompletion("");
     }
-  }, [setInput, setCalledApi, input]);
+  }, [setInput, setCompletion, setCalledApi, input]);
 
   useEffect(() => {
     if (!isLoading && calledApi && !completion) {
@@ -73,6 +74,7 @@ export default function HighlighterPage({ q }: HighlighterPageProps) {
     return deduct(1).then((success) => {
       if (success) {
         setCalledApi(true);
+        setCompletion("");
         handleSubmit(e);
       }
     });
@@ -167,7 +169,7 @@ export default function HighlighterPage({ q }: HighlighterPageProps) {
           <div className="no-scrollbar relative mx-auto w-full max-w-lg rounded-lg bg-white p-8 shadow-sm md:max-h-[850px]">
             <div className="prose prose-sm text-pretty text-lg/8 text-slate-700">
               {beforeHighlight}
-              {completion && (
+              {input.includes(completion) && completion && (
                 <span className="inline text-pretty bg-yellow-100 font-semibold">
                   {completion}
                 </span>
