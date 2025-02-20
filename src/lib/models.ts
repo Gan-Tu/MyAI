@@ -53,6 +53,10 @@ export const getLanguageModel = (model: string): LanguageModel => {
   throw Error(`Unsupported model: ${model}`)
 }
 
+export const getHighlightingModel = (): LanguageModel => {
+  return google('tunedModels/texthighlighter-c0uqcsiv5s5v')
+}
+
 export const VISION_MODELS: {
   [key: string]: {
     model?: string,
