@@ -16,7 +16,7 @@ import { Button } from "@/components/base/button";
 import { useCredits } from "@/hooks/credits";
 import { useCompletion } from "@ai-sdk/react";
 import { StopCircleIcon } from "@heroicons/react/20/solid";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import AnimatedSparkleIcon from "../../components/animated-sparkle";
 import CreditFooter from "../../components/credit-footer";
@@ -41,6 +41,7 @@ export default function HighlighterPage({ q }: HighlighterPageProps) {
     // Throttle the completion and data updates to 50ms:
     experimental_throttle: 50,
   });
+  const [calledApi, setCalledApi] = useState(false);
 
   useEffect(() => {
     if (error) {
@@ -56,14 +57,22 @@ export default function HighlighterPage({ q }: HighlighterPageProps) {
 
   useEffect(() => {
     if (!input) {
-      setCompletion("");
+      setInput("");
+      setCalledApi(false);
     }
-  }, [setCompletion, input]);
+  }, [setInput, setCalledApi, input]);
+
+  useEffect(() => {
+    if (!isLoading && calledApi && !completion) {
+      toast.error("Nothing to highlight.");
+    }
+  }, [isLoading, calledApi, completion]);
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     return deduct(1).then((success) => {
       if (success) {
+        setCalledApi(true);
         handleSubmit(e);
       }
     });
@@ -158,7 +167,7 @@ export default function HighlighterPage({ q }: HighlighterPageProps) {
           <div className="no-scrollbar relative mx-auto w-full max-w-lg rounded-lg bg-white p-8 shadow-sm md:max-h-[850px]">
             <div className="prose prose-sm text-pretty text-lg/8 text-slate-700">
               {beforeHighlight}
-              {completion && afterHighlight && (
+              {completion && (
                 <span className="inline text-pretty bg-yellow-100 font-semibold">
                   {completion}
                 </span>

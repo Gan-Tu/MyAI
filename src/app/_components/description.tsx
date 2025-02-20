@@ -91,7 +91,7 @@ export default function Description({
         >
           <div ref={contentRef}>
             {beforeHighlight}
-            {highlighting && afterHighlight && (
+            {highlighting && (
               <span className={clsx("px-[0.15rem] font-semibold", colorTheme)}>
                 {highlighting}
               </span>
