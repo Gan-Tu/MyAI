@@ -91,7 +91,7 @@ export default function HighlighterPage({ q }: HighlighterPageProps) {
   return (
     <div className="font-display mx-auto my-auto flex h-full w-full max-w-6xl grow flex-col pb-4 dark:bg-gray-950 lg:flex-row">
       {/* Info Card*/}
-      <div className="lg:w-3/8 relative flex min-w-[400px] flex-grow flex-col justify-center overflow-hidden px-6 lg:pointer-events-none lg:inset-0 lg:z-40 lg:flex lg:px-0">
+      <div className="lg:w-3/8 relative flex min-w-[400px] grow flex-col justify-center overflow-hidden px-6 lg:pointer-events-none lg:inset-0 lg:z-40 lg:flex lg:px-0">
         <div className="relative flex w-full lg:pointer-events-auto lg:mr-[calc(max(2rem,50%-38rem)+40rem)] lg:min-w-[32rem] lg:overflow-y-auto lg:overflow-x-hidden lg:pl-[max(4rem,calc(50%-38rem))]">
           <div className="mx-auto w-full min-w-[350px] max-w-md md:min-w-[400px] lg:mx-0 lg:flex lg:w-96 lg:flex-col lg:before:flex-1 lg:before:pt-6">
             <div className="pb-10 sm:pb-20 sm:pt-32 lg:py-20 lg:pt-20">
@@ -119,7 +119,7 @@ export default function HighlighterPage({ q }: HighlighterPageProps) {
                       autoFocus={true}
                       value={input}
                       placeholder="Enter your text snippet here..."
-                      className="peer w-full cursor-text bg-transparent px-4 py-2.5 text-base text-slate-800 placeholder:text-zinc-400 focus:outline-none disabled:text-gray-500 lg:text-sm"
+                      className="peer w-full cursor-text bg-transparent px-4 py-2.5 text-base text-slate-800 placeholder:text-zinc-400 focus:outline-hidden disabled:text-gray-500 lg:text-sm"
                       onChange={handleInputChange}
                       rows={10}
                       disabled={isLoading}
@@ -129,7 +129,7 @@ export default function HighlighterPage({ q }: HighlighterPageProps) {
                   </div>
 
                   <div className="flex items-center">
-                    <div className="flex-grow"></div>
+                    <div className="grow"></div>
                     <Button
                       type="submit"
                       className="my-1 ml-auto max-h-10 text-sm"
@@ -166,7 +166,7 @@ export default function HighlighterPage({ q }: HighlighterPageProps) {
       {/* Highlighting */}
       {completion && !isLoading && (
         <div className="flex min-h-screen w-full flex-col items-center justify-center px-6 pt-20 lg:min-h-full lg:px-8">
-          <div className="no-scrollbar relative mx-auto w-full max-w-lg rounded-lg bg-white p-8 shadow-sm md:max-h-[850px]">
+          <div className="no-scrollbar relative mx-auto w-full max-w-lg rounded-lg bg-white p-8 shadow-xs md:max-h-[850px]">
             <div className="prose prose-sm text-pretty text-lg/8 text-slate-700">
               {beforeHighlight}
               {input.includes(completion) && completion && (

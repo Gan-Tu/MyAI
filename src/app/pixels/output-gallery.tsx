@@ -40,7 +40,7 @@ export default function OutputGallery({
     <div
       className={clsx(
         className,
-        "lg:w-3/8 relative flex min-w-[400px] flex-grow flex-col justify-center overflow-hidden px-7 lg:inset-0 lg:z-40 lg:flex lg:px-0",
+        "lg:w-3/8 relative flex min-w-[400px] grow flex-col justify-center overflow-hidden px-7 lg:inset-0 lg:z-40 lg:flex lg:px-0",
       )}
     >
       {imageUrl && (
@@ -57,7 +57,7 @@ export default function OutputGallery({
       )}
 
       {isLoading && (
-        <div className="flex aspect-square w-full place-content-center items-center rounded-lg border-2 border-dashed border-gray-300 p-12 text-center text-sm font-semibold text-gray-500 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+        <div className="flex aspect-square w-full place-content-center items-center rounded-lg border-2 border-dashed border-gray-300 p-12 text-center text-sm font-semibold text-gray-500 hover:border-gray-400 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
           <svg
             className="-ml-1 mr-3 h-5 w-5 animate-spin"
             xmlns="http://www.w3.org/2000/svg"

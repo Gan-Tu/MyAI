@@ -162,7 +162,7 @@ export function EmailForm({ isOpen, setIsOpen }: EmailFormProps) {
               defaultChecked={true}
               onChange={(checked) => setRememberMe(checked)}
             >
-              <CheckIcon className="fill-white opacity-0 group-data-[checked]:opacity-100" />
+              <CheckIcon className="fill-white opacity-0 group-data-checked:opacity-100" />
             </Checkbox>
             <Label>Remember me</Label>
           </Field>

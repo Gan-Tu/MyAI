@@ -67,7 +67,7 @@ export default function SummarizerPage({ defaultModel }: SummarizerPageProps) {
   return (
     <div className="font-display mx-auto my-auto flex h-full w-full max-w-6xl grow flex-col pb-4 dark:bg-gray-950 lg:flex-row">
       {/* Info Card*/}
-      <div className="lg:w-3/8 relative flex min-w-[400px] flex-grow flex-col justify-center overflow-hidden px-6 lg:pointer-events-none lg:inset-0 lg:z-40 lg:flex lg:px-0">
+      <div className="lg:w-3/8 relative flex min-w-[400px] grow flex-col justify-center overflow-hidden px-6 lg:pointer-events-none lg:inset-0 lg:z-40 lg:flex lg:px-0">
         <div className="relative flex w-full lg:pointer-events-auto lg:mr-[calc(max(2rem,50%-38rem)+40rem)] lg:min-w-[32rem] lg:overflow-y-auto lg:overflow-x-hidden lg:pl-[max(4rem,calc(50%-38rem))]">
           <div className="mx-auto w-full min-w-[350px] max-w-md md:min-w-[400px] lg:mx-0 lg:flex lg:w-96 lg:flex-col lg:before:flex-1 lg:before:pt-6">
             <div className="pb-10 sm:pb-20 sm:pt-32 lg:py-20 lg:pt-20">
@@ -87,7 +87,7 @@ export default function SummarizerPage({ defaultModel }: SummarizerPageProps) {
                 {/* Controls */}
                 <div className="text-slate flex flex-col gap-6 text-pretty py-4 md:gap-4">
                   <Headless.Field className="justift-center flex items-baseline gap-6">
-                    <Label className="flex-grow text-sm font-semibold">
+                    <Label className="grow text-sm font-semibold">
                       Model
                     </Label>
                     <Select
@@ -123,7 +123,7 @@ export default function SummarizerPage({ defaultModel }: SummarizerPageProps) {
                     name="prompt"
                     value={input}
                     placeholder="Enter url here..."
-                    className="peer w-0 flex-auto cursor-text bg-transparent px-4 py-2.5 text-base text-slate-800 placeholder:text-zinc-400 focus:outline-none disabled:text-gray-500 lg:text-sm"
+                    className="peer w-0 flex-auto cursor-text bg-transparent px-4 py-2.5 text-base text-slate-800 placeholder:text-zinc-400 focus:outline-hidden disabled:text-gray-500 lg:text-sm"
                     onChange={handleInputChange}
                     disabled={isLoading}
                   />
