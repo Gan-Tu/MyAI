@@ -16,10 +16,13 @@ import { createDeepSeek } from '@ai-sdk/deepseek';
 import { google } from '@ai-sdk/google';
 import { groq } from '@ai-sdk/groq';
 import { openai } from '@ai-sdk/openai';
+import { xai } from '@ai-sdk/xai';
 import { LanguageModel } from 'ai';
 
 export const supportedLanguageModels = [
   'gpt-4o-mini',
+  'grok-2-1212',
+  'grok-beta',
   'gemini-2.0-flash-001',
   'gemini-1.5-flash',
   'llama-3.1-8b-instant',
@@ -40,6 +43,8 @@ export const getLanguageModel = (model: string): LanguageModel => {
     return google(model)
   } else if (model.startsWith('llama')) {
     return groq(model)
+  } else if (model.startsWith('grok')) {
+    return xai(model)
   } else if (model.startsWith('deepseek')) {
     const deepseek = createDeepSeek({
       apiKey: process.env.DEEPSEEK_API_KEY ?? '',
