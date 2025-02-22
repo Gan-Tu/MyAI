@@ -28,6 +28,7 @@ import {
   ArrowRightStartOnRectangleIcon,
 } from "@heroicons/react/20/solid";
 import { CurrencyDollarIcon } from "@heroicons/react/24/outline";
+import Intercom from "@intercom/messenger-js-sdk";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import toast from "react-hot-toast";
@@ -55,6 +56,18 @@ export function TopNavbar({
   let showLogin = enableLogin && !user;
   let showLogout = user; // always allow user to sign out, if logged in
   let showDropDown = showLogin || showLogout;
+
+  if (user) {
+    Intercom({
+      app_id: "od46lrxi",
+      user_id: user.uid,
+      name: user.displayName || undefined,
+      email: user.email || undefined,
+      created_at: user.metadata.creationTime
+        ? new Date(user.metadata.creationTime).getTime()
+        : undefined,
+    });
+  }
 
   const onBuyCredits = async () => {
     if (!user) {
@@ -116,7 +129,7 @@ export function TopNavbar({
                 className="cursor-pointer"
               />
             </DropdownButton>
-            <DropdownMenu className="min-w-32 max-w-fit" anchor="bottom end">
+            <DropdownMenu className="max-w-fit min-w-32" anchor="bottom end">
               {user && (
                 <DropdownSection>
                   <DropdownHeader>
@@ -137,7 +150,7 @@ export function TopNavbar({
               {!isCreditsLoading && enableCredits && (
                 <DropdownSection>
                   <DropdownHeader>
-                    <div className="text-pretty text-sm text-zinc-500 dark:text-zinc-400">
+                    <div className="text-sm text-pretty text-zinc-500 dark:text-zinc-400">
                       You have{" "}
                       <span className="font-semibold text-slate-800 dark:text-white">
                         {Math.max(balance, 0)}{" "}
@@ -145,7 +158,7 @@ export function TopNavbar({
                       credit{balance > 1 && "s"} left
                       <br />
                       {!user && (
-                        <div className="mt-2 text-pretty italic text-zinc-600">
+                        <div className="mt-2 text-pretty text-zinc-600 italic">
                           Sign in to get free credits!
                         </div>
                       )}
