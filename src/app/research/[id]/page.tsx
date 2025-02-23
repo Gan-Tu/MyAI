@@ -50,7 +50,7 @@ export default function ResearchPage({ params }: { params: { id: string } }) {
       : null;
 
   const handleBack = () => {
-    router.push("/");
+    router.push("/research");
   };
 
   return (
