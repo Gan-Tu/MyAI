@@ -18,4 +18,5 @@ export const navItems = [
   { label: "Pixel Crafter", url: "/pixels" },
   { label: "Web Summarizer", url: "/web-summarizer" },
   { label: 'Text Highlighter', url: '/highlighter' },
+  { label: 'Deep Research', url: '/research' },
 ];
