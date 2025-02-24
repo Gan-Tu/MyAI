@@ -42,6 +42,7 @@ Pinpoint key information in any content. **Highlight, save, and analyze** import
 - **Vercel** for hosting
 - **AI SDK** for LLM integration
 - **Resend** for email
+- **Intercom** for customer support
 - more...
 
 ## 💡 Contributing
