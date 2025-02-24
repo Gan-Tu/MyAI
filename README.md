@@ -35,6 +35,8 @@ Pinpoint key information in any content. **Highlight, save, and analyze** import
 - **Next.js** (App Router)
 - **TypeScript**
 - **TailwindCSS**
+- **Firebase** (for authentication)
+- **Stripe** (for payment)
 - **Vercel** (Hosting)
 
 ## 💡 Contributing
