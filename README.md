@@ -35,9 +35,14 @@ Pinpoint key information in any content. **Highlight, save, and analyze** import
 - **Next.js** (App Router)
 - **TypeScript**
 - **TailwindCSS**
-- **Firebase** (for authentication)
-- **Stripe** (for payment)
-- **Vercel** (Hosting)
+- **Firebase** for authentication
+- **Stripe** for payment
+- **Upstash** for caching
+- **Neon** for database
+- **Vercel** for hosting
+- **AI SDK** for LLM integration
+- **Resend** for email
+- more...
 
 ## 💡 Contributing
 
