@@ -15,6 +15,7 @@ import { anthropic } from '@ai-sdk/anthropic';
 import { createDeepSeek } from '@ai-sdk/deepseek';
 import { google } from '@ai-sdk/google';
 import { groq } from '@ai-sdk/groq';
+import { mistral } from '@ai-sdk/mistral';
 import { openai } from '@ai-sdk/openai';
 import { xai } from '@ai-sdk/xai';
 import { LanguageModel } from 'ai';
@@ -25,6 +26,8 @@ export const supportedLanguageModels = [
   'gemini-2.0-flash-001',
   'gemini-1.5-flash',
   'llama-3.1-8b-instant',
+  'mistral-small-latest',
+  'ministral-3b-latest',
   'claude-3-5-haiku-20241022',
   'deepseek-chat',
 ]
@@ -44,6 +47,8 @@ export const getLanguageModel = (model: string): LanguageModel => {
     return groq(model)
   } else if (model.startsWith('grok')) {
     return xai(model)
+  } else if (model.startsWith('ministral') || model.startsWith('mistral')) {
+    return mistral(model)
   } else if (model.startsWith('deepseek')) {
     const deepseek = createDeepSeek({
       apiKey: process.env.DEEPSEEK_API_KEY ?? '',
