@@ -3,22 +3,28 @@
 import AnimatedSparkleIcon from "@/components/animated-sparkle";
 import { Button } from "@/components/base/button";
 import CreditFooter from "@/components/credit-footer";
+import { useCredits } from "@/hooks/credits";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import useSWR from "swr";
 
 const fetcher = (url: string) =>
-  fetch(url, { headers: { "user-id": "user123" } }).then((res) => res.json()); // Replace with actual auth
+  fetch(url, { headers: { "user-id": "user123" } }).then((res) => res.json());
 
 export default function Home() {
   const [topic, setTopic] = useState("");
+  const { deduct } = useCredits();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const { data, error } = useSWR("/api/research/deep", fetcher);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!(await deduct(0, topic))) {
+      // reset to 25
+      return;
+    }
     setIsLoading(true);
     try {
       const res = await fetch("/api/research/new", {
