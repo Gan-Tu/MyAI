@@ -10,7 +10,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { ResetExpansionProvider } from "@/hooks/reset-expansion";
 import { supportedLanguageModels } from "@/lib/models";
 import CitationsPage from "./citations";
 
@@ -37,10 +36,8 @@ export default async function Page({
     defaultModel = undefined;
   }
   return (
-    <ResetExpansionProvider>
-      <div className="place-content-center p-6">
-        <CitationsPage q={query} defaultModel={defaultModel} />
-      </div>
-    </ResetExpansionProvider>
+    <div className="place-content-center p-6">
+      <CitationsPage q={query} defaultModel={defaultModel} />
+    </div>
   );
 }
