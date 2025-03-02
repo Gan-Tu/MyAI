@@ -9,7 +9,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-// 
+//
 
 "use client";
 
@@ -31,10 +31,14 @@ const fetcher = async ([url, userId]: [string, string]) => {
   return res.json();
 };
 
-export default function ResearchPage({ params }: { params: { id: string } }) {
+interface ResearchPageProps {
+  id: string;
+}
+
+export default function ResearchPage({ id }: ResearchPageProps) {
   const { user } = useSession();
   const { data, error } = useSWR(
-    [`/api/research/${params.id}`, user?.uid || ""],
+    [`/api/research/${id}`, user?.uid || ""],
     fetcher,
     {
       refreshInterval: 5000, // Poll every 5 seconds
@@ -69,7 +73,7 @@ export default function ResearchPage({ params }: { params: { id: string } }) {
   } = data;
 
   const handleCancel = async () => {
-    await fetch(`/api/research/${params.id}/cancel`, {
+    await fetch(`/api/research/${id}/cancel`, {
       method: "POST",
       headers: { "X-User-Id": user?.uid || "" },
     });

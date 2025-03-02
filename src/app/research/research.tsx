@@ -48,7 +48,7 @@ export default function ResearchHome({ q, defaultModel }: ResearchHomeProps) {
         headers: { "X-User-Id": user?.uid || "" },
       }).then(async (res) => {
         if (!res.ok) {
-          toast.error("Error loading research sessions");
+          setError("Error loading research sessions");
         } else {
           setData(await res.json());
         }
@@ -56,10 +56,15 @@ export default function ResearchHome({ q, defaultModel }: ResearchHomeProps) {
     }
   }, [user]);
 
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+    }
+  }, [error]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!(await deduct(0, topic))) {
-      // reset to 25
+    if (!(await deduct(25, topic))) {
       return;
     }
     setIsLoading(true);
@@ -163,7 +168,7 @@ export default function ResearchHome({ q, defaultModel }: ResearchHomeProps) {
       <div className="flex w-full min-w-0 flex-col items-center justify-center px-4 pt-8 lg:w-1/2 lg:px-8 lg:pt-0">
         <div className="max-h-[600px] w-full max-w-lg overflow-y-auto rounded-lg bg-white p-6 shadow-xs">
           <h2 className="text-lg font-semibold text-slate-800">
-            Your Research Sessions
+            Research Sessions
           </h2>
           {error && (
             <p className="mt-2 text-sm text-red-500">Error loading sessions</p>
