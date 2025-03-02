@@ -9,6 +9,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+// 
 
 "use client";
 
@@ -21,7 +22,10 @@ const fetcher = async ([url, userId]: [string, string]) => {
   const res = await fetch(url, { headers: { "X-User-Id": userId } });
 
   if (!res.ok) {
-    throw new Error(`An error occurred while fetching the data: ${res.status}`);
+    const error = new Error("An error occurred while fetching the data.");
+    error.info = await res.json();
+    error.status = res.status;
+    throw error;
   }
 
   return res.json();
