@@ -10,7 +10,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { ResetExpansionProvider } from "@/hooks/reset-expansion";
 import HighlighterPage from "./highlighter";
 
 export const metadata = {
@@ -27,10 +26,8 @@ export default async function Page({
   const { q } = await searchParams;
   const query = Array.isArray(q) ? (q.length > 0 ? q[0] : undefined) : q;
   return (
-    <ResetExpansionProvider>
-      <div className="place-content-center p-6">
-        <HighlighterPage q={query} />
-      </div>
-    </ResetExpansionProvider>
+    <div className="place-content-center p-6">
+      <HighlighterPage q={query} />
+    </div>
   );
 }

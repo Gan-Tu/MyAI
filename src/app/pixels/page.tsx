@@ -10,7 +10,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { ResetExpansionProvider } from "@/hooks/reset-expansion";
 import { VISION_MODELS } from "@/lib/models";
 import PixelsPage from "./pixels";
 
@@ -37,10 +36,8 @@ export default async function Page({
     defaultModel = undefined;
   }
   return (
-    <ResetExpansionProvider>
-      <div className="place-content-center p-6">
-        <PixelsPage q={query} defaultModel={defaultModel} />
-      </div>
-    </ResetExpansionProvider>
+    <div className="place-content-center p-6">
+      <PixelsPage q={query} defaultModel={defaultModel} />
+    </div>
   );
 }
