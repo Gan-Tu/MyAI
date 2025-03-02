@@ -1,5 +1,8 @@
 "use client";
 
+import AnimatedSparkleIcon from "@/components/animated-sparkle";
+import { Button } from "@/components/base/button";
+import CreditFooter from "@/components/credit-footer";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -66,28 +69,22 @@ export default function Home() {
               <div className="bg-slate/2.5 ring-slate/15 absolute inset-0 -z-10 rounded-lg ring-1 ring-pink-400/50 transition peer-focus:ring-pink-300" />
             </div>
 
-            <div className="flex items-center">
-              <div className="grow"></div>
-              <button
+            <div className="flex flex-col items-end">
+              <Button
                 type="submit"
-                className="my-1 ml-auto flex max-h-10 items-center justify-center rounded-md bg-pink-500 px-4 py-2 text-sm text-white transition-colors hover:bg-pink-600 disabled:bg-pink-300"
+                className="my-1 ml-auto max-h-10 text-sm"
                 disabled={isLoading}
               >
-                <svg
-                  className="mr-2 h-3 w-3 animate-pulse fill-pink-200"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-                </svg>
-                {isLoading ? "Starting..." : "Start Research"}
-              </button>
+                <AnimatedSparkleIcon className="h-3 w-3 fill-pink-400" />
+                {isLoading ? "Researching..." : "Research"}
+                <span className="text-xs font-light">(20 Credits)</span>
+              </Button>
             </div>
           </form>
 
-          <p className="mt-6 text-center text-sm text-slate-500 lg:text-left">
-            Powered by AI · Built with ❤️
-          </p>
+          <div className="hidden flex-1 items-end pb-4 lg:block lg:justify-start lg:pb-6">
+            <CreditFooter decorationColor="decoration-pink-300/[.66]" />
+          </div>
         </div>
       </div>
 

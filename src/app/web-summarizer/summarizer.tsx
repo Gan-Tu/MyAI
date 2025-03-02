@@ -12,9 +12,11 @@
 
 "use client";
 
+import AnimatedSparkleIcon from "@/components/animated-sparkle";
 import { Button } from "@/components/base/button";
 import { Label } from "@/components/base/fieldset";
 import { Select } from "@/components/base/select";
+import CreditFooter from "@/components/credit-footer";
 import { MemoizedMarkdown } from "@/components/memoized-markdown";
 import { useCredits } from "@/hooks/credits";
 import { supportedLanguageModels } from "@/lib/models";
@@ -23,8 +25,6 @@ import * as Headless from "@headlessui/react";
 import { StopCircleIcon } from "@heroicons/react/20/solid";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import AnimatedSparkleIcon from "../../components/animated-sparkle";
-import CreditFooter from "../../components/credit-footer";
 
 interface SummarizerPageProps {
   defaultModel?: string;
