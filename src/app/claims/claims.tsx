@@ -34,7 +34,7 @@ interface ClaimsProps {
 
 export default function ClaimsPage({ q, defaultModel }: ClaimsProps) {
   const [input, setInput] = useState(q);
-  const [model, setModel] = useState<string>(defaultModel || "gpt-4o-mini");
+  const [model, setModel] = useState<string>(defaultModel || "grok-2-1212");
   const [claims, setClaims] = useState<any>(null);
   const { deduct } = useCredits();
   const { object, submit, isLoading, stop, error } = useObject({

@@ -15,7 +15,7 @@ import { getAuth } from "firebase/auth";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCKhMgX3MnPHq6Jnlz8rPXMohgGW35Th4Q",
-  authDomain: "myai-51dcc.firebaseapp.com",
+  authDomain: "auth.mycool.ai",
   projectId: "myai-51dcc",
   storageBucket: "myai-51dcc.firebasestorage.app",
   messagingSenderId: "1063594001354",

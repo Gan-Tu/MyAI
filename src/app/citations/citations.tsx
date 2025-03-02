@@ -34,7 +34,7 @@ interface CitationsPageProps {
 
 export default function CitationsPage({ q, defaultModel }: CitationsPageProps) {
   const [input, setInput] = useState(q);
-  const [model, setModel] = useState<string>(defaultModel || "gpt-4o-mini");
+  const [model, setModel] = useState<string>(defaultModel || "grok-2-1212");
   const [classifications, setClassification] = useState<any>(null);
   const { deduct } = useCredits();
   const { object, submit, isLoading, stop, error } = useObject({
