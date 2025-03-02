@@ -178,11 +178,12 @@ export default function ResearchHome({ q, defaultModel }: ResearchHomeProps) {
           )}
           {data && data.length > 0 && (
             <ul className="mt-4 space-y-3">
+              {/* TODO: add pagination */}
               {data.map((session: any) => (
                 <li key={session.id} className="border-b border-slate-200 pb-2">
                   <Link
                     href={`/research/${session.id}`}
-                    className="flex items-center justify-between text-sm text-slate-700 transition-colors hover:text-pink-500"
+                    className="flex items-center justify-between text-sm text-slate-700 transition-colors hover:text-blue-500"
                   >
                     <span
                       className={clsx(
@@ -193,7 +194,7 @@ export default function ResearchHome({ q, defaultModel }: ResearchHomeProps) {
                       {session.topic}
                     </span>
                     <span
-                      className={`capitalize ${
+                      className={`ml-4 capitalize ${
                         session.status === "completed"
                           ? "text-green-500"
                           : session.status === "pending"
@@ -208,7 +209,8 @@ export default function ResearchHome({ q, defaultModel }: ResearchHomeProps) {
                   </Link>
                   {session.model && (
                     <span className="text-xs text-slate-400">
-                      {session.model}
+                      <b>{session.model}</b>, Created at{" "}
+                      {new Date(session.created_at).toLocaleString()}
                     </span>
                   )}
                 </li>
