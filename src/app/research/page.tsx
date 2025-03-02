@@ -21,7 +21,7 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
   const { user } = useSession();
   const { data, error } = useSWR(
-    ["/api/research/deep", user?.uid || ""],
+    ["/api/research/status", user?.uid || ""],
     fetcher,
   );
 
