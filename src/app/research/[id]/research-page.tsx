@@ -13,23 +13,17 @@
 
 "use client";
 
+import {
+  DescriptionDetails,
+  DescriptionList,
+  DescriptionTerm,
+} from "@/components/base/description-list";
 import { useSession } from "@/hooks/session";
+import { type ResearchSession } from "@/lib/types";
+import { ChevronLeftIcon, StopCircleIcon } from "@heroicons/react/20/solid";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import useSWR from "swr";
-
-const fetcher = async ([url, userId]: [string, string]) => {
-  const res = await fetch(url, { headers: { "X-User-Id": userId } });
-
-  if (!res.ok) {
-    const error = new Error("An error occurred while fetching the data.");
-    error.info = await res.json();
-    error.status = res.status;
-    throw error;
-  }
-
-  return res.json();
-};
 
 interface ResearchPageProps {
   id: string;
@@ -37,14 +31,30 @@ interface ResearchPageProps {
 
 export default function ResearchPage({ id }: ResearchPageProps) {
   const { user } = useSession();
-  const { data, error } = useSWR(
-    [`/api/research/${id}`, user?.uid || ""],
-    fetcher,
-    {
-      refreshInterval: 5000, // Poll every 5 seconds
-    },
-  );
+  const [data, setData] = useState<ResearchSession | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+
+  const handleBack = () => {
+    router.push("/research");
+  };
+
+  useEffect(() => {
+    // TODO: refresh every 5 seconds
+    if (user?.uid && !data && !error) {
+      fetch(`/api/research/${id}`, {
+        headers: { "X-User-Id": user?.uid || "" },
+        cache: "no-store",
+        next: { revalidate: 0 },
+      }).then(async (res) => {
+        if (!res.ok) {
+          setError("Error loading research sessions");
+        } else {
+          setData(await res.json());
+        }
+      });
+    }
+  }, [user, data, error, id]);
 
   if (error) {
     toast.error(`Error loading research: ${error}`);
@@ -64,12 +74,14 @@ export default function ResearchPage({ id }: ResearchPageProps) {
   const {
     status,
     topic,
+    model,
     current_step,
     sub_topic_index,
     research_plan,
     progress,
     final_report,
     error_message,
+    created_at,
   } = data;
 
   const handleCancel = async () => {
@@ -77,7 +89,7 @@ export default function ResearchPage({ id }: ResearchPageProps) {
       method: "POST",
       headers: { "X-User-Id": user?.uid || "" },
     });
-    router.refresh();
+    handleBack();
   };
 
   // Determine the next sub-topic if any remain
@@ -89,10 +101,6 @@ export default function ResearchPage({ id }: ResearchPageProps) {
       ? research_plan[sub_topic_index]
       : null;
 
-  const handleBack = () => {
-    router.push("/research");
-  };
-
   return (
     <div className="font-display mx-auto my-auto flex h-full w-full max-w-6xl grow flex-col pb-4 lg:flex-row dark:bg-gray-950">
       {/* Left Panel */}
@@ -101,38 +109,51 @@ export default function ResearchPage({ id }: ResearchPageProps) {
           {/* Back Button */}
           <button
             onClick={handleBack}
-            className="mt-4 mb-4 flex items-center rounded-md bg-amber-500 px-4 py-2 text-sm text-white transition-colors hover:bg-amber-600"
+            className="mt-4 mb-4 flex items-center rounded-md bg-amber-500 py-2 pr-4 pl-2 text-sm text-white transition-colors hover:bg-amber-600"
           >
-            <svg
-              className="mr-2 h-3 w-3 fill-white"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
-            </svg>
+            <ChevronLeftIcon className="h-5 w-5 fill-white font-bold" />
             Back
           </button>
-
           <h1 className="text-slate mt-2 text-4xl/tight font-light text-pretty">
-            <span className="bg-amber-100">Researching</span>{" "}
-            <span className="text-amber-500">{topic}</span>
+            Research Status
           </h1>
-          <p className="mt-4 text-sm/6 text-slate-700">
-            Follow the progress of your deep research session below. Cancel
-            anytime if needed. {process.env.NEXT_PUBLIC_NODE_ENV}
-          </p>
+          <p className="mt-4 border p-4 text-sm/6 text-slate-700">{topic}</p>
 
           {/* Status and Progress */}
           <div className="mt-6">
-            <p className="text-sm font-semibold text-slate-800">
-              Status:{" "}
-              <span className="text-amber-500 capitalize">{status}</span>
-            </p>
+            <DescriptionList className="grid grid-cols-3">
+              <DescriptionTerm className="col-span-1">Model</DescriptionTerm>
+              <DescriptionDetails className="">{model}</DescriptionDetails>
+
+              <DescriptionTerm className="">Created at</DescriptionTerm>
+              <DescriptionDetails className="">
+                {new Date(created_at).toLocaleString()}
+              </DescriptionDetails>
+
+              <DescriptionTerm className="">Status</DescriptionTerm>
+              <DescriptionDetails>
+                <span
+                  className={`font-semibold capitalize ${
+                    status === "completed"
+                      ? "text-green-500"
+                      : status === "pending"
+                        ? "text-amber-500"
+                        : status === "canceled"
+                          ? "text-red-500"
+                          : "text-red-700"
+                  }`}
+                >
+                  {status}
+                </span>
+              </DescriptionDetails>
+            </DescriptionList>
+
             {status === "pending" && current_step === 0 && (
               <p className="mt-2 text-sm text-slate-600">
                 Generating research plan...
               </p>
             )}
+
             {status === "pending" && current_step === 1 && research_plan && (
               <>
                 <p className="mt-2 text-sm text-slate-600">
@@ -154,9 +175,6 @@ export default function ResearchPage({ id }: ResearchPageProps) {
                 Compiling final report...
               </p>
             )}
-            {status === "canceled" && (
-              <p className="mt-2 text-sm text-red-500">Research canceled</p>
-            )}
             {status === "error" && (
               <p className="mt-2 text-sm text-red-500">
                 Error: {error_message}
@@ -167,19 +185,12 @@ export default function ResearchPage({ id }: ResearchPageProps) {
           {/* Cancel Button */}
           {status === "pending" && (
             <button
+              className="mt-4 flex cursor-pointer items-center justify-center rounded-md bg-red-500 px-4 py-2 text-sm font-bold text-white transition-colors hover:bg-red-600"
+              color="red"
               onClick={handleCancel}
-              className="mt-4 flex items-center justify-center rounded-md bg-red-500 px-4 py-2 text-sm text-white transition-colors hover:bg-red-600"
             >
-              <svg
-                className="mr-2 h-3 w-3 animate-pulse fill-white"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <circle cx="12" cy="12" r="10" />
-                <rect x="11" y="6" width="2" height="12" />
-                <rect x="6" y="11" width="12" height="2" />
-              </svg>
-              Cancel Research
+              <StopCircleIcon className="mr-2 h-5 w-5 animate-pulse fill-white text-white" />
+              Cancel
             </button>
           )}
         </div>

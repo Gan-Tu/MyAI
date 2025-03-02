@@ -54,7 +54,7 @@ export default function ResearchHome({ q, defaultModel }: ResearchHomeProps) {
         }
       });
     }
-  }, [user]);
+  }, [user, data, error]);
 
   useEffect(() => {
     if (error) {

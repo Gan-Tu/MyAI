@@ -62,3 +62,21 @@ export type VisionModelParameter = {
   default: string,
   options: string[]
 }
+
+export type ResearchSession = {
+  id: string; // uuid
+  user_id: string;
+  topic: string;
+  model: string;
+  status: 'pending' | string; // Assuming 'pending' is the default, but could be other strings
+  current_step: number;
+  sub_topic_index: number;
+  research_plan: any; // JSONB, could be more specific if known structure
+  summaries: any; // JSONB, could be more specific if known structure
+  final_report: string | null;
+  error_message: string | null;
+  progress: any; // JSONB array, assuming an array of objects
+  processing: boolean;
+  created_at: Date;
+  updated_at: Date;
+}
