@@ -4,20 +4,26 @@ import AnimatedSparkleIcon from "@/components/animated-sparkle";
 import { Button } from "@/components/base/button";
 import CreditFooter from "@/components/credit-footer";
 import { useCredits } from "@/hooks/credits";
+import { useSession } from "@/hooks/session";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import toast from "react-hot-toast";
 import useSWR from "swr";
 
-const fetcher = (url: string) =>
-  fetch(url, { headers: { "user-id": "user123" } }).then((res) => res.json());
+const fetcher = ([url, userId]: [string, string]) =>
+  fetch(url, { headers: { "X-User-Id": userId } }).then((res) => res.json());
 
 export default function Home() {
   const [topic, setTopic] = useState("");
   const { deduct } = useCredits();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  const { data, error } = useSWR("/api/research/deep", fetcher);
+  const { user } = useSession();
+  const { data, error } = useSWR(
+    ["/api/research/deep", user?.uid || ""],
+    fetcher,
+  );
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,16 +35,19 @@ export default function Home() {
     try {
       const res = await fetch("/api/research/new", {
         method: "POST",
-        headers: { "Content-Type": "application/json", "user-id": "user123" }, // Replace with actual auth
+        headers: {
+          "Content-Type": "application/json",
+          "X-User-Id": user?.uid || "",
+        },
         body: JSON.stringify({ topic }),
       });
       const { id } = await res.json();
       router.push(`/research/${id}`);
     } catch (error) {
-      console.error("Error starting research:", error);
+      toast.error(`Error starting research: ${error}`);
     } finally {
       setIsLoading(false);
-      setTopic(""); // Clear input after submission
+      setTopic("");
     }
   };
 
@@ -108,7 +117,7 @@ export default function Home() {
           )}
           {data && data.length === 0 && (
             <p className="mt-2 text-sm text-slate-600">
-              No research sessions yet. Start one above!
+              No research sessions yet. Start one!
             </p>
           )}
           {data && data.length > 0 && (

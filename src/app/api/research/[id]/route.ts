@@ -6,7 +6,7 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   const id = params.id;
-  const userId = request.headers.get('user-id'); // Extract from header
+  const userId = request.headers.get('X-User-Id');
   if (!userId) {
     return NextResponse.json({ error: 'User ID required' }, { status: 401 });
   }

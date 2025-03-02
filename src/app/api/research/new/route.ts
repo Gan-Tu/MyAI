@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(request: NextRequest) {
   const { topic } = await request.json();
-  const userId = request.headers.get('user-id'); // Extract from header
+  const userId = request.headers.get('X-User-Id');
   if (!userId) {
     return NextResponse.json({ error: 'User ID required' }, { status: 401 });
   }
