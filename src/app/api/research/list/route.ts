@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'User ID required' }, { status: 401 });
   }
   const res = await query(
-    'SELECT id, topic, status, model, created_at FROM research_sessions WHERE user_id = $1',
+    'SELECT id, topic, status, model, created_at FROM research_sessions WHERE user_id = $1 ORDER BY created_at DESC',
     [userId]
   );
   return NextResponse.json(res.rows);

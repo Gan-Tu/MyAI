@@ -21,11 +21,10 @@ import { useCredits } from "@/hooks/credits";
 import { useSession } from "@/hooks/session";
 import { supportedLanguageModels } from "@/lib/models";
 import * as Headless from "@headlessui/react";
-import clsx from "clsx";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import ResearchSession from "./research-sessions";
 
 interface ResearchHomeProps {
   q?: string;
@@ -44,7 +43,7 @@ export default function ResearchHome({ q, defaultModel }: ResearchHomeProps) {
 
   useEffect(() => {
     if (user?.uid && !data && !error) {
-      fetch("/api/research/status", {
+      fetch("/api/research/list", {
         headers: { "X-User-Id": user?.uid || "" },
       }).then(async (res) => {
         if (!res.ok) {
@@ -166,63 +165,7 @@ export default function ResearchHome({ q, defaultModel }: ResearchHomeProps) {
 
       {/* Right Panel: Session List */}
       <div className="flex w-full min-w-0 flex-col items-center justify-center px-4 pt-8 lg:w-1/2 lg:px-8 lg:pt-0">
-        <div className="max-h-[600px] w-full max-w-lg overflow-y-auto rounded-lg bg-white p-6 shadow-xs">
-          <h2 className="text-lg font-semibold text-slate-800">
-            Research Sessions
-          </h2>
-          {error && (
-            <p className="mt-2 text-sm text-red-500">Error loading sessions</p>
-          )}
-          {!data && !error && (
-            <p className="mt-2 text-sm text-slate-500">Loading...</p>
-          )}
-          {data && data.length === 0 && (
-            <p className="mt-2 text-sm text-slate-600">
-              No research sessions yet. Start one!
-            </p>
-          )}
-          {data && data.length > 0 && (
-            <ul className="mt-4 space-y-3">
-              {/* TODO: add pagination */}
-              {data.map((session: any) => (
-                <li key={session.id} className="border-b border-slate-200 pb-2">
-                  <Link
-                    href={`/research/${session.id}`}
-                    className="flex items-center justify-between text-sm text-slate-700 transition-colors hover:text-blue-500"
-                  >
-                    <span
-                      className={clsx(
-                        "line-clamp-2",
-                        session.status === "canceled" && "line-through",
-                      )}
-                    >
-                      {session.topic}
-                    </span>
-                    <span
-                      className={`ml-4 capitalize ${
-                        session.status === "completed"
-                          ? "text-green-500"
-                          : session.status === "pending"
-                            ? "text-pink-500"
-                            : session.status === "canceled"
-                              ? "text-red-500"
-                              : "text-red-700"
-                      }`}
-                    >
-                      {session.status}
-                    </span>
-                  </Link>
-                  {session.model && (
-                    <span className="text-xs text-slate-400">
-                      <b>{session.model}</b>, Created at{" "}
-                      {new Date(session.created_at).toLocaleString()}
-                    </span>
-                  )}
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
+        <ResearchSession sessions={data || []} error={error} />
       </div>
     </div>
   );

@@ -80,3 +80,11 @@ export type ResearchSession = {
   created_at: Date;
   updated_at: Date;
 }
+
+export type ResearchSessionStatus = {
+  id: string; // uuid
+  topic: string;
+  model: string;
+  status: 'pending' | string;
+  created_at: Date;
+}

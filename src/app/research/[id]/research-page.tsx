@@ -56,11 +56,6 @@ export default function ResearchPage({ id }: ResearchPageProps) {
     }
   }, [user, data, error, id]);
 
-  if (error) {
-    toast.error(`Error loading research: ${error}`);
-    router.push("/404");
-  }
-
   if (!data) {
     return (
       <div className="font-display mx-auto my-auto flex h-full w-full max-w-6xl grow flex-col pb-4 lg:flex-row dark:bg-gray-950">
@@ -83,6 +78,11 @@ export default function ResearchPage({ id }: ResearchPageProps) {
     error_message,
     created_at,
   } = data;
+
+  if (error) {
+    toast.error(`Error loading research: ${error}`);
+    router.push("/404");
+  }
 
   const handleCancel = async () => {
     await fetch(`/api/research/${id}/cancel`, {
