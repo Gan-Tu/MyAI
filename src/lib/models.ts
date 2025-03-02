@@ -21,8 +21,8 @@ import { xai } from '@ai-sdk/xai';
 import { LanguageModel } from 'ai';
 
 export const supportedLanguageModels = [
-  'gpt-4o-mini',
   'grok-2-1212',
+  'gpt-4o-mini',
   'gemini-2.0-flash-001',
   'gemini-1.5-flash',
   'llama-3.1-8b-instant',
