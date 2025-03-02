@@ -81,7 +81,7 @@ export type ResearchSession = {
   updated_at: Date;
 }
 
-export type ResearchSessionStatus = {
+export type DeepResearchSessionStatus = {
   session_id: string; // uuid
   topic: string;
   model: string;
@@ -89,7 +89,7 @@ export type ResearchSessionStatus = {
   created_at: Date;
 }
 
-export type DeepResearchSessionStatus =
+export type ResearchSessionStatusEnum =
   | 'pending'
   | 'in_progress'
   | 'completed'
@@ -106,7 +106,7 @@ export type DeepResearchSession = {
   user_id: string;
   model: string;
   topic: string;
-  status: DeepResearchSessionStatus;
+  status: ResearchSessionStatusEnum;
   error_message?: string | null;
   summaries: DeepResearchSessionSummary[];
   created_at: string; // ISO timestamp

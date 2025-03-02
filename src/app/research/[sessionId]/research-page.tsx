@@ -25,47 +25,24 @@ import {
   TrashIcon,
 } from "@heroicons/react/20/solid";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { cancelSession, deleteSession } from "../actions";
 
 interface ResearchPageProps {
   id: string;
+  data: DeepResearchSession;
 }
 
-export default function ResearchPage({ id }: ResearchPageProps) {
-  const [data, setData] = useState<DeepResearchSession | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+export default function ResearchPage({ id, data }: ResearchPageProps) {
+  // const [data, setData] = useState<DeepResearchSession | null>(null);
+  // const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
   const handleBack = () => {
     router.push("/research");
   };
-
-  const fetchData = useCallback(() => {
-    setIsLoading(true);
-    fetch(`/api/research/${id}`, { cache: "no-store", next: { revalidate: 0 } })
-      .then(async (res) => {
-        if (!res.ok) {
-          setError("Error loading research sessions");
-        } else {
-          setData(await res.json());
-        }
-      })
-      .catch((err) => {
-        setError(err.message);
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
-  }, [fetch, setIsLoading, id]);
-
-  useEffect(() => {
-    // TODO: refresh every 5 seconds
-    if (id) {
-      fetchData();
-    }
-  }, [id, fetchData]);
 
   useEffect(() => {
     if (error) {
@@ -74,28 +51,14 @@ export default function ResearchPage({ id }: ResearchPageProps) {
     }
   }, [error]);
 
-  if (!data) {
-    if (isLoading) {
-      return (
-        <div className="font-display mx-auto my-auto flex h-full w-full max-w-6xl grow flex-col pb-4 lg:flex-row dark:bg-gray-950">
-          <div className="flex w-full min-w-0 flex-col justify-center px-4 lg:w-1/2 lg:px-8">
-            <div className="mx-auto w-full max-w-md">Loading</div>
-          </div>
-        </div>
-      );
-    }
-    router.push("/404");
-    return null;
-  }
-
   const handleCancel = async () => {
-    await fetch(`/api/research/${id}/cancel`, { method: "POST" });
+    await cancelSession(id);
     router.refresh();
-    fetchData();
+    // fetchData();
   };
 
   const handleDelete = async () => {
-    await fetch(`/api/research/${id}`, { method: "DELETE" });
+    await deleteSession(id);
     router.push("/research");
   };
 

@@ -20,11 +20,12 @@ import CreditFooter from "@/components/credit-footer";
 import { useCredits } from "@/hooks/credits";
 import { useSession } from "@/hooks/session";
 import { supportedLanguageModels } from "@/lib/models";
-import { type ResearchSessionStatus } from "@/lib/types";
+import { type DeepResearchSessionStatus } from "@/lib/types";
 import * as Headless from "@headlessui/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { listSessions, startSession } from "./actions";
 import ResearchSessionsOverview from "./sessions-overview";
 
 interface ResearchHomeProps {
@@ -33,28 +34,21 @@ interface ResearchHomeProps {
 }
 
 export default function ResearchHome({ q, defaultModel }: ResearchHomeProps) {
-  const [topic, setTopic] = useState(q);
+  const [topic, setTopic] = useState<string>(q || "");
   const [model, setModel] = useState<string>(defaultModel || "grok-2-1212");
   const { deduct } = useCredits();
   const { user } = useSession();
   const router = useRouter();
   const [isStarting, setIsStarting] = useState(false);
   const [isLoadingSessions, setIsLoadingSessions] = useState(true);
-  const [sessions, setSessions] = useState<ResearchSessionStatus[]>([]);
+  const [sessions, setSessions] = useState<DeepResearchSessionStatus[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (user?.uid) {
-      fetch(`/api/research/list?userId=${user?.uid}`, {
-        cache: "no-store",
-        next: { revalidate: 0 },
-      })
+      listSessions(user.uid)
         .then(async (res) => {
-          if (!res.ok) {
-            setError("Failed to list research sessions");
-          } else {
-            setSessions(await res.json());
-          }
+          setSessions(res);
         })
         .catch((err) => {
           setError(err.message);
@@ -82,12 +76,7 @@ export default function ResearchHome({ q, defaultModel }: ResearchHomeProps) {
       if (!userId) {
         throw new Error("User ID not found");
       }
-      const res = await fetch("/api/research/start", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId, topic, model }),
-      });
-      const { session_id } = await res.json();
+      const session_id = await startSession(userId, topic, model);
       router.push(`/research/${session_id}`);
     } catch (error) {
       toast.error(`Error starting research: ${error}`);

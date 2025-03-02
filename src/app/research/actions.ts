@@ -10,47 +10,40 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { query } from '@/lib/db';
+'use server'
 
-export async function listSessions(userId: string) {
+import { query } from '@/lib/db';
+import { type DeepResearchSession, type DeepResearchSessionStatus } from "@/lib/types";
+
+export async function listSessions(userId: string): Promise<DeepResearchSessionStatus[]> {
   const res = await query(
     'SELECT session_id, topic, status, model, created_at FROM DeepResearchSessions WHERE user_id = $1 ORDER BY created_at DESC',
     [userId]
   );
-  return res.rows;
+  return res.rows as DeepResearchSessionStatus[];
 }
 
-export async function startSession(userId: string, topic: string, model: string) {
+export async function startSession(userId: string, topic: string, model: string): Promise<string> {
   const res = await query(`INSERT INTO DeepResearchSessions (user_id, topic, model) VALUES ($1, $2, $3) RETURNING session_id`, [userId, topic, model]);
   return res.rows[0].session_id;
 }
 
-export async function getSession(sessionId: string) {
-  const res = await query(
-    'SELECT * FROM DeepResearchSessions WHERE session_id = $1', [sessionId]
-  );
-  if (res.rows.length === 0) {
-    return null;
-  }
-  return res.rows[0];
-}
-
-export async function deleteSession(sessionId: string) {
+export async function deleteSession(sessionId: string): Promise<DeepResearchSession | null> {
   const res = await query(
     'DELETE FROM DeepResearchSessions WHERE session_id = $1 RETURNING *', [sessionId]
   );
   if (res.rows.length === 0) {
     return null;
   }
-  return res.rows[0];
+  return res.rows[0] as DeepResearchSession;
 }
 
-export async function cancelSession(sessionId: string) {
+export async function cancelSession(sessionId: string): Promise<DeepResearchSession | null> {
   const res = await query(
     'UPDATE DeepResearchSessions SET status = $1 WHERE session_id = $2', ["canceled", sessionId]
   );
   if (res.rows.length === 0) {
     return null;
   }
-  return res.rows[0];
+  return res.rows[0] as DeepResearchSession;
 }

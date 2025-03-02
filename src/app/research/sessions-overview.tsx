@@ -14,13 +14,13 @@
 
 import PaginationBar from "@/components/pagination-bar";
 import { usePagination } from "@/hooks/pagination";
-import { ResearchSessionStatus } from "@/lib/types";
+import { DeepResearchSessionStatus } from "@/lib/types";
 import clsx from "clsx";
 import Link from "next/link";
 
 interface ResearchSessionProps {
   isLoading: boolean;
-  sessions: ResearchSessionStatus[];
+  sessions: DeepResearchSessionStatus[];
   error?: string | null;
 }
 
@@ -58,7 +58,7 @@ export default function ResearchSessionsOverview({
       )}
       {!isLoading && sessions?.length > 0 && (
         <ul className="mt-4 space-y-3">
-          {currentSessions?.map((session: ResearchSessionStatus) => (
+          {currentSessions?.map((session: DeepResearchSessionStatus) => (
             <li
               key={session.session_id}
               className="border-b border-slate-200 pb-2"
