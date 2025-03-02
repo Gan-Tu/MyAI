@@ -20,11 +20,12 @@ import CreditFooter from "@/components/credit-footer";
 import { useCredits } from "@/hooks/credits";
 import { useSession } from "@/hooks/session";
 import { supportedLanguageModels } from "@/lib/models";
+import { type ResearchSessionStatus } from "@/lib/types";
 import * as Headless from "@headlessui/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import ResearchSession from "./research-sessions";
+import ResearchSessionsOverview from "./sessions-overview";
 
 interface ResearchHomeProps {
   q?: string;
@@ -35,25 +36,34 @@ export default function ResearchHome({ q, defaultModel }: ResearchHomeProps) {
   const [topic, setTopic] = useState(q);
   const [model, setModel] = useState<string>(defaultModel || "grok-2-1212");
   const { deduct } = useCredits();
-  const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
   const { user } = useSession();
-  const [data, setData] = useState<any[] | null>(null);
+  const router = useRouter();
+  const [isStarting, setIsStarting] = useState(false);
+  const [isLoadingSessions, setIsLoadingSessions] = useState(true);
+  const [sessions, setSessions] = useState<ResearchSessionStatus[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (user?.uid && !data && !error) {
-      fetch("/api/research/list", {
-        headers: { "X-User-Id": user?.uid || "" },
-      }).then(async (res) => {
-        if (!res.ok) {
-          setError("Error loading research sessions");
-        } else {
-          setData(await res.json());
-        }
-      });
+    if (user?.uid) {
+      fetch(`/api/research/list?userId=${user?.uid}`, {
+        cache: "no-store",
+        next: { revalidate: 0 },
+      })
+        .then(async (res) => {
+          if (!res.ok) {
+            setError("Failed to list research sessions");
+          } else {
+            setSessions(await res.json());
+          }
+        })
+        .catch((err) => {
+          setError(err.message);
+        })
+        .finally(() => {
+          setIsLoadingSessions(false);
+        });
     }
-  }, [user, data, error]);
+  }, [user, setIsLoadingSessions, setError, isLoadingSessions]);
 
   useEffect(() => {
     if (error) {
@@ -66,23 +76,23 @@ export default function ResearchHome({ q, defaultModel }: ResearchHomeProps) {
     if (!(await deduct(25, topic))) {
       return;
     }
-    setIsLoading(true);
+    setIsStarting(true);
     try {
-      const res = await fetch("/api/research/new", {
+      let userId = user?.uid;
+      if (!userId) {
+        throw new Error("User ID not found");
+      }
+      const res = await fetch("/api/research/start", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-User-Id": user?.uid || "",
-          "X-AI-Model": model,
-        },
-        body: JSON.stringify({ topic }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId, topic, model }),
       });
-      const { id } = await res.json();
-      router.push(`/research/${id}`);
+      const { session_id } = await res.json();
+      router.push(`/research/${session_id}`);
     } catch (error) {
       toast.error(`Error starting research: ${error}`);
     } finally {
-      setIsLoading(false);
+      setIsStarting(false);
       setTopic("");
     }
   };
@@ -110,7 +120,7 @@ export default function ResearchHome({ q, defaultModel }: ResearchHomeProps) {
                 value={model}
                 onChange={(e) => setModel(e.target.value)}
                 className="max-w-fit text-sm"
-                disabled={isLoading}
+                disabled={isStarting}
               >
                 {supportedLanguageModels.map((model) => (
                   <option
@@ -138,7 +148,7 @@ export default function ResearchHome({ q, defaultModel }: ResearchHomeProps) {
                 className="peer w-full cursor-text resize-none border-none bg-transparent px-4 py-2.5 text-base text-slate-800 placeholder:text-zinc-400 focus:outline-none disabled:text-gray-500 lg:text-sm"
                 onChange={(e) => setTopic(e.target.value)}
                 rows={10}
-                disabled={isLoading}
+                disabled={isStarting}
               />
               <div className="absolute inset-0 -z-10 rounded-lg transition peer-focus:ring-4 peer-focus:ring-pink-300/15" />
               <div className="bg-slate/2.5 ring-slate/15 absolute inset-0 -z-10 rounded-lg ring-1 ring-pink-400/50 transition peer-focus:ring-pink-300" />
@@ -148,10 +158,10 @@ export default function ResearchHome({ q, defaultModel }: ResearchHomeProps) {
               <Button
                 type="submit"
                 className="my-1 ml-auto max-h-10 text-sm"
-                disabled={isLoading}
+                disabled={isStarting}
               >
                 <AnimatedSparkleIcon className="h-3 w-3 fill-pink-400" />
-                {isLoading ? "Researching..." : "Research"}
+                {isStarting ? "Researching..." : "Research"}
                 <span className="text-xs font-light">(20 Credits)</span>
               </Button>
             </div>
@@ -165,7 +175,11 @@ export default function ResearchHome({ q, defaultModel }: ResearchHomeProps) {
 
       {/* Right Panel: Session List */}
       <div className="flex w-full min-w-0 flex-col items-center justify-center px-4 pt-8 lg:w-1/2 lg:px-8 lg:pt-0">
-        <ResearchSession sessions={data || []} error={error} />
+        <ResearchSessionsOverview
+          isLoading={isLoadingSessions}
+          sessions={sessions || []}
+          error={error}
+        />
       </div>
     </div>
   );

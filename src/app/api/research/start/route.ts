@@ -10,37 +10,31 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 // 
-import { query } from '@/lib/db';
 import { checkRateLimit } from "@/lib/redis";
+import { startSession } from '@/lib/research';
+import { revalidatePath } from 'next/cache';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(request: NextRequest) {
-  const { topic } = await request.json();
-  const userId = request.headers.get('X-User-Id');
-  const modelChoice = request.headers.get('X-AI-Model') || 'gpt-4o-mini'
+  const { topic, userId, model } = await request.json();
 
   if (!topic) {
-    return NextResponse.json({ error: 'Topic required' }, { status: 400 });
-  }
-  if (!userId) {
-    return NextResponse.json({ error: 'User ID required' }, { status: 401 });
-  }
-  if (!modelChoice) {
-    return NextResponse.json({ error: 'modelChoice is required' }, { status: 401 });
+    return NextResponse.json({ error: 'topic is required' }, { status: 400 });
+  } else if (!userId) {
+    return NextResponse.json({ error: 'userId is required' }, { status: 401 });
+  } else if (!model) {
+    return NextResponse.json({ error: 'model is required' }, { status: 401 });
   }
 
-  let { passed, secondsLeft } = await checkRateLimit("/api/ai-topics")
+  let { passed, secondsLeft } = await checkRateLimit("/api/research/start")
   if (!passed) {
     return NextResponse.json({
       error: `Rate Limited. ${secondsLeft && `${secondsLeft}s left`}.`
     }, { status: 429 })
   }
 
-  const res = await query(
-    'INSERT INTO research_sessions (user_id, topic, model) VALUES ($1, $2, $3) RETURNING id',
-    [userId, topic, modelChoice]
-  );
-  const id = res.rows[0].id;
+  const session_id = await startSession(userId, topic, model);
+  revalidatePath('/research')
 
   // // Trigger the first step immediately
   // await fetch(`${request.nextUrl.origin}/api/research/process`, {
@@ -49,5 +43,5 @@ export async function POST(request: NextRequest) {
   //   body: JSON.stringify({ id }),
   // });
 
-  return NextResponse.json({ id });
+  return NextResponse.json({ session_id });
 }

@@ -82,9 +82,66 @@ export type ResearchSession = {
 }
 
 export type ResearchSessionStatus = {
-  id: string; // uuid
+  session_id: string; // uuid
   topic: string;
   model: string;
   status: 'pending' | string;
   created_at: Date;
+}
+
+export type DeepResearchSessionStatus =
+  | 'pending'
+  | 'in_progress'
+  | 'completed'
+  | 'canceled'
+  | 'failed';
+
+export type DeepResearchSessionSummary = {
+  step: number;
+  summary: string;
+}
+
+export type DeepResearchSession = {
+  session_id: string;
+  user_id: string;
+  model: string;
+  topic: string;
+  status: DeepResearchSessionStatus;
+  error_message?: string | null;
+  summaries: DeepResearchSessionSummary[];
+  created_at: string; // ISO timestamp
+  updated_at: string; // ISO timestamp
+}
+
+export type DeepResearchSearchQuery = {
+  query_id: string;
+  session_id: string;
+  step_number: number;
+  query_text: string;
+  summary: string;
+  timestamp: string; // ISO timestamp
+}
+
+export type DeepResearchSearchResult = {
+  result_id: string;
+  query_id: string;
+  url: string;
+  title: string;
+  snippet: string;
+  full_content?: string | null;
+}
+
+export type DeepResearchKnowledgeBase = {
+  knowledge_id: string;
+  session_id: string;
+  step_number: number;
+  content: string;
+  sources: string[]; // Array of URLs
+}
+
+export type DeepResearchReport = {
+  report_id: string;
+  session_id: string;
+  final_report: string;
+  citations: string[]; // Array of citation sources
 }

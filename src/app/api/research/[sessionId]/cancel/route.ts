@@ -10,24 +10,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { query } from '@/lib/db';
+import { cancelSession } from '@/lib/research';
+import { revalidatePath } from 'next/cache';
 import { NextRequest, NextResponse } from 'next/server';
 
-export async function GET(
+export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ sessionId: string }> }
 ) {
-  const id = params.id;
-  const userId = request.headers.get('X-User-Id');
-  if (!userId) {
-    return NextResponse.json({ error: 'User ID required' }, { status: 401 });
+  const sessionId = (await params).sessionId
+  if (!sessionId) {
+    return NextResponse.json({ error: 'session id required' }, { status: 401 });
   }
-  const res = await query(
-    'SELECT * FROM research_sessions WHERE id = $1 AND user_id = $2',
-    [id, userId]
-  );
-  if (res.rows.length === 0) {
-    return NextResponse.json({ error: 'Not found' }, { status: 404 });
+  const res = await cancelSession(sessionId);
+  if (!res) {
+    return NextResponse.json({ error: 'Session not found' }, { status: 404 });
   }
-  return NextResponse.json(res.rows[0]);
+  revalidatePath("/research");
+  revalidatePath(`/research/${sessionId}`);
+  return NextResponse.json(res);
 }

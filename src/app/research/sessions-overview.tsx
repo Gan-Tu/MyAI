@@ -19,11 +19,13 @@ import clsx from "clsx";
 import Link from "next/link";
 
 interface ResearchSessionProps {
+  isLoading: boolean;
   sessions: ResearchSessionStatus[];
   error?: string | null;
 }
 
-export default function ResearchSession({
+export default function ResearchSessionsOverview({
+  isLoading,
   sessions,
   error,
 }: ResearchSessionProps) {
@@ -44,22 +46,25 @@ export default function ResearchSession({
         Research Sessions
       </h2>
       {error && (
-        <p className="mt-2 text-sm text-red-500">Error loading sessions</p>
+        <p className="mt-2 text-sm text-red-500">
+          Error loading sessions: {error}
+        </p>
       )}
-      {!sessions && !error && (
-        <p className="mt-2 text-sm text-slate-500">Loading...</p>
-      )}
-      {sessions && sessions.length === 0 && (
+      {isLoading && <p className="mt-2 text-sm text-slate-500">Loading...</p>}
+      {!isLoading && !sessions?.length && (
         <p className="mt-2 text-sm text-slate-600">
           No research sessions yet. Start one!
         </p>
       )}
-      {sessions && sessions.length > 0 && (
+      {!isLoading && sessions?.length > 0 && (
         <ul className="mt-4 space-y-3">
           {currentSessions?.map((session: ResearchSessionStatus) => (
-            <li key={session.id} className="border-b border-slate-200 pb-2">
+            <li
+              key={session.session_id}
+              className="border-b border-slate-200 pb-2"
+            >
               <Link
-                href={`/research/${session.id}`}
+                href={`/research/${session.session_id}`}
                 className="flex items-center justify-between text-sm text-slate-700 transition-colors hover:text-blue-500"
               >
                 <span
@@ -74,8 +79,9 @@ export default function ResearchSession({
                   className={`ml-4 capitalize ${
                     session.status === "completed"
                       ? "text-green-500"
-                      : session.status === "pending"
-                        ? "text-pink-500"
+                      : session.status === "pending" ||
+                          session.status == "in_progress"
+                        ? "text-orange-500"
                         : session.status === "canceled"
                           ? "text-red-500"
                           : "text-red-700"
@@ -94,14 +100,16 @@ export default function ResearchSession({
           ))}
         </ul>
       )}
-      <PaginationBar
-        page={page}
-        totalPages={totalPages}
-        resultsPerPage={resultsPerPage}
-        totalResults={totalResults}
-        handlePrevious={handlePrevious}
-        handleNext={handleNext}
-      />
+      {sessions?.length > 0 && (
+        <PaginationBar
+          page={page}
+          totalPages={totalPages}
+          resultsPerPage={resultsPerPage}
+          totalResults={totalResults}
+          handlePrevious={handlePrevious}
+          handleNext={handleNext}
+        />
+      )}
     </div>
   );
 }

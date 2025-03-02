@@ -1,67 +1,56 @@
-import { openai } from '@ai-sdk/openai';
-import { generateObject, generateText } from 'ai';
-import { z } from "zod";
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 
-export async function generatePlan(topic: string): Promise<{ subTopics: string[]; thoughts: string }> {
-  const { text } = await generateText({
-    model: openai('gpt-4o-mini'),
-    prompt: `For the topic: "${topic}", provide a brief thought process (1-2 sentences) on what you plan to do and what might need more research. Then, list 3-5 concise sub-topics or queries to investigate as a numbered list.`,
-  });
+import { query } from '@/lib/db';
 
-  const [thoughts, subTopicsText] = text.split(/(?=\n\s*1\.)/); // Split at first numbered item
-  const subTopics = subTopicsText
-    .split('\n')
-    .map((line) => line.replace(/^\d+\.\s*/, '').trim())
-    .filter((line) => line)
-    .slice(0, 5); // Limit to 5 sub-topics for brevity
-
-  return { subTopics, thoughts: thoughts.trim().substring(0, 200) }; // Limit thoughts to 200 chars for brevity
+export async function listSessions(userId: string) {
+  const res = await query(
+    'SELECT session_id, topic, status, model, created_at FROM DeepResearchSessions WHERE user_id = $1 ORDER BY created_at DESC',
+    [userId]
+  );
+  return res.rows;
 }
 
-export async function performSearch(query: string): Promise<string[]> {
-  // Removed Google search and URL scraping. Simulate LLM-based research content
-  const { text } = await generateText({
-    model: openai('gpt-4o-mini'),
-    prompt: `Generate 3 concise, hypothetical insights about "${query}" as if conducting research without web searches. Format each insight as a single sentence.`,
-  });
-
-  const insights = text
-    .split('\n')
-    .map((line) => line.trim())
-    .filter((line) => line)
-    .slice(0, 3); // Limit to 3 insights
-
-  return insights;
+export async function startSession(userId: string, topic: string, model: string) {
+  const res = await query(`INSERT INTO DeepResearchSessions (user_id, topic, model) VALUES ($1, $2, $3) RETURNING session_id`, [userId, topic, model]);
+  return res.rows[0].session_id;
 }
 
-export async function summarizeFindings(findings: string[]): Promise<{ summary: string; needsMoreResearch: string }> {
-  const findingsText = findings.join('\n');
-
-  const result = await generateObject({
-    model: openai('gpt-4o-mini'),
-    schema: z.object({
-      summary: z.string().describe('A concise one-sentence summary of the 3 findings, under 75 words.'),
-      needsMoreResearch: z.string().describe('A concise one-sentence explanation of what might need more research, under 75 words. If no research is needed, output emtpy string'),
-    }),
-    prompt: `Given these 3 findings: "${findingsText}", provide a concise summary in one sentence (under 75 words) and a one-sentence explanation of what might need more research (under 75 words). Ensure the total output is under 150 words, and return the results in JSON format.`,
-  });
-
-  return {
-    summary: result.object.summary.trim(),
-    needsMoreResearch: result.object.needsMoreResearch.trim(),
-  };
+export async function getSession(sessionId: string) {
+  const res = await query(
+    'SELECT * FROM DeepResearchSessions WHERE session_id = $1', [sessionId]
+  );
+  if (res.rows.length === 0) {
+    return null;
+  }
+  return res.rows[0];
 }
 
-export async function compileReport(
-  topic: string,
-  summaries: { subTopic: string; summary: string }[]
-): Promise<string> {
-  const summariesText = summaries
-    .map((s) => `Sub-topic: ${s.subTopic}\n${s.summary}`)
-    .join('\n\n');
-  const { text } = await generateText({
-    model: openai('gpt-4o-mini'),
-    prompt: `Compile a concise final research report on "${topic}" with a brief introduction (1 sentence), the following summaries, and a brief conclusion (1 sentence):\n\n${summariesText}`,
-  });
-  return text.substring(0, 1000); // Limit report to 1000 chars for brevity
+export async function deleteSession(sessionId: string) {
+  const res = await query(
+    'DELETE FROM DeepResearchSessions WHERE session_id = $1 RETURNING *', [sessionId]
+  );
+  if (res.rows.length === 0) {
+    return null;
+  }
+  return res.rows[0];
+}
+
+export async function cancelSession(sessionId: string) {
+  const res = await query(
+    'UPDATE DeepResearchSessions SET status = $1 WHERE session_id = $2', ["canceled", sessionId]
+  );
+  if (res.rows.length === 0) {
+    return null;
+  }
+  return res.rows[0];
 }

@@ -10,17 +10,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { query } from '@/lib/db';
+import { listSessions } from '@/lib/research';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
-  const userId = request.headers.get('X-User-Id');
+  const searchParams = request.nextUrl.searchParams
+  const userId = searchParams.get('userId');
   if (!userId) {
-    return NextResponse.json({ error: 'User ID required' }, { status: 401 });
+    return NextResponse.json({ error: 'userId is missing' }, { status: 401 });
   }
-  const res = await query(
-    'SELECT id, topic, status, model, created_at FROM research_sessions WHERE user_id = $1 ORDER BY created_at DESC',
-    [userId]
-  );
-  return NextResponse.json(res.rows);
+  const res = await listSessions(userId);
+  return NextResponse.json(res);
 }

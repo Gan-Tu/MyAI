@@ -18,11 +18,14 @@ import {
   DescriptionList,
   DescriptionTerm,
 } from "@/components/base/description-list";
-import { useSession } from "@/hooks/session";
-import { type ResearchSession } from "@/lib/types";
-import { ChevronLeftIcon, StopCircleIcon } from "@heroicons/react/20/solid";
+import { type DeepResearchSession } from "@/lib/types";
+import {
+  ChevronLeftIcon,
+  StopCircleIcon,
+  TrashIcon,
+} from "@heroicons/react/20/solid";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
 interface ResearchPageProps {
@@ -30,8 +33,8 @@ interface ResearchPageProps {
 }
 
 export default function ResearchPage({ id }: ResearchPageProps) {
-  const { user } = useSession();
-  const [data, setData] = useState<ResearchSession | null>(null);
+  const [data, setData] = useState<DeepResearchSession | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
@@ -39,67 +42,62 @@ export default function ResearchPage({ id }: ResearchPageProps) {
     router.push("/research");
   };
 
-  useEffect(() => {
-    // TODO: refresh every 5 seconds
-    if (user?.uid && !data && !error) {
-      fetch(`/api/research/${id}`, {
-        headers: { "X-User-Id": user?.uid || "" },
-        cache: "no-store",
-        next: { revalidate: 0 },
-      }).then(async (res) => {
+  const fetchData = useCallback(() => {
+    setIsLoading(true);
+    fetch(`/api/research/${id}`, { cache: "no-store", next: { revalidate: 0 } })
+      .then(async (res) => {
         if (!res.ok) {
           setError("Error loading research sessions");
         } else {
           setData(await res.json());
         }
+      })
+      .catch((err) => {
+        setError(err.message);
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
+  }, [fetch, setIsLoading, id]);
+
+  useEffect(() => {
+    // TODO: refresh every 5 seconds
+    if (id) {
+      fetchData();
     }
-  }, [user, data, error, id]);
+  }, [id, fetchData]);
+
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+      console.error(error);
+    }
+  }, [error]);
 
   if (!data) {
-    return (
-      <div className="font-display mx-auto my-auto flex h-full w-full max-w-6xl grow flex-col pb-4 lg:flex-row dark:bg-gray-950">
-        <div className="flex w-full min-w-0 flex-col justify-center px-4 lg:w-1/2 lg:px-8">
-          <div className="mx-auto w-full max-w-md">Loading</div>
+    if (isLoading) {
+      return (
+        <div className="font-display mx-auto my-auto flex h-full w-full max-w-6xl grow flex-col pb-4 lg:flex-row dark:bg-gray-950">
+          <div className="flex w-full min-w-0 flex-col justify-center px-4 lg:w-1/2 lg:px-8">
+            <div className="mx-auto w-full max-w-md">Loading</div>
+          </div>
         </div>
-      </div>
-    );
-  }
-
-  const {
-    status,
-    topic,
-    model,
-    current_step,
-    sub_topic_index,
-    research_plan,
-    progress,
-    final_report,
-    error_message,
-    created_at,
-  } = data;
-
-  if (error) {
-    toast.error(`Error loading research: ${error}`);
+      );
+    }
     router.push("/404");
+    return null;
   }
 
   const handleCancel = async () => {
-    await fetch(`/api/research/${id}/cancel`, {
-      method: "POST",
-      headers: { "X-User-Id": user?.uid || "" },
-    });
-    handleBack();
+    await fetch(`/api/research/${id}/cancel`, { method: "POST" });
+    router.refresh();
+    fetchData();
   };
 
-  // Determine the next sub-topic if any remain
-  const nextSubTopic =
-    status === "pending" &&
-    current_step === 1 &&
-    research_plan &&
-    sub_topic_index < research_plan.length
-      ? research_plan[sub_topic_index]
-      : null;
+  const handleDelete = async () => {
+    await fetch(`/api/research/${id}`, { method: "DELETE" });
+    router.push("/research");
+  };
 
   return (
     <div className="font-display mx-auto my-auto flex h-full w-full max-w-6xl grow flex-col pb-4 lg:flex-row dark:bg-gray-950">
@@ -117,37 +115,39 @@ export default function ResearchPage({ id }: ResearchPageProps) {
           <h1 className="text-slate mt-2 text-4xl/tight font-light text-pretty">
             Research Status
           </h1>
-          <p className="mt-4 border p-4 text-sm/6 text-slate-700">{topic}</p>
+          <p className="mt-4 border p-4 text-sm/6 text-slate-700">
+            {data.topic}
+          </p>
 
           {/* Status and Progress */}
           <div className="mt-6">
             <DescriptionList className="grid grid-cols-3">
               <DescriptionTerm className="col-span-1">Model</DescriptionTerm>
-              <DescriptionDetails className="">{model}</DescriptionDetails>
+              <DescriptionDetails className="">{data.model}</DescriptionDetails>
 
               <DescriptionTerm className="">Created at</DescriptionTerm>
               <DescriptionDetails className="">
-                {new Date(created_at).toLocaleString()}
+                {new Date(data.created_at).toLocaleString()}
               </DescriptionDetails>
 
               <DescriptionTerm className="">Status</DescriptionTerm>
               <DescriptionDetails>
                 <span
                   className={`font-semibold capitalize ${
-                    status === "completed"
+                    data.status === "completed"
                       ? "text-green-500"
-                      : status === "pending"
+                      : data.status === "pending"
                         ? "text-amber-500"
-                        : status === "canceled"
+                        : data.status === "canceled"
                           ? "text-red-500"
                           : "text-red-700"
                   }`}
                 >
-                  {status}
+                  {data.status}
                 </span>
               </DescriptionDetails>
             </DescriptionList>
-
+            {/* 
             {status === "pending" && current_step === 0 && (
               <p className="mt-2 text-sm text-slate-600">
                 Generating research plan...
@@ -179,11 +179,11 @@ export default function ResearchPage({ id }: ResearchPageProps) {
               <p className="mt-2 text-sm text-red-500">
                 Error: {error_message}
               </p>
-            )}
+            )} */}
           </div>
 
           {/* Cancel Button */}
-          {status === "pending" && (
+          {["pending", "in_progress"].includes(data.status) && (
             <button
               className="mt-4 flex cursor-pointer items-center justify-center rounded-md bg-red-500 px-4 py-2 text-sm font-bold text-white transition-colors hover:bg-red-600"
               color="red"
@@ -193,65 +193,25 @@ export default function ResearchPage({ id }: ResearchPageProps) {
               Cancel
             </button>
           )}
+
+          {/* Delete Button */}
+          {!["pending", "in_progress"].includes(data.status) && (
+            <button
+              className="mt-4 flex cursor-pointer items-center justify-center rounded-md bg-red-500 px-4 py-2 text-sm text-white transition-colors hover:bg-red-600"
+              color="red"
+              onClick={handleDelete}
+            >
+              <TrashIcon className="mr-2 h-5 w-5 fill-white text-white" />
+              Delete
+            </button>
+          )}
         </div>
       </div>
 
       {/* Right Panel: Progress and Report */}
       <div className="flex min-w-0 flex-col items-center justify-center px-4 pt-8 lg:w-1/2 lg:px-8 lg:pt-0">
         <div className="relative mx-auto w-full max-w-lg overflow-y-auto rounded-lg bg-white p-6 shadow-sm md:max-h-[850px]">
-          {/* Progress Updates */}
-          {progress && progress.length > 0 && (
-            <div className="mb-6">
-              <h2 className="mb-4 text-lg font-semibold text-slate-800">
-                Progress Updates
-              </h2>
-              <div className="space-y-4">
-                {progress.map((p: { message: string }, i: number) => (
-                  <div
-                    key={i}
-                    className="rounded-lg border border-gray-200 bg-gray-50 p-4 shadow-xs transition-colors hover:bg-gray-100"
-                  >
-                    <p className="text-sm break-words text-slate-700">
-                      {p.message}
-                    </p>
-                    {/* Optional: Add clickable references or icons (e.g., for sub-topics or sources) */}
-                    {i === 0 && (
-                      <p className="mt-2 text-xs text-gray-500">
-                        <span className="inline-flex items-center gap-1">
-                          <svg
-                            className="h-3 w-3 text-gray-400"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                            />
-                          </svg>
-                          20 sources
-                        </span>
-                      </p>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Final Report */}
-          {status === "completed" && final_report && (
-            <div>
-              <h2 className="mb-4 text-lg font-semibold text-slate-800">
-                Final Report
-              </h2>
-              <p className="prose prose-sm text-pretty text-slate-700">
-                {final_report}
-              </p>
-            </div>
-          )}
+          {/* // TODO */}
         </div>
       </div>
     </div>
