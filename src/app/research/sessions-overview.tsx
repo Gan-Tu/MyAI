@@ -64,7 +64,11 @@ export default function ResearchSessionsOverview({
               className="border-b border-slate-200 pb-2"
             >
               <Link
-                href={`/research/${session.session_id}`}
+                href={
+                  session.status === "completed"
+                    ? `/research/${session.session_id}/report`
+                    : `/research/${session.session_id}`
+                }
                 className="flex items-center justify-between text-sm text-slate-700 transition-colors hover:text-blue-500"
               >
                 <span

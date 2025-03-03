@@ -30,7 +30,7 @@ const WEB_RESULTS_PER_QUERY = 10;
 const BASE_SYSTEM_PROMPT =
   "You are a helpful deep research assistant, working as a part of larger system to write an exhaustive, highly detailed, well-structured research report on the query topic for an academic audience. The end report prioritizes verbosity, ensuring no relevant subtopic is overlooked, and the report is expected to be least 1000 words.";
 
-async function evaluteNextStep(topic, knowledgeSummary) {
+async function evaluteNextStep(topic, searchedQueries, knowledgeSummary) {
   const { object } = await generateObject({
     model: MODEL,
     system: `
@@ -43,6 +43,7 @@ async function evaluteNextStep(topic, knowledgeSummary) {
       <planning_rules>
       During your thinking phase, you should follow these guidelines:
       - Always break the topic down into multiple steps
+      - Do not repeat search queries
       - Assess the different perspectives and whether they are useful for any steps needed to answer the query
       - Create the best report that weighs all the evidence from the sources
       - Make sure that your final report addresses all parts of the query
@@ -61,7 +62,7 @@ async function evaluteNextStep(topic, knowledgeSummary) {
       </output>
     `.trim(),
     prompt:
-      `Remember that today is ${tools.getTodayStr()}. Am I ready to write the final report? If not, what are the reason and what new search queries should I issue? For the topic '${topic}', this is my current knowledge:\n\n${knowledgeSummary || "No prior knowledge."}`.trim(),
+      `Remember that today is ${tools.getTodayStr()}. Am I ready to write the final report? If not, what are the reason and what new search queries should I issue? For the topic '${topic}', I've searched these queries so far: [${searchedQueries.join(",")}]. This is my current knowledge:\n\n${knowledgeSummary || "No prior knowledge."}`.trim(),
     schema: z.object({
       sufficient: z
         .boolean()
@@ -86,20 +87,19 @@ async function evaluteNextStep(topic, knowledgeSummary) {
 
 async function summarizeKnowledge(topic, searchResults) {
   let context = "";
-  for (const result of searchResults) {
-    context = `${context}
-      <source_${result.citationIndex}>
-      # Search Query: ${result.query}
-      # Preferred Title: ${result.title}
-      # URL: ${result.url}
-      # Snippet: ${result.snippet}
-      
-      ${result.fullContent}
-      </source_${result.citationIndex}>\n
-    `.trim();
-  }
+  searchResults.forEach((result, index) => {
+    const x = index + 1;
+    // Replace [1] to [10] with [x.1] to [x.10]
+    const updatedResult = result.replace(/\[(\d{1,2})\]/g, (match, number) => {
+      if (number >= 1 && number <= 15) {
+        return `[${x}.${number}]`;
+      }
+      return match;
+    });
+    context += updatedResult + "\n\n";
+  });
   const { object } = await generateObject({
-    model: MODEL, // SUMMARIZATION_MODEL,
+    model: SUMMARIZATION_MODEL,
     system: `
       <goal>
       ${BASE_SYSTEM_PROMPT}
@@ -140,7 +140,7 @@ async function summarizeKnowledge(topic, searchResults) {
         .array(
           z.object({
             sourceIndex: z
-              .number()
+              .string()
               .describe("The inline source citation index"),
             url: z.string().describe("The url of the citated source"),
           }),
@@ -274,10 +274,18 @@ async function runResearch(sessionId) {
   if (!session) {
     throw Error(`Failed to locate session ${sessionId}`);
   }
+  if (session.status != "pending") {
+    return {
+      ok: true,
+      msg: "session is not in pending state",
+      status: session.status,
+    };
+  }
+
   await db.updateSessionStatus(sessionId, "in_progress");
 
   let currentStep = 1;
-  let citationIndex = 1;
+  let searchedQueries = [];
   while (currentStep < MAX_RESEARCH_STEP) {
     // Step 1: Plan next step, and get new search queries
     console.log(`# Step ${currentStep}`);
@@ -286,8 +294,10 @@ async function runResearch(sessionId) {
     console.log("Evaluating next step...");
     let { sufficient, queries, stepSummary } = await evaluteNextStep(
       topic,
+      searchedQueries,
       knowledgeSummary,
     );
+    console.log(stepSummary);
 
     // Step 1: Update step summary
     await db.addSessionSummary(sessionId, {
@@ -300,6 +310,7 @@ async function runResearch(sessionId) {
       console.log(`Writing report`);
       const report = await writeReport(topic, knowledgeSummary);
       const reportId = await db.addReport(sessionId, report);
+      await db.updateSessionStatus(sessionId, "completed");
       return {
         sufficient,
         stepSummary,
@@ -311,56 +322,64 @@ async function runResearch(sessionId) {
     let knowledgeResults = [];
     for (const queryText of queries) {
       console.log(`Researching ${queryText}`);
-      const queryId = await db.createSearchQuery(
-        sessionId,
-        queryText,
-        currentStep,
-      );
-      // const response = await tools.searchAndScrape(queryText, 10);
-      // knowledgeResults.push(response);
-      const searchResults = await tools.searchGoogle(
-        queryText,
-        WEB_RESULTS_PER_QUERY,
-      );
-      for (const searchResult of searchResults) {
-        console.log(`Reading ${searchResult.url}`);
-        let fullContent = "";
-        try {
-          fullContent = await tools.getPageContent(searchResult.url);
-        } catch (error) {
-          console.error("Failed to get full content: ", error);
-        }
-        knowledgeResults.push({
-          citationIndex,
-          query: queryText,
-          url: searchResult.url,
-          title: searchResult.title,
-          snippet: searchResult.snippet,
-          fullContent,
-        });
-        citationIndex++;
-        await db.createSearchResult(
-          queryId,
-          searchResult.url,
-          searchResult.title,
-          searchResult.snippet,
-          fullContent,
-        );
+      searchedQueries.push(queryText);
+      await db.createSearchQuery(sessionId, queryText, currentStep);
+      try {
+        const response = await tools.searchAndScrape(queryText, 10);
+        knowledgeResults.push(response);
+      } catch (error) {
+        console.error(error);
       }
+      // const searchResults = await tools.searchGoogle(
+      //   queryText,
+      //   WEB_RESULTS_PER_QUERY,
+      // );
+      // for (const searchResult of searchResults) {
+      //   console.log(`Reading ${searchResult.url}`);
+      //   let fullContent = "";
+      //   try {
+      //     fullContent = await tools.getPageContent(searchResult.url);
+      //   } catch (error) {
+      //     console.error("Failed to get full content: ", error);
+      //   }
+      //   knowledgeResults.push({
+      //     citationIndex,
+      //     query: queryText,
+      //     url: searchResult.url,
+      //     title: searchResult.title,
+      //     snippet: searchResult.snippet,
+      //     fullContent,
+      //   });
+      //   citationIndex++;
+      //   await db.createSearchResult(
+      //     queryId,
+      //     searchResult.url,
+      //     searchResult.title,
+      //     searchResult.snippet,
+      //     fullContent,
+      //   );
+      // }
     }
 
     if (knowledgeResults.length > 0) {
-      for (let i = 0; i < knowledgeResults.length; i += 3) {
-        console.log(`Summarizing results chunk ${i} into knowledge snippets`);
-        let chunk = knowledgeResults.slice(i, i + 3);
-        const knowledge = await summarizeKnowledge(topic, chunk);
-        await db.createKnowledgeEntry(
-          sessionId,
-          currentStep,
-          knowledge.summary,
-          knowledge.sources,
-        );
-      }
+      // for (let i = 0; i < knowledgeResults.length; i += 3) {
+      //   console.log(`Summarizing results chunk ${i} into knowledge snippets`);
+      //   let chunk = knowledgeResults.slice(i, i + 3);
+      //   const knowledge = await summarizeKnowledge(topic, chunk);
+      //   await db.createKnowledgeEntry(
+      //     sessionId,
+      //     currentStep,
+      //     knowledge.summary,
+      //     knowledge.sources,
+      //   );
+      // }
+      const knowledge = await summarizeKnowledge(topic, knowledgeResults);
+      await db.createKnowledgeEntry(
+        sessionId,
+        currentStep,
+        knowledge.summary,
+        knowledge.sources,
+      );
     }
     currentStep++;
   }

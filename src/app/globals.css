@@ -191,3 +191,94 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer base {
+  /* Headings with proper hierarchy and spacing */
+  .markdown-style h1 {
+    @apply text-4xl font-bold mb-6 text-gray-800 border-b pb-2 border-gray-200;
+  }
+  .markdown-style h2 {
+    @apply text-3xl font-bold mt-8 mb-4 text-gray-800;
+  }
+  .markdown-style h3 {
+    @apply text-2xl font-semibold mt-6 mb-3 text-gray-800;
+  }
+  .markdown-style h4 {
+    @apply text-xl font-semibold mt-5 mb-2 text-gray-800;
+  }
+  .markdown-style h5 {
+    @apply text-lg font-semibold mt-4 mb-2 text-gray-800;
+  }
+  .markdown-style h6 {
+    @apply text-base font-semibold mt-4 mb-2 text-gray-800;
+  }
+
+  /* Paragraph styling */
+  .markdown-style p {
+    @apply mb-4 text-gray-700 leading-relaxed;
+  }
+
+  /* Links */
+  .markdown-style a {
+    @apply text-blue-600 hover:text-blue-800 transition-colors duration-200 underline;
+  }
+
+  /* Lists */
+  .markdown-style ul, 
+  .markdown-style ol {
+    @apply mb-4 pl-5;
+  }
+  
+  .markdown-style li {
+    @apply mb-1;
+  }
+  
+  .markdown-style ul {
+    @apply list-disc;
+  }
+  
+  .markdown-style ol {
+    @apply list-decimal;
+  }
+
+  /* Blockquotes */
+  .markdown-style blockquote {
+    @apply pl-4 border-l-4 border-gray-300 italic text-gray-600 my-4;
+  }
+
+  /* Code */
+  .markdown-style code {
+    @apply bg-gray-100 text-pink-600 px-1 py-0.5 rounded text-sm font-mono;
+  }
+
+  .markdown-style pre {
+    @apply bg-gray-800 text-gray-100 p-4 rounded-lg mb-4 overflow-x-auto;
+  }
+
+  .markdown-style pre code {
+    @apply bg-transparent text-inherit p-0 text-sm;
+  }
+
+  /* Tables */
+  .markdown-style table {
+    @apply w-full mb-4 border-collapse;
+  }
+  
+  .markdown-style th {
+    @apply bg-gray-100 border border-gray-300 p-2 text-left font-semibold;
+  }
+  
+  .markdown-style td {
+    @apply border border-gray-300 p-2;
+  }
+
+  /* Horizontal rule */
+  .markdown-style hr {
+    @apply my-8 border-t border-gray-300;
+  }
+
+  /* Images */
+  .markdown-style img {
+    @apply max-w-full h-auto rounded my-4;
+  }
+}

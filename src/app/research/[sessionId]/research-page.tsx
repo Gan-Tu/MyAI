@@ -24,6 +24,7 @@ import {
   StopCircleIcon,
   TrashIcon,
 } from "@heroicons/react/20/solid";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
@@ -106,6 +107,20 @@ export default function ResearchPage({ id, data }: ResearchPageProps) {
                   {data.status.replace("_", " ")}
                 </span>
               </DescriptionDetails>
+
+              {data.status === "completed" && (
+                <>
+                  <DescriptionTerm className="">Report</DescriptionTerm>
+                  <DescriptionDetails>
+                    <Link
+                      href={`/research/${id}/report`}
+                      className="flex items-center gap-2 text-blue-600"
+                    >
+                      View
+                    </Link>
+                  </DescriptionDetails>
+                </>
+              )}
             </DescriptionList>
             {/* 
             {status === "pending" && current_step === 0 && (
@@ -173,8 +188,8 @@ export default function ResearchPage({ id, data }: ResearchPageProps) {
         <div className="relative mx-auto w-full max-w-lg overflow-y-auto rounded-lg bg-white p-6 shadow-sm md:max-h-[850px]">
           {/* // TODO */}
           {data.summaries?.length > 0 &&
-            data.summaries?.map((summary) => (
-              <p>
+            data.summaries?.map((summary, index) => (
+              <p key={`summary${index}`}>
                 <b>Step {summary.step}: </b>
                 {summary.summary}
               </p>

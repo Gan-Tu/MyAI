@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "npx functions-framework --target=startResearch [--signature-type=http]",
-    "dev": "nodemon --inspect node_modules/.bin/functions-framework --target=startResearch [--signature-type=http]"
+    "dev": "nodemon --inspect node_modules/.bin/functions-framework --target=startResearch [--signature-type=http]",
+    "deploy": "gcloud run deploy deep-research-worker --source . --base-image nodejs22  --function startResearch --region=us-central1 --allow-unauthenticated  --env-vars-file .env.yaml  --timeout=900s  --memory=2048M"
   },
   "author": "Gan Tu",
   "dependencies": {

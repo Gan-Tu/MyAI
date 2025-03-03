@@ -72,10 +72,10 @@ async function searchAndScrape(query, count) {
       "Content-Type": "application/json",
       "X-Retain-Images": "none",
     },
-    body: {
+    body: JSON.stringify({
       q: query,
-      count: `${count}`,
-    },
+      count: count,
+    }),
   });
   if (!response.ok) {
     throw new Error(`HTTP error! status: ${response.status}`);
