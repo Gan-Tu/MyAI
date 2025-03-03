@@ -35,8 +35,6 @@ interface ResearchPageProps {
 }
 
 export default function ResearchPage({ id, data }: ResearchPageProps) {
-  // const [data, setData] = useState<DeepResearchSession | null>(null);
-  // const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
@@ -54,7 +52,6 @@ export default function ResearchPage({ id, data }: ResearchPageProps) {
   const handleCancel = async () => {
     await cancelSession(id);
     router.refresh();
-    // fetchData();
   };
 
   const handleDelete = async () => {
@@ -106,7 +103,7 @@ export default function ResearchPage({ id, data }: ResearchPageProps) {
                           : "text-red-700"
                   }`}
                 >
-                  {data.status}
+                  {data.status.replace("_", " ")}
                 </span>
               </DescriptionDetails>
             </DescriptionList>
@@ -175,6 +172,13 @@ export default function ResearchPage({ id, data }: ResearchPageProps) {
       <div className="flex min-w-0 flex-col items-center justify-center px-4 pt-8 lg:w-1/2 lg:px-8 lg:pt-0">
         <div className="relative mx-auto w-full max-w-lg overflow-y-auto rounded-lg bg-white p-6 shadow-sm md:max-h-[850px]">
           {/* // TODO */}
+          {data.summaries?.length > 0 &&
+            data.summaries?.map((summary) => (
+              <p>
+                <b>Step {summary.step}: </b>
+                {summary.summary}
+              </p>
+            ))}
         </div>
       </div>
     </div>

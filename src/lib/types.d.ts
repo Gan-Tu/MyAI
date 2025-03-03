@@ -118,7 +118,6 @@ export type DeepResearchSearchQuery = {
   session_id: string;
   step_number: number;
   query_text: string;
-  summary: string;
   timestamp: string; // ISO timestamp
 }
 
@@ -143,5 +142,5 @@ export type DeepResearchReport = {
   report_id: string;
   session_id: string;
   final_report: string;
-  citations: string[]; // Array of citation sources
+  // citations: string[]; // Array of citation sources
 }

@@ -87,7 +87,7 @@ export default function ResearchSessionsOverview({
                           : "text-red-700"
                   }`}
                 >
-                  {session.status}
+                  {session.status.replace("_", " ")}
                 </span>
               </Link>
               {session.model && (
