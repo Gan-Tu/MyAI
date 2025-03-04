@@ -41,7 +41,7 @@ export default async function Page({
       <div className="prose markdown-style place-content-center p-6">
         <Link
           href={`/research/${sessionId}`}
-          className="my-4 flex items-center gap-2 text-blue-600"
+          className="my-4 flex items-center gap-2 text-blue-600 print:hidden"
         >
           Back to status page
         </Link>
