@@ -199,7 +199,7 @@ export const supportedImageModels: ImageModelMetadata[] = [
     displayName: 'Signature Design',
     provider: "replicate",
     model: 'gan-tu/flux-dev-ai-signature:3699362ed9e98d32d05c7e99f747772960463dac9af70ebda3b98e69bd9f9b90',
-    promptPrefix: "AISIGNATURE handwritten signature",
+    promptPrefix: "AISIGNATURE handwritten signature, black stylish calligraphy on white background. ",
     creditsCost: 5,
     parameters: []
   },
