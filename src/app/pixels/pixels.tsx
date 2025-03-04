@@ -87,7 +87,7 @@ export default function PixelsPage({ q, defaultModel }: ImagesPageProps) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        prompt: input,
+        prompt: `${modelSpec?.promptPrefix || ""}${input}${modelSpec?.promptSuffix || ""}`,
         modelName: model,
         options: providerOptions,
       }),

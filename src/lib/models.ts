@@ -186,6 +186,38 @@ export const supportedImageModels: ImageModelMetadata[] = [
     creditsCost: 10,
     aspectRatio: ['1:1', '21:9', '16:9', '3:2', '4:3', '5:4', '1:11', '4:5', '3:4', '2:3', '9:16', '9:21'],
     parameters: []
+  },
+  {
+    displayName: 'Cartoon iRobot',
+    provider: "replicate",
+    model: 'gan-tu/flux-cartoon-irobot:ad185cf288be3a9fdff1b2f4e82fd39e345c6dbc92493f8ddfad3973f97fd79f',
+    promptPrefix: "Cartoon IROBOT ",
+    creditsCost: 5,
+    parameters: []
+  },
+  {
+    displayName: 'Signature Design',
+    provider: "replicate",
+    model: 'gan-tu/flux-dev-ai-signature:3699362ed9e98d32d05c7e99f747772960463dac9af70ebda3b98e69bd9f9b90',
+    promptPrefix: "AISIGNATURE handwritten signature",
+    creditsCost: 5,
+    parameters: []
+  },
+  {
+    displayName: 'Priapus God Cartoon',
+    provider: "replicate",
+    model: 'gan-tu/flux-priapus-cartoon:7a836d9f4003f20bd2fda5e5395a1afc1fcbf03efb5ac9bdbdb9a640fe55cb33',
+    promptPrefix: "A photo of a cartoon muscular man PRIAPUS, ",
+    creditsCost: 5,
+    parameters: []
+  },
+  {
+    displayName: 'Otake Cartoon Wolf',
+    provider: "replicate",
+    model: 'gan-tu/flux-otake-cartoon:088e3fb59c4814c0928d359e30ad212887be25ed6cf47050bdab3d9581d023b0',
+    promptPrefix: "A cartoon wolf OTAKE with orange fur, ",
+    creditsCost: 5,
+    parameters: []
   }
 ];
 

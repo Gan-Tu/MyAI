@@ -76,5 +76,6 @@ export type ImageModelMetadata = {
   creditsCost: number;
   parameters?: ImageModelMetadataParameter[];
   aspectRatio?: `${number}:${number}`[];
+  promptPrefix?: string;
   promptSuffix?: string;
 };
