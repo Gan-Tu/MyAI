@@ -13,34 +13,28 @@
 "use client";
 
 import CreditFooter from "@/components/credit-footer";
-import { PredictionWithInput } from "@/lib/types";
 import clsx from "clsx";
 import Link from "next/link";
 
 interface OutputGalleryProps {
   isLoading: boolean;
-  prediction?: PredictionWithInput | null | undefined;
+  imageUrl: string;
+  prompt: string;
   className?: string;
 }
 
 /* eslint-disable @next/next/no-img-element */
 export default function OutputGallery({
   isLoading,
-  prediction,
+  prompt,
+  imageUrl,
   className,
 }: OutputGalleryProps) {
-  let imageUrl =
-    prediction?.status === "succeeded"
-      ? Array.isArray(prediction?.output)
-        ? prediction.output[0]
-        : prediction.output
-      : null;
-
   return (
     <div
       className={clsx(
         className,
-        "lg:w-3/8 relative flex min-w-[400px] grow flex-col justify-center overflow-hidden px-7 lg:inset-0 lg:z-40 lg:flex lg:px-0",
+        "relative flex min-w-[400px] grow flex-col justify-center overflow-hidden px-7 lg:inset-0 lg:z-40 lg:flex lg:w-3/8 lg:px-0",
       )}
     >
       {imageUrl && (
@@ -51,15 +45,15 @@ export default function OutputGallery({
             width={768}
             sizes="100vw"
             className="aspect-auto rounded-lg object-cover"
-            alt={prediction?.input?.prompt || "output image"}
+            alt={prompt || "output image"}
           />
         </Link>
       )}
 
       {isLoading && (
-        <div className="flex aspect-square w-full place-content-center items-center rounded-lg border-2 border-dashed border-gray-300 p-12 text-center text-sm font-semibold text-gray-500 hover:border-gray-400 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+        <div className="flex aspect-square w-full place-content-center items-center rounded-lg border-2 border-dashed border-gray-300 p-12 text-center text-sm font-semibold text-gray-500 hover:border-gray-400 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-hidden">
           <svg
-            className="-ml-1 mr-3 h-5 w-5 animate-spin"
+            className="mr-3 -ml-1 h-5 w-5 animate-spin"
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"

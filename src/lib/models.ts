@@ -10,15 +10,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { type VisionModelParameter } from "@/lib/types";
+import { type ImageModelMetadata } from "@/lib/types";
 import { anthropic } from '@ai-sdk/anthropic';
 import { createDeepSeek } from '@ai-sdk/deepseek';
 import { google } from '@ai-sdk/google';
 import { groq } from '@ai-sdk/groq';
 import { mistral } from '@ai-sdk/mistral';
 import { openai } from '@ai-sdk/openai';
+import { replicate } from '@ai-sdk/replicate';
 import { xai } from '@ai-sdk/xai';
-import { LanguageModel } from 'ai';
+import { ImageModel, LanguageModel } from 'ai';
+
 
 export const supportedLanguageModels = [
   'grok-2-1212',
@@ -66,104 +68,54 @@ export const getHighlightingModel = (): LanguageModel => {
   return google('tunedModels/texthighlighter-c0uqcsiv5s5v')
 }
 
-export const VISION_MODELS: {
-  [key: string]: {
-    model?: string,
-    version?: string,
-    promptSuffix?: string,
-    creditsCost: number,
-    parameters: VisionModelParameter[]
-  }
-} = {
-  'AI Stickers': {
-    version: '4acb778eb059772225ec213948f0660867b2e03f277448f18cf1800b96a65a1a',
+export const supportedImageModels: ImageModelMetadata[] = [
+  {
+    displayName: 'Stickers',
+    provider: "replicate",
+    model: 'fofr/sticker-maker:4acb778eb059772225ec213948f0660867b2e03f277448f18cf1800b96a65a1a',
     creditsCost: 1,
     parameters: [
       {
         name: "output_format",
-        displayName: "Output Format",
-        default: "png",
-        options: [
-          'png',
-        ]
+        options: ['png']
       }
     ]
   },
-  'AI Emoji': {
-    version: '2489b7892129c47ec8590fd3e86270b8804f2ff07faeae8c306342fad2f48df6',
+  {
+    displayName: 'Emoji',
+    provider: "replicate",
+    model: 'fpsorg/emoji:2489b7892129c47ec8590fd3e86270b8804f2ff07faeae8c306342fad2f48df6',
     creditsCost: 1,
+    aspectRatio: ['1:1', '16:9', '21:9', '3:2', '2:3', '4:5', '5:4', '3:4', '4:3', '9:16', '9:21'],
     parameters: [
       {
-        name: "aspect_ratio",
-        displayName: "Aspect Ratio",
-        default: "1:1",
-        options: [
-          '1:1',
-          '16:9',
-          '21:9',
-          '3:2',
-          '2:3',
-          '4:5',
-          '5:4',
-          '3:4',
-          '4:3',
-          '9:16',
-          '9:21',
-        ]
-      },
-      {
         name: "output_format",
-        displayName: "Output Format",
-        default: "jpg",
-        options: [
-          'jpg',
-          'png',
-        ]
+        options: ['jpg', 'png']
       }
     ]
   },
-  'Flux - Watercolor': {
-    version: '846d1eb37059ed2ed268ff8dd4aa1531487fcdc3425a7a44c2a0a10723ef8383',
+  {
+    displayName: 'Watercolor',
+    provider: "replicate",
+    model: 'lucataco/flux-watercolor:846d1eb37059ed2ed268ff8dd4aa1531487fcdc3425a7a44c2a0a10723ef8383',
     creditsCost: 5,
     promptSuffix: ' in the style of TOK',
+    aspectRatio: ['1:1', '16:9', '21:9', '3:2', '2:3', '4:5', '5:4', '3:4', '4:3', '9:16', '9:21'],
     parameters: [
       {
-        name: "aspect_ratio",
-        displayName: "Aspect Ratio",
-        default: "1:1",
-        options: [
-          '1:1',
-          '16:9',
-          '21:9',
-          '3:2',
-          '2:3',
-          '4:5',
-          '5:4',
-          '3:4',
-          '4:3',
-          '9:16',
-          '9:21',
-        ]
-      },
-      {
         name: "output_format",
-        displayName: "Output Format",
-        default: "png",
-        options: [
-          'png',
-          'jpg',
-        ]
+        options: ['png', 'jpg']
       }
     ]
   },
-  'Recraft AI - Affordable & Fast Image': {
+  {
+    displayName: 'Recraft 20B',
+    provider: "replicate",
     model: 'recraft-ai/recraft-20b',
     creditsCost: 5,
     parameters: [
       {
         name: "style",
-        displayName: "Style",
-        default: "realistic_image",
         options: [
           'realistic_image',
           'realistic_image/b_and_w',
@@ -195,14 +147,14 @@ export const VISION_MODELS: {
       }
     ]
   },
-  'Recraft AI - SOTA Image Generation': {
+  {
+    displayName: 'Recraft V3 - Red Panda',
+    provider: "replicate",
     model: 'recraft-ai/recraft-v3',
     creditsCost: 10,
     parameters: [
       {
         name: "style",
-        displayName: "Style",
-        default: "any",
         options: [
           'any',
           'realistic_image',
@@ -210,7 +162,7 @@ export const VISION_MODELS: {
           'digital_illustration/pixel_art',
           'digital_illustration/hand_drawn',
           'digital_illustration/grain',
-          'digital _illustration/infantile_sketch',
+          'digital_illustration/infantile_sketch',
           'digital_illustration/2d_art_poster',
           'digital_illustration/handmade_3d',
           'digital_illustration/hand_drawn_out/',
@@ -227,28 +179,36 @@ export const VISION_MODELS: {
       }
     ]
   },
-  'Stable Diffusion - High Res Photo': {
+  {
+    displayName: 'Flux 1.1 Pro Ultra',
+    provider: "replicate",
     model: 'black-forest-labs/flux-1.1-pro-ultra',
     creditsCost: 10,
-    parameters: [
-      {
-        name: "aspect_ratio",
-        displayName: "Aspect Ratio",
-        default: "1:1",
-        options: [
-          '21:9',
-          '16:9',
-          '3:2',
-          '4:3',
-          '5:4',
-          '1:11',
-          '4:5',
-          '3:4',
-          '2:3',
-          '9:16',
-          '9:21',
-        ]
-      }
-    ]
-  },
+    aspectRatio: ['1:1', '21:9', '16:9', '3:2', '4:3', '5:4', '1:11', '4:5', '3:4', '2:3', '9:16', '9:21'],
+    parameters: []
+  }
+];
+
+export const getImageModelMetadata = (model: string): ImageModelMetadata | null => {
+  let models = supportedImageModels.filter(
+    (x) => x.displayName == model,
+  );
+  if (models.length > 0) {
+    return models[0];
+  }
+  return null;
+}
+
+export const getImageModel = (model: string): ImageModel => {
+  if (!model) {
+    throw new Error("Misisng model string");
+  }
+  const metadata = getImageModelMetadata(model);
+  if (!metadata) {
+    throw Error(`Unsupported model: ${model}`)
+  }
+  if (metadata.provider == "replicate") {
+    return replicate.image(metadata.model)
+  }
+  throw Error(`Unsupported model: ${model}`)
 }

@@ -10,7 +10,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { VISION_MODELS } from "@/lib/models";
+import { getImageModelMetadata, supportedImageModels } from "@/lib/models";
 import PixelsPage from "./pixels";
 
 export const metadata = {
@@ -27,17 +27,16 @@ export default async function Page({
   const { q, model: modelParam } = await searchParams;
   const model = Array.isArray(modelParam)
     ? modelParam.length > 0
-      ? modelParam[0]
+      ? getImageModelMetadata(modelParam[0])?.displayName || undefined
       : undefined
     : modelParam;
   const query = Array.isArray(q) ? (q.length > 0 ? q[0] : undefined) : q;
-  let defaultModel: string | undefined = model;
-  if (!VISION_MODELS.hasOwnProperty(defaultModel ?? "")) {
-    defaultModel = undefined;
-  }
   return (
     <div className="place-content-center p-6">
-      <PixelsPage q={query} defaultModel={defaultModel} />
+      <PixelsPage
+        q={query}
+        defaultModel={model || supportedImageModels[0].displayName}
+      />
     </div>
   );
 }

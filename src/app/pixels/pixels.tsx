@@ -16,45 +16,63 @@ import { Button } from "@/components/base/button";
 import { Label } from "@/components/base/fieldset";
 import { Select } from "@/components/base/select";
 import { useCredits } from "@/hooks/credits";
-import { VISION_MODELS } from "@/lib/models";
+import { getImageModelMetadata, supportedImageModels } from "@/lib/models";
+import {
+  type ImageModelMetadata,
+  type ImageModelMetadataParameter,
+} from "@/lib/types";
 import { capitalizeFirstLetter } from "@/lib/utils";
 import * as Headless from "@headlessui/react";
-import { sleep } from "openai/core.mjs";
-import { useEffect, useState } from "react";
+import { JSONValue } from "ai";
+import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
-import { type Prediction } from "replicate";
 import AnimatedSparkleIcon from "../../components/animated-sparkle";
 import CreditFooter from "../../components/credit-footer";
-import { predictWithReplicate } from "../actions";
 import OutputGallery from "./output-gallery";
 
 interface ImagesPageProps {
   q?: string;
-  defaultModel?: string;
+  defaultModel: string;
 }
 
 export default function PixelsPage({ q, defaultModel }: ImagesPageProps) {
   const [input, setInput] = useState(q);
-  const [extraInputs, setExtraInputs] = useState({});
-  const [creditsCost, setCreditsCost] = useState<number>(1);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [model, setModel] = useState<string>(
-    defaultModel || Object.keys(VISION_MODELS)[0],
-  );
-  const [curPrediction, setCurPrediction] = useState<Prediction | null>(null);
+  const [model, setModel] = useState<string>(defaultModel);
+  const [providerOptions, setProviderOptions] = useState({});
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
   const { deduct } = useCredits();
 
-  useEffect(() => {
-    let modelConfig = VISION_MODELS[model];
-    if (modelConfig) {
-      setCreditsCost(modelConfig.creditsCost);
-      let params = {};
-      modelConfig.parameters?.forEach((element) => {
-        params = { ...params, [element.name]: element.default };
+  // Memoize modelSpec and parameters to prevent unnecessary recalculations
+  const modelSpec: ImageModelMetadata | null = useMemo(
+    () => getImageModelMetadata(model),
+    [model],
+  );
+  const creditsCost: number = modelSpec?.creditsCost || 1;
+
+  const parameters: ImageModelMetadataParameter[] = useMemo(() => {
+    const params = [];
+    if (modelSpec?.aspectRatio?.length) {
+      params.push({
+        name: "aspect_ratio",
+        options: modelSpec.aspectRatio as string[],
       });
-      setExtraInputs(params);
     }
-  }, [model]);
+    return params.concat(modelSpec?.parameters || []);
+  }, [modelSpec]);
+
+  useEffect(() => {
+    if (parameters.length > 0) {
+      const options: Record<string, JSONValue> = parameters.reduce(
+        (acc, element) => {
+          acc[element.name] = element.options[0];
+          return acc;
+        },
+        {} as Record<string, JSONValue>,
+      );
+      setProviderOptions(options);
+    }
+  }, [parameters]);
 
   const fetchPrediction = async () => {
     if (!input) {
@@ -63,50 +81,25 @@ export default function PixelsPage({ q, defaultModel }: ImagesPageProps) {
     if (!(await deduct(creditsCost, input))) {
       return;
     }
-    let { error, prediction } = await predictWithReplicate(
-      {
-        prompt: `${input}${VISION_MODELS[model]?.promptSuffix || ""}`,
-        ...extraInputs,
+    const res = await fetch("/api/pixels", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
       },
-      /*model*/ VISION_MODELS[model]?.model,
-      /*version*/ VISION_MODELS[model]?.version,
-    );
-    if (error) {
-      throw new Error(error as string);
-    }
-    setCurPrediction(prediction || null);
-
-    // Poll Prediction
-    while (
-      prediction &&
-      prediction.status !== "succeeded" &&
-      prediction.status !== "failed"
-    ) {
-      await sleep(2000);
-      const response = await fetch(
-        "/api/replicate/predictions/" + prediction.id,
-        { cache: "no-store", next: { revalidate: 0 } },
-      );
-      let body = await response.json();
-      if (response.status !== 200) {
-        throw new Error(body.error);
-      }
-      prediction = body.prediction;
-      if (prediction) {
-        setCurPrediction(prediction);
-      }
-    }
-    if (prediction?.status === "failed") {
-      throw new Error(prediction.error as string);
-    } else if (prediction?.status === "succeeded") {
-      setIsLoading(false);
-    }
+      body: JSON.stringify({
+        prompt: input,
+        modelName: model,
+        options: providerOptions,
+      }),
+    });
+    const { url } = await res.json();
+    setImageUrl(url);
     return;
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setCurPrediction(null);
+    setImageUrl(null);
     setIsLoading(true);
     fetchPrediction()
       .catch((error) => {
@@ -117,15 +110,15 @@ export default function PixelsPage({ q, defaultModel }: ImagesPageProps) {
   };
 
   return (
-    <div className="font-display mx-auto my-auto flex h-full w-full max-w-6xl grow flex-col pb-4 dark:bg-gray-950 lg:flex-row">
+    <div className="font-display mx-auto my-auto flex h-full w-full max-w-6xl grow flex-col pb-4 lg:flex-row dark:bg-gray-950">
       {/* Info Card*/}
-      <div className="lg:w-3/8 relative flex min-w-[400px] grow flex-col justify-center overflow-hidden px-6 lg:inset-0 lg:flex lg:px-0">
-        <div className="relative flex w-full lg:mr-[calc(max(2rem,50%-38rem)+40rem)] lg:min-w-[32rem] lg:overflow-y-auto lg:overflow-x-hidden lg:pl-[max(4rem,calc(50%-38rem))]">
-          <div className="mx-auto w-full min-w-[350px] max-w-md md:min-w-[400px] lg:mx-0 lg:flex lg:w-96 lg:flex-col lg:before:flex-1 lg:before:pt-6">
-            <div className="pb-10 sm:pb-20 sm:pt-32 lg:py-20 lg:pt-20">
+      <div className="relative flex min-w-[400px] grow flex-col justify-center overflow-hidden px-6 lg:inset-0 lg:flex lg:w-3/8 lg:px-0">
+        <div className="relative flex w-full lg:mr-[calc(max(2rem,50%-38rem)+40rem)] lg:min-w-[32rem] lg:overflow-x-hidden lg:overflow-y-auto lg:pl-[max(4rem,calc(50%-38rem))]">
+          <div className="mx-auto w-full max-w-md min-w-[350px] md:min-w-[400px] lg:mx-0 lg:flex lg:w-96 lg:flex-col lg:before:flex-1 lg:before:pt-6">
+            <div className="pb-10 sm:pt-32 sm:pb-20 lg:py-20 lg:pt-20">
               <div className="relative">
                 {/* Intro */}
-                <h1 className="text-slate mt-14 text-pretty text-4xl/tight font-light">
+                <h1 className="text-slate mt-14 text-4xl/tight font-light text-pretty">
                   Pixel Crafter <span className="text-purple-500">by AI</span>
                 </h1>
                 <p className="mt-4 text-sm/6 text-slate-700">
@@ -136,11 +129,9 @@ export default function PixelsPage({ q, defaultModel }: ImagesPageProps) {
                   effortlessly.
                 </p>
                 {/* Controls */}
-                <div className="text-slate flex flex-col gap-6 text-pretty py-4 md:gap-4">
+                <div className="text-slate flex flex-col gap-6 py-4 text-pretty md:gap-4">
                   <Headless.Field className="justift-center flex items-baseline gap-6">
-                    <Label className="grow text-sm font-semibold">
-                      Model
-                    </Label>
+                    <Label className="grow text-sm font-semibold">Model</Label>
                     <Select
                       name="model"
                       value={model}
@@ -148,36 +139,39 @@ export default function PixelsPage({ q, defaultModel }: ImagesPageProps) {
                       className="max-w-fit text-sm"
                       disabled={isLoading}
                     >
-                      {Object.keys(VISION_MODELS).map((model) => (
+                      {supportedImageModels.map((model) => (
                         <option
-                          key={model}
-                          value={model}
+                          key={model.displayName}
+                          value={model.displayName}
                           className="text-end text-sm"
                         >
-                          {model}
+                          {model.displayName}
                         </option>
                       ))}
                     </Select>
                   </Headless.Field>
-                  {VISION_MODELS[model]?.parameters?.map((param) => (
+                  {parameters.map((param) => (
                     <Headless.Field
                       key={param.name}
                       className="justift-center flex items-baseline gap-6"
                     >
                       <Label className="grow text-sm font-semibold">
-                        {param.displayName || capitalizeFirstLetter(param.name)}
+                        {capitalizeFirstLetter(
+                          param.name.replace(/[-_]/g, " "),
+                        )}
                       </Label>
                       <Select
                         name={param.name}
-                        defaultValue={param.default}
+                        defaultValue={param.options[0]}
                         className="max-w-fit text-sm"
                         disabled={isLoading}
-                        onChange={(e) =>
-                          setExtraInputs({
-                            ...extraInputs,
+                        onChange={(e) => {
+                          setProviderOptions({
+                            ...providerOptions,
                             [param.name]: e.target.value,
-                          })
-                        }
+                          });
+                          console.log(e.target.value);
+                        }}
                       >
                         {param.options.map((val: string, index: number) => (
                           <option
@@ -193,7 +187,7 @@ export default function PixelsPage({ q, defaultModel }: ImagesPageProps) {
                   ))}
                 </div>
 
-                {/* Search Query */}
+                {/* Prompt */}
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div className="relative isolate mt-4 text-sm">
                     <label className="sr-only">Descriptions</label>
@@ -240,11 +234,12 @@ export default function PixelsPage({ q, defaultModel }: ImagesPageProps) {
       </div>
 
       {/* Output Gallery */}
-      {(isLoading || curPrediction) && (
+      {(isLoading || imageUrl) && (
         <OutputGallery
-          className="stretch no-scrollbar lg:w-5/8 mx-auto max-h-screen w-full min-w-[350px] max-w-lg grow pb-10 md:min-w-[400px] lg:mx-6 lg:max-w-xl lg:pt-20"
+          className="stretch no-scrollbar mx-auto max-h-screen w-full max-w-lg min-w-[350px] grow pb-10 md:min-w-[400px] lg:mx-6 lg:w-5/8 lg:max-w-xl lg:pt-20"
           isLoading={isLoading}
-          prediction={curPrediction}
+          prompt={input || ""}
+          imageUrl={imageUrl || ""}
         />
       )}
     </div>

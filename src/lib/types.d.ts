@@ -62,3 +62,19 @@ export type VisionModelParameter = {
   default: string,
   options: string[]
 }
+
+
+export type ImageModelMetadataParameter = {
+  name: string;
+  options: string[];
+}
+
+export type ImageModelMetadata = {
+  displayName: string;
+  provider: string;
+  model: string;
+  creditsCost: number;
+  parameters?: ImageModelMetadataParameter[];
+  aspectRatio?: `${number}:${number}`[];
+  promptSuffix?: string;
+};
