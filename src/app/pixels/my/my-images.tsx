@@ -100,7 +100,7 @@ export default function MyImagesView() {
                   className="aspect-14/13 w-full rounded-2xl border object-cover"
                 />
               </Link>
-              <h3 className="text-slate mt-6 text-lg/8 font-semibold tracking-tight">
+              <h3 className="text-slate mt-6 line-clamp-1 text-lg/8 font-semibold tracking-tight">
                 {image.model.split(":")[0] ||
                   capitalizeFirstLetter(image.provider)}
               </h3>
