@@ -26,7 +26,9 @@ import {
 } from "@/lib/types";
 import { capitalizeFirstLetter } from "@/lib/utils";
 import * as Headless from "@headlessui/react";
+import { PhotoIcon } from "@heroicons/react/20/solid";
 import { JSONValue } from "ai";
+import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import OutputGallery from "./image-loader";
@@ -44,6 +46,7 @@ export default function PixelsPage({ q, defaultModel }: ImagesPageProps) {
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const { deduct } = useCredits();
   const { user } = useSession();
+  const router = useRouter();
 
   // Memoize modelSpec and parameters to prevent unnecessary recalculations
   const modelSpec: ImageModelMetadata | null = useMemo(
@@ -131,6 +134,19 @@ export default function PixelsPage({ q, defaultModel }: ImagesPageProps) {
                   masterpieces, PixelCrafter brings your imagination to life
                   effortlessly.
                 </p>
+
+                {/* View Images Generation */}
+                <Button
+                  color="white"
+                  className="my-2 ml-auto max-h-10 w-full"
+                  onClick={() => router.push("/pixels/my")}
+                >
+                  <PhotoIcon className="w- h-3 fill-white" />
+                  <span className="text-sm font-medium">
+                    Click here to view my past generations
+                  </span>
+                </Button>
+
                 {/* Controls */}
                 <div className="text-slate flex flex-col gap-6 py-4 text-pretty md:gap-4">
                   <Headless.Field className="justift-center flex items-baseline gap-6">
@@ -189,7 +205,6 @@ export default function PixelsPage({ q, defaultModel }: ImagesPageProps) {
                     </Headless.Field>
                   ))}
                 </div>
-
                 {/* Prompt */}
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div className="relative isolate mt-4 text-sm">
@@ -211,7 +226,7 @@ export default function PixelsPage({ q, defaultModel }: ImagesPageProps) {
                     <div className="bg-slate/2.5 ring-slate/15 absolute inset-0 -z-10 rounded-lg ring-1 ring-purple-400/50 transition peer-focus:ring-purple-300" />
                   </div>
 
-                  <div className="flex flex-col items-end">
+                  <div className="flex items-end">
                     <Button
                       type="submit"
                       className="my-1 ml-auto max-h-10 text-sm"

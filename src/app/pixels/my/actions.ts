@@ -19,7 +19,7 @@ export async function getImagesByUserId(userId: string) {
     return []
   }
   const data = await query(
-    "SELECT image_url, prompt as alt FROM PixelsImageGeneration WHERE user_id = $1",
+    "SELECT image_url, prompt, provider, model FROM PixelsImageGeneration WHERE user_id = $1",
     [userId]
   );
   return data.rows;

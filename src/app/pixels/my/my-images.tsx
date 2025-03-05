@@ -15,6 +15,7 @@
 import AnimatedSparkleIcon from "@/components/animated-sparkle";
 import { Button } from "@/components/base/button";
 import { useSession } from "@/hooks/session";
+import { capitalizeFirstLetter } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -24,7 +25,9 @@ import { getImagesByUserId } from "./actions";
 
 interface ImageItem {
   image_url: string;
-  alt?: string;
+  prompt: string;
+  provider: string;
+  model: string;
 }
 
 export default function MyImagesView() {
@@ -93,21 +96,22 @@ export default function MyImagesView() {
                   src={image.image_url}
                   width={280}
                   height={260}
-                  alt={image.alt || ""}
+                  alt={image.prompt || ""}
                   className="aspect-14/13 w-full rounded-2xl border object-cover"
                 />
-                {/* {image.title && (
-                  <h3 className="text-slate mt-6 text-lg/8 font-semibold tracking-tight">
-                    {image.title}
-                  </h3>
-                )}
-                {image.subtitle && (
-                  <p className="text-black-300 text-base/7">{image.subtitle}</p>
-                )}
-                {image.footer && (
-                  <p className="text-black-500 text-sm/6">{image.footer}</p>
-                )} */}
               </Link>
+              <h3 className="text-slate mt-6 text-lg/8 font-semibold tracking-tight">
+                {image.model.split(":")[0] ||
+                  capitalizeFirstLetter(image.provider)}
+              </h3>
+              {/* {image.provider && (
+                <p className="text-black-300 text-base/7">{image.provider}</p>
+              )} */}
+              {image.prompt && (
+                <p className="text-black-500 prose line-clamp-3 text-sm/6 text-pretty hover:line-clamp-none">
+                  {image.prompt}
+                </p>
+              )}
             </li>
           ))}
         </ul>
