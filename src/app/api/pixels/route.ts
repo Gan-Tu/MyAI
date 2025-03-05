@@ -63,11 +63,10 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Faield to initialize image model." }, { status: 400 })
   }
 
-  const { aspectRatio, output_format, ...restOfOptions } = options;
+  const { aspectRatio, ...restOfOptions } = options;
   let providerOptions = restOfOptions ? {
     [modelSpec.provider]: {
       ...restOfOptions,
-      output_format: output_format
     }
   } : undefined;
 
@@ -79,7 +78,7 @@ export async function POST(req: Request) {
       providerOptions: providerOptions
     });
 
-    const fileExt = output_format || "webp";
+    const fileExt = options.output_format || "webp";
     const fileName = `${generateId()}.${fileExt}`;
     const imageBuffer = Buffer.from(image.uint8Array);
 
