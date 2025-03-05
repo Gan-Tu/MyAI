@@ -26,6 +26,7 @@ import { type NavigationProps } from "@/lib/types";
 import {
   ArrowLeftEndOnRectangleIcon,
   ArrowRightStartOnRectangleIcon,
+  PhotoIcon,
 } from "@heroicons/react/20/solid";
 import { CurrencyDollarIcon } from "@heroicons/react/24/outline";
 import Intercom, {
@@ -182,6 +183,11 @@ export function TopNavbar({
                 </DropdownSection>
               )}
               <DropdownSection>
+                <DropdownItem href="/pixels/my" className="cursor-pointer">
+                  <PhotoIcon />
+                  <DropdownLabel>Image Gallery</DropdownLabel>
+                </DropdownItem>
+                <DropdownDivider />
                 {showLogin && (
                   <DropdownItem
                     href={`/login?redirect_to=${encodeURIComponent(pathname)}`}

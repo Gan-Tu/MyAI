@@ -12,9 +12,11 @@
 
 "use client";
 
+import AnimatedSparkleIcon from "@/components/animated-sparkle";
 import { Button } from "@/components/base/button";
 import { Label } from "@/components/base/fieldset";
 import { Select } from "@/components/base/select";
+import CreditFooter from "@/components/credit-footer";
 import { useCredits } from "@/hooks/credits";
 import { getImageModelMetadata, supportedImageModels } from "@/lib/models";
 import {
@@ -26,9 +28,7 @@ import * as Headless from "@headlessui/react";
 import { JSONValue } from "ai";
 import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
-import AnimatedSparkleIcon from "../../components/animated-sparkle";
-import CreditFooter from "../../components/credit-footer";
-import OutputGallery from "./output-gallery";
+import OutputGallery from "./image-loader";
 
 interface ImagesPageProps {
   q?: string;
