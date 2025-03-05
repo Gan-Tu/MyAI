@@ -123,7 +123,7 @@ export const supportedImageModels: ImageModelMetadata[] = [
           'realistic_image/hard_flash',
           'realistic_image/hdr',
           'realistic_image/motion_blur',
-          'realistic_image/natura_light',
+          'realistic_image/natural_light',
           'realistic_image/studio_portrait',
           'digital_illustration',
           'digital_illustration/2d_art_poster',
