@@ -25,7 +25,7 @@ interface RequestBodyType {
 }
 
 async function uploadImage(fileName: string, buffer: Buffer) {
-  const blob = await put(fileName, buffer, {
+  const blob = await put(`replicate-images/${fileName}`, buffer, {
     access: 'public',
   });
   return blob;
