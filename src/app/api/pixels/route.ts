@@ -11,8 +11,9 @@
 // limitations under the License.
 
 import { getImageModel, getImageModelMetadata } from '@/lib/models';
-import redis, { checkRateLimit } from "@/lib/redis";
+import { checkRateLimit } from "@/lib/redis";
 import { ImageModelMetadata } from '@/lib/types';
+import { neon } from '@neondatabase/serverless';
 import { put } from '@vercel/blob';
 import { generateId, experimental_generateImage as generateImage, ImageModel, JSONValue } from 'ai';
 import { NextResponse } from 'next/server';
@@ -20,8 +21,10 @@ import { NextResponse } from 'next/server';
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;
 
+const sql = neon(process.env.DATABASE_URL!);
+
 interface RequestBodyType {
-  prompt: string, modelName: string, options: Record<string, JSONValue>
+  prompt: string, modelName: string, options: Record<string, JSONValue>, userId: string
 }
 
 async function uploadImage(fileName: string, buffer: Buffer) {
@@ -32,7 +35,7 @@ async function uploadImage(fileName: string, buffer: Buffer) {
 }
 
 export async function POST(req: Request) {
-  const { prompt, modelName, options }: RequestBodyType = await req.json();
+  const { prompt, modelName, options, userId }: RequestBodyType = await req.json();
 
   let { passed, secondsLeft } = await checkRateLimit("/api/pixels")
   if (!passed) {
@@ -43,6 +46,8 @@ export async function POST(req: Request) {
 
   if (!prompt) {
     return NextResponse.json({ error: "Prompt is required." }, { status: 400 })
+  } else if (!userId) {
+    return NextResponse.json({ error: "userId is required." }, { status: 400 })
   } else if (!modelName) {
     return NextResponse.json({ error: "modelName is required." }, { status: 400 })
   } else if (!options) {
@@ -91,14 +96,16 @@ export async function POST(req: Request) {
       contentDisposition: blob.contentDisposition,
     };
 
-    const redisKey = `myai:replicate:${fileName}`;
-    await redis.json.set(redisKey, "$", {
-      input: {
-        modelName, prompt, aspectRatio, providerOptions
-      },
-      output: result
-    });
-    console.log(`Saved content to redis at: ${redisKey}`);
+    await sql(`INSERT INTO PixelsImageGeneration (user_id, content_type, image_url, provider, model, prompt) VALUES ($1,$2,$3,$4,$5,$6)`, [userId, blob.contentType, blob.url, modelSpec.provider, modelSpec.model, prompt]);
+
+    // const redisKey = `myai:replicate:${fileName}`;
+    // await redis.json.set(redisKey, "$", {
+    //   input: {
+    //     modelName, prompt, aspectRatio, providerOptions
+    //   },
+    //   output: result
+    // });
+    // console.log(`Saved content to redis at: ${redisKey}`);
 
     return NextResponse.json(result, { status: 200 });
 

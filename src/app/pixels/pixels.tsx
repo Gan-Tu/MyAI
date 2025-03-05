@@ -18,6 +18,7 @@ import { Label } from "@/components/base/fieldset";
 import { Select } from "@/components/base/select";
 import CreditFooter from "@/components/credit-footer";
 import { useCredits } from "@/hooks/credits";
+import { useSession } from "@/hooks/session";
 import { getImageModelMetadata, supportedImageModels } from "@/lib/models";
 import {
   type ImageModelMetadata,
@@ -42,6 +43,7 @@ export default function PixelsPage({ q, defaultModel }: ImagesPageProps) {
   const [providerOptions, setProviderOptions] = useState({});
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const { deduct } = useCredits();
+  const { user } = useSession();
 
   // Memoize modelSpec and parameters to prevent unnecessary recalculations
   const modelSpec: ImageModelMetadata | null = useMemo(
@@ -90,6 +92,7 @@ export default function PixelsPage({ q, defaultModel }: ImagesPageProps) {
         prompt: `${modelSpec?.promptPrefix || ""}${input}${modelSpec?.promptSuffix || ""}`,
         modelName: model,
         options: providerOptions,
+        userId: user?.uid || "",
       }),
     });
     const { url } = await res.json();
