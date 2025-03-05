@@ -108,7 +108,7 @@ export default function MyImagesView() {
                 <p className="text-black-300 text-base/7">{image.provider}</p>
               )} */}
               {image.prompt && (
-                <p className="text-black-500 prose line-clamp-3 text-sm/6 text-pretty hover:line-clamp-none">
+                <p className="text-black-500 prose line-clamp-4 text-sm/6 text-pretty">
                   {image.prompt}
                 </p>
               )}
