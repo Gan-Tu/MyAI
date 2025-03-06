@@ -1,6 +1,7 @@
-import redis from '@/lib/redis'
-import { Dropbox } from 'dropbox'
-import { Resend } from 'resend'
+import { query } from "@/lib/db";
+import redis from '@/lib/redis';
+import { Dropbox } from 'dropbox';
+import { Resend } from 'resend';
 
 export const dynamic = 'force-dynamic'
 
@@ -53,14 +54,17 @@ export async function GET(request: Request) {
         replicate.push(resp)
       }
     }
+    const imagesBlob = await query("SELECT * FROM PixelsImageGeneration");
 
     // Format data for Dropbox
     const financeContent = JSON.stringify(finance, null, 2)
     const replicateContent = JSON.stringify(replicate, null, 2)
+    const imagesBlobContent = JSON.stringify(imagesBlob.rows, null, 2)
 
     const unixTimestamp = Math.floor(Date.now() / 1000)
     const financeFilePath = `/${unixTimestamp}/finance.json`
     const replicateFilePath = `/${unixTimestamp}/replicate.json`
+    const imagesBlobFilePath = `/${unixTimestamp}/images.json`
 
     // Upload file to Dropbox
     await dbx.filesUpload({
@@ -75,6 +79,11 @@ export async function GET(request: Request) {
       mode: { '.tag': 'overwrite' }, // Overwrite existing file with the same name
     })
 
+    await dbx.filesUpload({
+      path: imagesBlobFilePath, // Dropbox path
+      contents: imagesBlobContent,
+      mode: { '.tag': 'overwrite' }, // Overwrite existing file with the same name
+    })
 
     const resend = new Resend(process.env.RESEND_API_KEY)
     await resend.emails.send({
