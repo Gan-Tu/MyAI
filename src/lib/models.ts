@@ -117,7 +117,7 @@ export const supportedImageModels: ImageModelMetadata[] = [
     parameters: [
       {
         name: "prompt_optimizer",
-        default: true
+        default: false
       }
     ]
   },
