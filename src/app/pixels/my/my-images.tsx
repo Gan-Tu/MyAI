@@ -69,20 +69,20 @@ export default function MyImagesView() {
               : "Please sign in to view your images"}
           </p>
 
-          {!user && (
+          {!isLoading && (
             <Button
-              className="my-1 mt-12 ml-auto max-h-10 text-sm"
+              className="mt-5 ml-auto text-sm"
               onClick={() => router.push("/pixels")}
             >
               <AnimatedSparkleIcon className="h-3 w-3 fill-purple-400" />
-              Go Generate!
+              Generate more images!
             </Button>
           )}
         </div>
 
         <ul
           role="list"
-          className="mx-auto mt-20 grid max-w-2xl grid-cols-1 gap-x-8 gap-y-14 sm:grid-cols-2 lg:mx-0 lg:max-w-none lg:grid-cols-3 xl:grid-cols-4"
+          className="mx-auto mt-8 grid max-w-2xl grid-cols-1 gap-x-8 gap-y-14 sm:grid-cols-2 lg:mx-0 lg:max-w-none lg:grid-cols-3 xl:grid-cols-4"
         >
           {images.map((image, i) => (
             <li key={`image-${i}`}>
