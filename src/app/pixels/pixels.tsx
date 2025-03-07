@@ -16,14 +16,12 @@ import AnimatedSparkleIcon from "@/components/animated-sparkle";
 import { Button } from "@/components/base/button";
 import { Label } from "@/components/base/fieldset";
 import { Select } from "@/components/base/select";
+import { Switch, SwitchField } from "@/components/base/switch";
 import CreditFooter from "@/components/credit-footer";
 import { useCredits } from "@/hooks/credits";
 import { useSession } from "@/hooks/session";
 import { getImageModelMetadata, supportedImageModels } from "@/lib/models";
-import {
-  type ImageModelMetadata,
-  type ImageModelMetadataParameter,
-} from "@/lib/types";
+import { type ImageModelMetadata, type ImageModelParameter } from "@/lib/types";
 import { capitalizeFirstLetter } from "@/lib/utils";
 import * as Headless from "@headlessui/react";
 import { PhotoIcon } from "@heroicons/react/20/solid";
@@ -55,12 +53,12 @@ export default function PixelsPage({ q, defaultModel }: ImagesPageProps) {
   );
   const creditsCost: number = modelSpec?.creditsCost || 1;
 
-  const parameters: ImageModelMetadataParameter[] = useMemo(() => {
-    const params = [];
+  const parameters: ImageModelParameter[] = useMemo(() => {
+    const params: ImageModelParameter[] = [];
     if (modelSpec?.aspectRatio?.length) {
       params.push({
         name: "aspect_ratio",
-        options: modelSpec.aspectRatio as string[],
+        options: modelSpec.aspectRatio,
       });
     }
     return params.concat(modelSpec?.parameters || []);
@@ -70,7 +68,11 @@ export default function PixelsPage({ q, defaultModel }: ImagesPageProps) {
     if (parameters.length > 0) {
       const options: Record<string, JSONValue> = parameters.reduce(
         (acc, element) => {
-          acc[element.name] = element.options[0];
+          if ("options" in element) {
+            acc[element.name] = element.options[0];
+          } else {
+            acc[element.name] = element.default;
+          }
           return acc;
         },
         {} as Record<string, JSONValue>,
@@ -169,41 +171,64 @@ export default function PixelsPage({ q, defaultModel }: ImagesPageProps) {
                       ))}
                     </Select>
                   </Headless.Field>
-                  {parameters.map((param) => (
-                    <Headless.Field
-                      key={param.name}
-                      className="justift-center flex items-baseline gap-6"
-                    >
-                      <Label className="grow text-sm font-semibold">
-                        {capitalizeFirstLetter(
-                          param.name.replace(/[-_]/g, " "),
-                        )}
-                      </Label>
-                      <Select
-                        name={param.name}
-                        defaultValue={param.options[0]}
-                        className="max-w-fit text-sm"
-                        disabled={isLoading}
-                        onChange={(e) => {
-                          setProviderOptions({
-                            ...providerOptions,
-                            [param.name]: e.target.value,
-                          });
-                          console.log(e.target.value);
-                        }}
+                  {parameters.map((param) =>
+                    "options" in param ? (
+                      <Headless.Field
+                        key={param.name}
+                        className="justift-center flex items-baseline gap-6"
                       >
-                        {param.options.map((val: string, index: number) => (
-                          <option
-                            key={`${param.name}-${index}`}
-                            value={val}
-                            className="text-end text-sm"
-                          >
-                            {val}
-                          </option>
-                        ))}
-                      </Select>
-                    </Headless.Field>
-                  ))}
+                        <Label className="grow text-sm font-semibold">
+                          {capitalizeFirstLetter(
+                            param.name.replace(/[-_]/g, " "),
+                          )}
+                        </Label>
+                        <Select
+                          name={param.name}
+                          defaultValue={param.options[0]}
+                          className="max-w-fit text-sm"
+                          disabled={isLoading}
+                          onChange={(e) => {
+                            setProviderOptions({
+                              ...providerOptions,
+                              [param.name]: e.target.value,
+                            });
+                          }}
+                        >
+                          {param.options.map((val: string, index: number) => (
+                            <option
+                              key={`${param.name}-${index}`}
+                              value={val}
+                              className="text-end text-sm"
+                            >
+                              {val}
+                            </option>
+                          ))}
+                        </Select>
+                      </Headless.Field>
+                    ) : (
+                      <SwitchField
+                        key={param.name}
+                        className="justift-center flex cursor-pointer items-baseline gap-6"
+                      >
+                        <Label className="grow text-sm font-semibold">
+                          {capitalizeFirstLetter(
+                            param.name.replace(/[-_]/g, " "),
+                          )}
+                        </Label>
+                        <Switch
+                          name={param.name}
+                          defaultChecked={param.default}
+                          disabled={isLoading}
+                          onChange={(val) => {
+                            setProviderOptions({
+                              ...providerOptions,
+                              [param.name]: val,
+                            });
+                          }}
+                        />
+                      </SwitchField>
+                    ),
+                  )}
                 </div>
                 {/* Prompt */}
                 <form onSubmit={handleSubmit} className="space-y-4">

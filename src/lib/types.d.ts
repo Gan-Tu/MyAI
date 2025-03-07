@@ -64,17 +64,24 @@ export type VisionModelParameter = {
 }
 
 
-export type ImageModelMetadataParameter = {
+export type ImageModelDropdownMetadataParameter = {
   name: string;
   options: string[];
 }
+
+export type ImageModelBooleanMetadataParameter = {
+  name: string;
+  default: boolean;
+}
+
+export type ImageModelParameter = ImageModelBooleanMetadataParameter | ImageModelDropdownMetadataParameter;
 
 export type ImageModelMetadata = {
   displayName: string;
   provider: string;
   model: string;
   creditsCost: number;
-  parameters?: ImageModelMetadataParameter[];
+  parameters?: ImageModelParameter[];
   aspectRatio?: `${number}:${number}`[];
   promptPrefix?: string;
   promptSuffix?: string;

@@ -109,6 +109,19 @@ export const supportedImageModels: ImageModelMetadata[] = [
     ]
   },
   {
+    displayName: 'Minimax Image-01',
+    provider: "replicate",
+    model: 'minimax/image-01',
+    creditsCost: 1,
+    aspectRatio: ['1:1', '16:9', '4:3', '3:2', '2:3', '3:4', '9:16', '21:9'],
+    parameters: [
+      {
+        name: "prompt_optimizer",
+        default: true
+      }
+    ]
+  },
+  {
     displayName: 'Recraft 20B',
     provider: "replicate",
     model: 'recraft-ai/recraft-20b',
