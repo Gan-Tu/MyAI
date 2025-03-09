@@ -165,8 +165,8 @@ export default function HighlighterPage({ q }: HighlighterPageProps) {
 
       {/* Highlighting */}
       {completion && !isLoading && (
-        <div className="flex min-h-screen w-full flex-col items-center justify-center px-6 pt-20 lg:min-h-full lg:px-8">
-          <div className="no-scrollbar relative mx-auto w-full max-w-lg rounded-lg bg-white p-8 shadow-xs md:max-h-[850px]">
+        <div className="flex min-h-screen flex-col items-center justify-center px-6 pt-20 lg:min-h-full lg:px-8">
+          <div className="no-scrollbar relative mx-auto max-w-lg rounded-lg bg-white p-8 shadow-xs md:max-h-[850px]">
             <div className="prose prose-sm text-pretty text-lg/8 text-slate-700">
               {beforeHighlight}
               {input.includes(completion) && completion && (
