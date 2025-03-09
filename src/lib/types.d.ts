@@ -86,3 +86,11 @@ export type ImageModelMetadata = {
   promptPrefix?: string;
   promptSuffix?: string;
 };
+
+export type ImageGalleryItem = {
+  image_url: string;
+  prompt: string;
+  provider: string;
+  model: string;
+  model_url?: string;
+}

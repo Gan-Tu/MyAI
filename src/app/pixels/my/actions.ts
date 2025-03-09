@@ -13,6 +13,7 @@
 "use server";
 
 import { query } from "@/lib/db";
+import { type ImageGalleryItem } from "@/lib/types";
 
 export async function getImagesByUserId(userId: string) {
   if (!userId) {
@@ -22,5 +23,11 @@ export async function getImagesByUserId(userId: string) {
     "SELECT image_url, prompt, provider, model FROM PixelsImageGeneration WHERE user_id = $1",
     [userId]
   );
-  return data.rows;
+  let imageData: ImageGalleryItem[] = data.rows as ImageGalleryItem[];
+  imageData.map(x => {
+    if (x.provider === "replicate") {
+      x.model_url = `https://replicate.com/${x.model.split(":")[0]}`
+    }
+  })
+  return imageData;
 }

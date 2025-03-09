@@ -15,32 +15,30 @@
 import AnimatedSparkleIcon from "@/components/animated-sparkle";
 import { Button } from "@/components/base/button";
 import { useSession } from "@/hooks/session";
+import { type ImageGalleryItem } from "@/lib/types";
 import { capitalizeFirstLetter } from "@/lib/utils";
+import { EllipsisVerticalIcon } from "@heroicons/react/20/solid";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { getImagesByUserId } from "./actions";
-
-interface ImageItem {
-  image_url: string;
-  prompt: string;
-  provider: string;
-  model: string;
-}
+import ImageOptions from "./image-options";
 
 export default function MyImagesView() {
   const router = useRouter();
   const { user } = useSession();
   const [isLoading, setIsLoading] = useState(false);
-  const [images, setImages] = useState<ImageItem[]>([]);
+  const [images, setImages] = useState<ImageGalleryItem[]>([]);
+  const [imageToEdit, setImageToEdit] = useState<ImageGalleryItem | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
     if (user && user.uid) {
       setIsLoading(true);
       getImagesByUserId(user.uid)
-        .then((data) => setImages(data as ImageItem[]))
+        .then((data) => setImages(data as ImageGalleryItem[]))
         .catch((error) => {
           toast.error("Failed to fetch images");
           console.error(error);
@@ -101,20 +99,50 @@ export default function MyImagesView() {
                 />
               </Link>
               <h3 className="text-slate mt-6 line-clamp-1 text-lg/8 font-semibold tracking-tight">
-                {image.model.split(":")[0] ||
-                  capitalizeFirstLetter(image.provider)}
+                {image.model_url ? (
+                  <Link
+                    href={image.model_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="cursor-pointer hover:text-blue-600 hover:underline"
+                  >
+                    {image.model.split(":")[0] ||
+                      capitalizeFirstLetter(image.provider)}
+                  </Link>
+                ) : (
+                  <span>
+                    {image.model.split(":")[0] ||
+                      capitalizeFirstLetter(image.provider)}
+                  </span>
+                )}
+                <button
+                  onClick={() => {
+                    setImageToEdit(image);
+                    setIsEditing(!isEditing);
+                  }}
+                >
+                  <EllipsisVerticalIcon className="mx-2 inline h-4 w-4 cursor-pointer text-slate-600" />
+                </button>
               </h3>
               {/* {image.provider && (
                 <p className="text-black-300 text-base/7">{image.provider}</p>
               )} */}
               {image.prompt && (
                 <p className="text-black-500 prose line-clamp-4 text-sm/6 text-pretty">
-                  {image.prompt}
+                  {capitalizeFirstLetter(image.prompt)}
                 </p>
               )}
             </li>
           ))}
         </ul>
+
+        {imageToEdit && (
+          <ImageOptions
+            image={imageToEdit}
+            isOpen={isEditing}
+            setIsOpen={setIsEditing}
+          />
+        )}
       </div>
     </div>
   );
