@@ -55,20 +55,28 @@ export default function ImageOptions({
           ) : (
             <div className="mt-6 border-t border-gray-100">
               <dl className="divide-y divide-gray-100">
-                <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+                <div className="py-4 sm:grid sm:grid-cols-4 sm:gap-4 sm:px-0">
                   <dt className="text-sm/6 font-medium text-gray-900">
                     Provider
                   </dt>
-                  <dd className="mt-1 text-sm/6 text-gray-700 sm:col-span-2 sm:mt-0">
+                  <dd className="mt-1 text-sm/6 text-gray-700 sm:col-span-3 sm:mt-0">
                     {capitalizeFirstLetter(image.provider)}
                   </dd>
                 </div>
+                <div className="py-4 sm:grid sm:grid-cols-4 sm:gap-4 sm:px-0">
+                  <dt className="text-sm/6 font-medium text-gray-900">
+                    Content Type
+                  </dt>
+                  <dd className="mt-1 text-sm/6 text-gray-700 sm:col-span-3 sm:mt-0">
+                    {image.content_type}
+                  </dd>
+                </div>
                 {image.model_url && (
-                  <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+                  <div className="py-4 sm:grid sm:grid-cols-4 sm:gap-4 sm:px-0">
                     <dt className="line-clamp-1 text-sm/6 font-medium text-gray-900">
                       Model URL
                     </dt>
-                    <dd className="mt-1 text-sm/6 text-gray-700 sm:col-span-2 sm:mt-0">
+                    <dd className="mt-1 text-sm/6 text-gray-700 sm:col-span-3 sm:mt-0">
                       <Link
                         href={image.model_url}
                         target="_blank"
@@ -80,12 +88,12 @@ export default function ImageOptions({
                     </dd>
                   </div>
                 )}
-                <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+                <div className="py-4 sm:grid sm:grid-cols-4 sm:gap-4 sm:px-0">
                   <dt className="text-sm/6 font-medium text-gray-900">
                     Prompt
                   </dt>
-                  <dd className="mt-1 max-h-512 overflow-scroll text-sm/6 text-gray-700 sm:col-span-2 sm:mt-0">
-                    {capitalizeFirstLetter(image.prompt)}
+                  <dd className="mt-1 max-h-512 overflow-scroll text-sm/6 text-gray-700 sm:col-span-3 sm:mt-0">
+                    {image.prompt}
                   </dd>
                 </div>
               </dl>
@@ -103,7 +111,7 @@ export default function ImageOptions({
               }
             }}
           >
-            {isDeleteMode ? "Cancel" : "Close"}
+            {isDeleteMode ? "Back" : "Close"}
           </Button>
           <Button
             color="red"

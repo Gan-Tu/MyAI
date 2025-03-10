@@ -89,6 +89,7 @@ export type ImageModelMetadata = {
 
 export type ImageGalleryItem = {
   image_url: string;
+  content_type: string;
   prompt: string;
   provider: string;
   model: string;

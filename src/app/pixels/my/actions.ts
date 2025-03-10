@@ -14,6 +14,7 @@
 
 import { query } from "@/lib/db";
 import { type ImageGalleryItem } from "@/lib/types";
+import { capitalizeFirstLetter } from "@/lib/utils";
 import { del } from "@vercel/blob";
 import { revalidatePath } from "next/cache";
 
@@ -22,13 +23,16 @@ export async function getImagesByUserId(userId: string) {
     return []
   }
   const data = await query(
-    "SELECT image_url, prompt, provider, model FROM PixelsImageGeneration WHERE user_id = $1",
+    "SELECT image_url, content_type, prompt, provider, model FROM PixelsImageGeneration WHERE user_id = $1",
     [userId]
   );
   let imageData: ImageGalleryItem[] = data.rows as ImageGalleryItem[];
   imageData.map(x => {
     if (x.provider === "replicate") {
       x.model_url = `https://replicate.com/${x.model.split(":")[0]}`
+    }
+    if (x.prompt) {
+      x.prompt = capitalizeFirstLetter(x.prompt)
     }
   })
   return imageData;

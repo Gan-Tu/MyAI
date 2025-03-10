@@ -95,10 +95,10 @@ export default function MyImagesView() {
                   width={280}
                   height={260}
                   alt={image.prompt || ""}
-                  className="aspect-14/13 w-full rounded-2xl border object-cover"
+                  className="aspect-14/13 w-full rounded-2xl border object-cover hover:opacity-80"
                 />
               </Link>
-              <h3 className="text-slate mt-6 line-clamp-1 text-lg/8 font-semibold tracking-tight">
+              <h3 className="text-slate mt-6 line-clamp-1 text-xl/8 font-semibold tracking-tight sm:text-lg/8">
                 {image.model_url ? (
                   <Link
                     href={image.model_url}
@@ -120,16 +120,14 @@ export default function MyImagesView() {
                     setImageToEdit(image);
                     setIsEditing(!isEditing);
                   }}
+                  className="items-center"
                 >
-                  <EllipsisVerticalIcon className="mx-2 inline h-4 w-4 cursor-pointer text-slate-600" />
+                  <EllipsisVerticalIcon className="mx-2 my-auto inline h-4 w-4 cursor-pointer text-slate-600" />
                 </button>
               </h3>
-              {/* {image.provider && (
-                <p className="text-black-300 text-base/7">{image.provider}</p>
-              )} */}
               {image.prompt && (
-                <p className="text-black-500 prose line-clamp-4 text-sm/6 text-pretty">
-                  {capitalizeFirstLetter(image.prompt)}
+                <p className="text-black-500 prose text-md/6 line-clamp-4 text-pretty sm:text-sm/6">
+                  {image.prompt}
                 </p>
               )}
             </li>
