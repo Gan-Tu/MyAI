@@ -238,7 +238,7 @@ export const supportedImageModels: ImageModelMetadata[] = [
     displayName: 'Signature Design',
     provider: "fal",
     model: 'fal-ai/flux-lora',
-    promptPrefix: "AISIGNATURE thin black stylish curly calligraphy on white background; handwritten signature: ",
+    promptPrefix: "AISIGNATURE, thin stroke, curly, black stylish calligraphy on white background, handwritten signature: ",
     descriptionPlaceholder: "Enter your name first, then followed with optional description like your profession.",
     creditsCost: 5,
     parameters: [
