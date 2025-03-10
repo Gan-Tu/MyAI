@@ -35,3 +35,35 @@ export function getAiTopicsRespCacheKey(str: string, model: string = 'gpt-4o-min
 export function getAiTopicsImagesCacheKey(str: string) {
   return `ai-topics:images:${str?.toLowerCase()?.trim()}`
 }
+
+export async function copyToClipboard(textToCopy: string) {
+  try {
+    // Modern approach using Clipboard API
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      await navigator.clipboard.writeText(textToCopy);
+      return;
+    }
+
+    // Fallback for older browsers
+    const textArea = document.createElement("textarea");
+    textArea.value = textToCopy;
+
+    // Make the textarea out of viewport
+    textArea.style.position = "fixed";
+    textArea.style.left = "-999999px";
+    textArea.style.top = "-999999px";
+    document.body.appendChild(textArea);
+
+    textArea.focus();
+    textArea.select();
+
+    const successful = document.execCommand("copy");
+    document.body.removeChild(textArea);
+
+    if (!successful) {
+      console.error("Fallback: Could not copy text");
+    }
+  } catch (err) {
+    console.error("Failed to copy text: ", err);
+  }
+};
