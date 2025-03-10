@@ -14,6 +14,8 @@
 
 import { query } from "@/lib/db";
 import { type ImageGalleryItem } from "@/lib/types";
+import { del } from "@vercel/blob";
+import { revalidatePath } from "next/cache";
 
 export async function getImagesByUserId(userId: string) {
   if (!userId) {
@@ -30,4 +32,14 @@ export async function getImagesByUserId(userId: string) {
     }
   })
   return imageData;
+}
+
+
+export async function deleteImageByUrl(imageUrl: string) {
+  await query(
+    "DELETE FROM PixelsImageGeneration WHERE image_url = $1",
+    [imageUrl]
+  );
+  await del(imageUrl);
+  revalidatePath("/pixels/my");
 }
