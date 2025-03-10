@@ -239,7 +239,10 @@ export default function PixelsPage({ q, defaultModel }: ImagesPageProps) {
                       name="text"
                       autoFocus={true}
                       value={input}
-                      placeholder="Enter your description here..."
+                      placeholder={
+                        modelSpec?.descriptionPlaceholder ||
+                        "Enter your description here..."
+                      }
                       className="peer w-full cursor-text bg-transparent px-4 py-2.5 text-base text-slate-800 placeholder:text-zinc-400 focus:outline-hidden disabled:text-gray-500 lg:text-sm"
                       onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
                         setInput(e.target.value)

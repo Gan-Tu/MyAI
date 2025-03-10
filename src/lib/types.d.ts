@@ -78,10 +78,12 @@ export type ImageModelParameter = ImageModelBooleanMetadataParameter | ImageMode
 
 export type ImageModelMetadata = {
   displayName: string;
+  descriptionPlaceholder?: string;
   provider: string;
   model: string;
   creditsCost: number;
   parameters?: ImageModelParameter[];
+  defaultParameters?: Record<string, JSONValue>;
   aspectRatio?: `${number}:${number}`[];
   promptPrefix?: string;
   promptSuffix?: string;

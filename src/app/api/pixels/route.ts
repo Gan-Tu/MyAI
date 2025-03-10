@@ -68,12 +68,19 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Faield to initialize image model." }, { status: 400 })
   }
 
-  const { aspectRatio, ...restOfOptions } = options;
+  let { aspectRatio, ...restOfOptions } = options;
+  if (modelSpec.defaultParameters) {
+    restOfOptions = {
+      ...(restOfOptions || {}),
+      ...modelSpec.defaultParameters
+    }
+  }
   let providerOptions = restOfOptions ? {
     [modelSpec.provider]: {
       ...restOfOptions,
     }
   } : undefined;
+  console.log("providerOptions", providerOptions);
 
   try {
     const { image } = await generateImage({

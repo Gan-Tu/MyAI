@@ -13,6 +13,7 @@
 import { type ImageModelMetadata } from "@/lib/types";
 import { anthropic } from '@ai-sdk/anthropic';
 import { createDeepSeek } from '@ai-sdk/deepseek';
+import { fal } from '@ai-sdk/fal';
 import { google } from '@ai-sdk/google';
 import { groq } from '@ai-sdk/groq';
 import { mistral } from '@ai-sdk/mistral';
@@ -225,13 +226,38 @@ export const supportedImageModels: ImageModelMetadata[] = [
     creditsCost: 5,
     parameters: []
   },
+  // {
+  //   displayName: 'Signature Design',
+  //   provider: "replicate",
+  //   model: 'gan-tu/flux-dev-ai-signature:3699362ed9e98d32d05c7e99f747772960463dac9af70ebda3b98e69bd9f9b90',
+  //   promptPrefix: "AISIGNATURE handwritten signature, black stylish calligraphy on white background. ",
+  //   creditsCost: 5,
+  //   parameters: []
+  // },
   {
     displayName: 'Signature Design',
-    provider: "replicate",
-    model: 'gan-tu/flux-dev-ai-signature:3699362ed9e98d32d05c7e99f747772960463dac9af70ebda3b98e69bd9f9b90',
-    promptPrefix: "AISIGNATURE handwritten signature, black stylish calligraphy on white background. ",
+    provider: "fal",
+    model: 'fal-ai/flux-lora',
+    promptPrefix: "AISIGNATURE thin black stylish curly calligraphy on white background; handwritten signature: ",
+    descriptionPlaceholder: "Enter your name first, then followed with optional description like your profession.",
     creditsCost: 5,
-    parameters: []
+    parameters: [
+      {
+        name: "output_format",
+        options: ['jpeg', 'png']
+      }
+    ],
+    defaultParameters: {
+      "loras": [
+        {
+          "path": "https://v3.fal.media/files/lion/OySNH55STXpyppPXSWNH8_pytorch_lora_weights.safetensors",
+          "scale": 1
+        }
+      ],
+      "guidance_scale": 5,
+      "num_inference_steps": 50,
+      "enable_safety_checker": false
+    }
   },
   {
     displayName: 'Priapus God Cartoon',
@@ -271,6 +297,8 @@ export const getImageModel = (model: string): ImageModel => {
   }
   if (metadata.provider == "replicate") {
     return replicate.image(metadata.model)
+  } else if (metadata.provider == "fal") {
+    return fal.image(metadata.model);
   }
   throw Error(`Unsupported model: ${model}`)
 }
