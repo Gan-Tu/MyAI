@@ -2,6 +2,7 @@ import { query } from "@/lib/db";
 import redis from '@/lib/redis';
 import { Dropbox } from 'dropbox';
 import { Resend } from 'resend';
+import BackupNotificationEmail from "./email";
 
 export const dynamic = 'force-dynamic'
 
@@ -90,7 +91,10 @@ export async function GET(request: Request) {
       from: 'MyAI <myai@tugan.app>',
       to: ['tugan0329@gmail.com'],
       subject: 'MyAI Backup Finished',
-      html: `MyAI successfully backed up latest redis data to Dropbox at /${unixTimestamp}/*.json`,
+      react: BackupNotificationEmail({
+        backupLocation: `/Dropbox/Apps/MyAI Backup/${unixTimestamp}/*.json`,
+        backupFiles: "3 Files"
+      })
     })
 
     return new Response(JSON.stringify({
