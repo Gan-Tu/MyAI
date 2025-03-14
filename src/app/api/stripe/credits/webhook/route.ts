@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
       } else if (!creditsPurchased) {
         return NextResponse.json({ error: `Missing credits purchased` }, { status: 500 });
       }
-      const processed = await redis.sadd(`myai:payments:${userId}`, session.payment_intent)
+      const processed = await redis.sadd(`myai:payments:${userId}`, session.payment_intent || session.id)
       if (processed > 0) {
         await redis.incrby(`myai:credits:${userId}`, creditsPurchased)
       }
