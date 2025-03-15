@@ -23,7 +23,7 @@ export async function getImagesByUserId(userId: string) {
     return []
   }
   const data = await query(
-    "SELECT image_url, content_type, prompt, provider, model FROM PixelsImageGeneration WHERE user_id = $1",
+    "SELECT image_url, content_type, prompt, provider, model FROM PixelsImageGeneration WHERE user_id = $1 ORDER BY updated_at",
     [userId]
   );
   let imageData: ImageGalleryItem[] = data.rows as ImageGalleryItem[];
