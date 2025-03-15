@@ -22,6 +22,10 @@ Evaluate your text’s credibility! Identify which sentences **need citations** 
 
 Turn your ideas into breathtaking **AI-generated visuals** in any style—from hyper-realistic designs to artistic masterpieces.
 
+#### 🖼️ My Images
+
+View and manage the images you've generated over time. Quickly reference your creations and prompts at ease.
+
 ### 🌎 Web Summarizer
 
 Summarize any web page in seconds. Get **clear, concise summaries** of articles, blogs, and research papers for quick understanding.
@@ -40,8 +44,10 @@ Pinpoint key information in any content. **Highlight, save, and analyze** import
 - **Upstash** for caching
 - **Neon** for database
 - **Vercel** for hosting
+- **Vercel Blob** for storing files and images
 - **AI SDK** for LLM integration
 - **Resend** for email
+- **React Email** for email templates
 - **Intercom** for customer support
 - more...
 
