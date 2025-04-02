@@ -117,7 +117,10 @@ export const supportedImageModels: ImageModelMetadata[] = [
     model: 'google/imagen-3-fast',
     creditsCost: 2,
     aspectRatio: ['1:1', '9:16', '16:9', '3:4', '4:3'],
-    parameters: []
+    parameters: [],
+    defaultParameters: {
+      "safety_filter_level": "block_only_high"
+    }
   },
   {
     displayName: 'Google ImageGen 3 - High Quality',
@@ -125,7 +128,10 @@ export const supportedImageModels: ImageModelMetadata[] = [
     model: 'google/imagen-3',
     creditsCost: 5,
     aspectRatio: ['1:1', '9:16', '16:9', '3:4', '4:3'],
-    parameters: []
+    parameters: [],
+    defaultParameters: {
+      "safety_filter_level": "block_only_high"
+    }
   },
   {
     displayName: 'Minimax Image-01',
