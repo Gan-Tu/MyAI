@@ -29,7 +29,6 @@ export const supportedLanguageModels = [
   'gemini-2.5-pro-exp-03-25',
   'gemini-2.0-flash-001',
   'gemini-1.5-flash',
-  'meta-llama/llama-4-scout-17b-16e-instruct',
   'llama-3.1-8b-instant',
   'mistral-small-latest',
   'ministral-3b-latest',
@@ -48,7 +47,7 @@ export const getLanguageModel = (model: string): LanguageModel => {
     return openai(model)
   } else if (model.startsWith('gemini')) {
     return google(model)
-  } else if (model.startsWith('llama') || model.startsWith('meta-llama')) {
+  } else if (model.startsWith('llama')) {
     return groq(model)
   } else if (model.startsWith('grok')) {
     return xai(model)
