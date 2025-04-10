@@ -31,7 +31,7 @@ interface SummarizerPageProps {
 }
 
 export default function SummarizerPage({ defaultModel }: SummarizerPageProps) {
-  const [model, setModel] = useState<string>(defaultModel || "grok-2-1212");
+  const [model, setModel] = useState<string>(defaultModel || "grok-3");
   const { deduct } = useCredits();
   const {
     isLoading,

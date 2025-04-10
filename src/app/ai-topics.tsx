@@ -50,7 +50,7 @@ const exampleIdeas = [
 
 export default function AiTopics({ q, defaultModel }: AiTopicsProps) {
   const [input, setInput] = useState(q);
-  const [model, setModel] = useState<string>(defaultModel || "grok-2-1212");
+  const [model, setModel] = useState<string>(defaultModel || "grok-3");
   const [images, setImages] = useState<ImageSearchResult[] | null>(null);
   const [hideImage, setHideImage] = useState(false);
   const [useCache, setUseCache] = useState(true);
