@@ -25,6 +25,7 @@ import { ImageModel, LanguageModel } from 'ai';
 
 export const supportedLanguageModels = [
   'grok-3',
+  'grok-3-mini-fast-beta',
   'gpt-4o-mini',
   'gemini-2.5-pro-exp-03-25',
   'gemini-2.0-flash-001',
