@@ -28,6 +28,7 @@ export const supportedLanguageModels = [
   'grok-3-mini-fast-beta',
   'gpt-4.1',
   'gpt-4.1-mini',
+  'o4-mini',
   'gpt-4o-mini',
   'gemini-2.5-pro-exp-03-25',
   'gemini-2.0-flash-001',
@@ -46,7 +47,7 @@ export const getLanguageModel = (model: string): LanguageModel => {
   if (!supportedLanguageModels.includes(model)) {
     throw Error(`Unsupported model: ${model}`)
   }
-  if (model.startsWith('gpt')) {
+  if (model.startsWith('gpt') || model.startsWith('o')) {
     return openai(model)
   } else if (model.startsWith('gemini')) {
     return google(model)
