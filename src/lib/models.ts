@@ -22,6 +22,7 @@ import { replicate } from '@ai-sdk/replicate';
 import { xai } from '@ai-sdk/xai';
 import { ImageModel, LanguageModel } from 'ai';
 
+export const defaultLanguageModel = 'gpt-4.1-mini';
 
 export const supportedLanguageModels = [
   'grok-3',

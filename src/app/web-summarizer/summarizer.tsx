@@ -17,7 +17,7 @@ import { Label } from "@/components/base/fieldset";
 import { Select } from "@/components/base/select";
 import { MemoizedMarkdown } from "@/components/memoized-markdown";
 import { useCredits } from "@/hooks/credits";
-import { supportedLanguageModels } from "@/lib/models";
+import { supportedLanguageModels, defaultLanguageModel } from "@/lib/models";
 import { useCompletion } from "@ai-sdk/react";
 import * as Headless from "@headlessui/react";
 import { StopCircleIcon } from "@heroicons/react/20/solid";
@@ -31,7 +31,7 @@ interface SummarizerPageProps {
 }
 
 export default function SummarizerPage({ defaultModel }: SummarizerPageProps) {
-  const [model, setModel] = useState<string>(defaultModel || "grok-3");
+  const [model, setModel] = useState<string>(defaultModel || defaultLanguageModel);
   const { deduct } = useCredits();
   const {
     isLoading,

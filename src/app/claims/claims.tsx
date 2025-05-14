@@ -16,11 +16,11 @@ import { Button } from "@/components/base/button";
 import { Label } from "@/components/base/fieldset";
 import { Select } from "@/components/base/select";
 import { useCredits } from "@/hooks/credits";
-import { supportedLanguageModels } from "@/lib/models";
+import { supportedLanguageModels, defaultLanguageModel } from "@/lib/models";
 import { claimsSchema } from "@/lib/schema";
 import * as Headless from "@headlessui/react";
 import { StopCircleIcon } from "@heroicons/react/20/solid";
-import { experimental_useObject as useObject } from "ai/react";
+import { experimental_useObject as useObject } from "@ai-sdk/react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import AnimatedSparkleIcon from "../../components/animated-sparkle";
@@ -34,7 +34,7 @@ interface ClaimsProps {
 
 export default function ClaimsPage({ q, defaultModel }: ClaimsProps) {
   const [input, setInput] = useState(q);
-  const [model, setModel] = useState<string>(defaultModel || "grok-3");
+  const [model, setModel] = useState<string>(defaultModel || defaultLanguageModel);
   const [claims, setClaims] = useState<any>(null);
   const { deduct } = useCredits();
   const { object, submit, isLoading, stop, error } = useObject({

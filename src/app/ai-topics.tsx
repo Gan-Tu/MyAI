@@ -19,12 +19,12 @@ import { Switch, SwitchField } from "@/components/base/switch";
 import { useColorTheme } from "@/hooks/color-theme";
 import { useCredits } from "@/hooks/credits";
 import { useResetExpansion } from "@/hooks/reset-expansion";
-import { supportedLanguageModels } from "@/lib/models";
+import { supportedLanguageModels, defaultLanguageModel } from "@/lib/models";
 import { entityCardSchema } from "@/lib/schema";
 import { ImageSearchResult } from "@/lib/types";
 import * as Headless from "@headlessui/react";
 import { MagnifyingGlassIcon, StopCircleIcon } from "@heroicons/react/20/solid";
-import { experimental_useObject as useObject } from "ai/react";
+import { experimental_useObject as useObject } from "@ai-sdk/react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import AnimatedSparkleIcon from "../components/animated-sparkle";
@@ -50,7 +50,7 @@ const exampleIdeas = [
 
 export default function AiTopics({ q, defaultModel }: AiTopicsProps) {
   const [input, setInput] = useState(q);
-  const [model, setModel] = useState<string>(defaultModel || "grok-3");
+  const [model, setModel] = useState<string>(defaultModel || defaultLanguageModel);
   const [images, setImages] = useState<ImageSearchResult[] | null>(null);
   const [hideImage, setHideImage] = useState(false);
   const [useCache, setUseCache] = useState(true);
