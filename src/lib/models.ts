@@ -25,6 +25,7 @@ import { ImageModel, LanguageModel } from 'ai';
 export const defaultLanguageModel = 'gpt-4.1-mini';
 
 export const supportedLanguageModels = [
+  'grok-4',
   'grok-3',
   'grok-3-mini-fast-beta',
   'gpt-4.1',
