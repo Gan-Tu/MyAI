@@ -73,7 +73,8 @@ export const getLanguageModel = (model: string): LanguageModel => {
 }
 
 export const getHighlightingModel = (): LanguageModel => {
-  return google('tunedModels/texthighlighter-c0uqcsiv5s5v')
+  // return google('tunedModels/texthighlighter-c0uqcsiv5s5v')
+  return openai("ft:gpt-4.1-mini-2025-04-14:personal:passage-highlight:BMma9d8r")
 }
 
 export const supportedImageModels: ImageModelMetadata[] = [

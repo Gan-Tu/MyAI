@@ -38,7 +38,7 @@ export async function POST(req: Request) {
 
   const result = await streamText({
     model: model,
-    prompt: prompt,
+    prompt: `Return an important, continuous substring from the user message to highlight:\n\n${prompt}`,
   });
 
   return result.toDataStreamResponse();
