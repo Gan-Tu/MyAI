@@ -22,14 +22,16 @@ import { replicate } from '@ai-sdk/replicate';
 import { xai } from '@ai-sdk/xai';
 import { ImageModel, LanguageModel } from 'ai';
 
-export const defaultLanguageModel = 'gpt-5';
+export const defaultLanguageModel = 'gpt-4.1';
 
 export const supportedLanguageModels = [
   'grok-4',
   'grok-3',
   'grok-3-mini-fast-beta',
-  'gpt-5',
-  'gpt-5-mini',
+  'gpt-4.1',
+  'gpt-4.1-mini',
+  'o4-mini',
+  'gpt-4o-mini',
   'gemini-2.5-pro-exp-03-25',
   'gemini-2.0-flash-001',
   'gemini-1.5-flash',
