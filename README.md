@@ -30,10 +30,6 @@ View and manage the images you've generated over time. Quickly reference your cr
 
 Summarize any web page in seconds. Get **clear, concise summaries** of articles, blogs, and research papers for quick understanding.
 
-### ✏️ Text Highlighter
-
-Pinpoint key information in any content. **Highlight, save, and analyze** important passages effortlessly.
-
 ## 🛠️ Tech Stack
 
 - **Next.js** (App Router)

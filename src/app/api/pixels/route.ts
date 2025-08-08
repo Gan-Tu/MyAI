@@ -54,7 +54,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "options is required." }, { status: 400 })
   }
 
-  let model: ImageModel | null = null;
+  let model = null;
   let modelSpec: ImageModelMetadata | null = null;
   try {
     model = getImageModel(modelName);

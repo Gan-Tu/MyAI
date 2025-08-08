@@ -11,16 +11,8 @@
 // limitations under the License.
 
 import { type ImageModelMetadata } from "@/lib/types";
-import { anthropic } from '@ai-sdk/anthropic';
-import { createDeepSeek } from '@ai-sdk/deepseek';
 import { fal } from '@ai-sdk/fal';
-import { google } from '@ai-sdk/google';
-import { groq } from '@ai-sdk/groq';
-import { mistral } from '@ai-sdk/mistral';
-import { openai } from '@ai-sdk/openai';
 import { replicate } from '@ai-sdk/replicate';
-import { xai } from '@ai-sdk/xai';
-import { ImageModel, LanguageModel } from 'ai';
 
 export const defaultLanguageModel = 'openai/gpt-5-mini';
 
@@ -36,41 +28,6 @@ export const supportedLanguageModels = [
   'deepseek/deepseek-r1',
   'deepseek/deepseek-v3',
 ]
-
-export const getLanguageModel = (model: string): LanguageModel => {
-  if (!model) {
-    throw new Error("Misisng model string");
-  }
-  if (!supportedLanguageModels.includes(model)) {
-    throw Error(`Unsupported model: ${model}`)
-  }
-  if (model.startsWith('gpt') || model.startsWith('o')) {
-    return openai(model)
-  } else if (model.startsWith('gemini')) {
-    return google(model)
-  } else if (model.startsWith('llama')) {
-    return groq(model)
-  } else if (model.startsWith('grok')) {
-    return xai(model)
-  } else if (model.startsWith('ministral') || model.startsWith('mistral')) {
-    return mistral(model)
-  } else if (model.startsWith('deepseek')) {
-    const deepseek = createDeepSeek({
-      apiKey: process.env.DEEPSEEK_API_KEY ?? '',
-    });
-    return deepseek(model)
-  } else if (model.startsWith('claude')) {
-    return anthropic(model, {
-      cacheControl: true,
-    })
-  }
-  throw Error(`Unsupported model: ${model}`)
-}
-
-export const getHighlightingModel = (): LanguageModel => {
-  // return google('tunedModels/texthighlighter-c0uqcsiv5s5v')
-  return openai("ft:gpt-4.1-mini-2025-04-14:personal:passage-highlight:BMma9d8r")
-}
 
 export const supportedImageModels: ImageModelMetadata[] = [
   {
@@ -296,7 +253,7 @@ export const getImageModelMetadata = (model: string): ImageModelMetadata | null 
   return null;
 }
 
-export const getImageModel = (model: string): ImageModel => {
+export const getImageModel = (model: string) => {
   if (!model) {
     throw new Error("Misisng model string");
   }
