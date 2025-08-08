@@ -10,9 +10,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { getLanguageModel } from '@/lib/models';
+
+import { defaultLanguageModel } from '@/lib/models';
 import { checkRateLimit } from '@/lib/redis';
-import { LanguageModel, streamText } from 'ai';
+import { streamText } from 'ai';
 import { NextResponse } from 'next/server';
 
 // Allow streaming responses up to 45 seconds
@@ -21,7 +22,7 @@ export const maxDuration = 45;
 export async function POST(req: Request) {
   const { prompt }: { prompt: string } = await req.json();
   const headers = req.headers;
-  const modelChoice = headers.get('X-AI-Model') || 'gpt-4o-mini'
+  const modelChoice = headers.get('X-AI-Model') || defaultLanguageModel
 
   let { passed, secondsLeft } = await checkRateLimit("/api/web-summarizer")
   if (!passed) {
@@ -30,19 +31,12 @@ export async function POST(req: Request) {
     }, { status: 429 })
   }
 
-  let model: LanguageModel | null = null;
-  try {
-    model = getLanguageModel(modelChoice)
-  } catch (error) {
-    console.error(error)
-    return NextResponse.json({ error: (error as Error).message }, { status: 400 })
-  }
 
   const scrapeResponse = await fetch(`https://urlreader.tugan.app/api/scrape?waitForTimeoutSeconds=15&url=${encodeURIComponent(prompt)}&json=1`);
   if (!scrapeResponse.ok) {
     return NextResponse.json(
       { error: `Failed to fetch URL content: ${scrapeResponse.statusText}` }, {
-        status: 500
+      status: 500
 
     }
     );
@@ -52,8 +46,8 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: `Failed to fetch URL content: ${error}` }, { status: 500 });
   }
 
-  const result = await streamText({
-    model: model,
+  const result = streamText({
+    model: modelChoice,
     prompt: `
       You are an AI assistant specialized in summarizing web content. Given webpage content in Markdown format, generate a concise high level summary, no more than 3 paragraphs or 20% of original content length. Each paragraph should cover a distinct aspect of the content.
 
@@ -83,5 +77,5 @@ export async function POST(req: Request) {
     `,
   });
 
-  return result.toDataStreamResponse();
+  return result.toUIMessageStreamResponse();
 }

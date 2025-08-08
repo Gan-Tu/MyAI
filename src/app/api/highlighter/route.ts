@@ -12,7 +12,7 @@
 
 import { getHighlightingModel } from '@/lib/models';
 import { checkRateLimit } from '@/lib/redis';
-import { LanguageModel, streamText } from 'ai';
+import { streamText } from 'ai';
 import { NextResponse } from 'next/server';
 
 // Allow streaming responses up to 30 seconds
@@ -28,18 +28,10 @@ export async function POST(req: Request) {
     }, { status: 429 })
   }
 
-  let model: LanguageModel | null = null;
-  try {
-    model = getHighlightingModel()
-  } catch (error) {
-    console.error(error)
-    return NextResponse.json({ error: (error as Error).message }, { status: 400 })
-  }
-
-  const result = await streamText({
-    model: model,
+  const result = streamText({
+    model: getHighlightingModel(),
     prompt: `Return an important, continuous substring from the user message to highlight:\n\n${prompt}`,
   });
 
-  return result.toDataStreamResponse();
+  return result.toUIMessageStreamResponse();
 }

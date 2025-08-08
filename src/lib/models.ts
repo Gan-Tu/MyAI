@@ -22,24 +22,19 @@ import { replicate } from '@ai-sdk/replicate';
 import { xai } from '@ai-sdk/xai';
 import { ImageModel, LanguageModel } from 'ai';
 
-export const defaultLanguageModel = 'gpt-4.1';
+export const defaultLanguageModel = 'openai/gpt-5-mini';
 
 export const supportedLanguageModels = [
-  'grok-4',
-  'grok-3',
-  'grok-3-mini-fast-beta',
-  'gpt-4.1',
-  'gpt-4.1-mini',
-  'o4-mini',
-  'gpt-4o-mini',
-  'gemini-2.5-pro-exp-03-25',
-  'gemini-2.0-flash-001',
-  'gemini-1.5-flash',
-  'llama-3.1-8b-instant',
-  'mistral-small-latest',
-  'ministral-3b-latest',
-  'claude-3-5-haiku-20241022',
-  'deepseek-chat',
+  'xai/grok-4',
+  'xai/grok-3',
+  'openai/gpt-5',
+  'openai/gpt-5-mini',
+  'google/gemini-2.5-flash',
+  'mistral/ministral-3b',
+  'anthropic/claude-3.7-sonnet',
+  'anthropic/claude-3.5-haiku',
+  'deepseek/deepseek-r1',
+  'deepseek/deepseek-v3',
 ]
 
 export const getLanguageModel = (model: string): LanguageModel => {
