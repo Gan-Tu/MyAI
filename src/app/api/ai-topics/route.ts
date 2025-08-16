@@ -10,8 +10,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import bing_search from '@/lib/agents';
-import { decrypt } from '@/lib/encryption';
 import { defaultLanguageModel } from '@/lib/models';
 import redis, { checkRateLimit } from "@/lib/redis";
 import { entityCardSchema } from '@/lib/schema';
@@ -71,30 +69,36 @@ export async function POST(req: Request) {
     let prompt = systemPrompt.trim()
 
     try {
-        let searchResults = await bing_search(context, 10);
-        if (searchResults.videos) {
-            let videoList = ''
-            searchResults.videos?.value?.forEach(result => {
-                if (result.name && result.allowMobileEmbed && result.embedHtml?.includes("youtube")
-                    && result.height <= result.width) {
-                    videoList += `\n\nName: ${result.name} \nUrl: ${extractVideoSrcWithoutAutoplay(result.embedHtml)} `
+        const google_response = await fetch(
+            `https://www.googleapis.com/customsearch/v1?q=${context.trim()}&cx=${process
+                .env.GOOGLE_SEARCH_ENGINE_ID!}&key=${process.env
+                    .GOOGLE_SEARCH_API_KEY!}&num=10`
+        );
+        if (google_response.ok) {
+            const { items } = await google_response.json()
+            prompt = `${prompt} \n\n## Web Context\n\nUse the following web results snippets as context for the generation of both description and fact generation.Summarize snippets if they are useful:
+`
+            items.forEach((result: any) => {
+                if (result.snippet) {
+                    prompt += `\n\nTitle: ${result.title} \nSnippet: ${result.snippet} `
                 }
             });
-            if (videoList) {
-                prompt = `${prompt} \n\n## Video Candidates\n\n${videoList} `
-            }
         }
-        prompt = `${prompt} \n\n## Web Context\n\nUse the following web results snippets as context for the generation of both description and fact generation.Summarize snippets if they are useful:
-`
-        searchResults.webPages?.value?.forEach(result => {
-            if (result.snippet) {
-                prompt += `\n\nTitle: ${result.name} \nSnippet: ${result.snippet} `
-            }
-        });
-
+        // if (searchResults.videos) {
+        //     let videoList = ''
+        //     searchResults.videos?.value?.forEach(result => {
+        //         if (result.name && result.allowMobileEmbed && result.embedHtml?.includes("youtube")
+        //             && result.height <= result.width) {
+        //             videoList += `\n\nName: ${result.name} \nUrl: ${extractVideoSrcWithoutAutoplay(result.embedHtml)} `
+        //         }
+        //     });
+        //     if (videoList) {
+        //         prompt = `${prompt} \n\n## Video Candidates\n\n${videoList} `
+        //     }
+        // }
         prompt += `\n\nToday is ${getTodayStr()} `
     } catch (error) {
-        console.error("Failed to get bing search results: ", error)
+        console.error("Failed to get google search results: ", error)
     }
 
     const result = streamObject({

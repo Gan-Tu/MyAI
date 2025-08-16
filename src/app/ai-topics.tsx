@@ -19,12 +19,12 @@ import { Switch, SwitchField } from "@/components/base/switch";
 import { useColorTheme } from "@/hooks/color-theme";
 import { useCredits } from "@/hooks/credits";
 import { useResetExpansion } from "@/hooks/reset-expansion";
-import { supportedLanguageModels, defaultLanguageModel } from "@/lib/models";
+import { defaultLanguageModel, supportedLanguageModels } from "@/lib/models";
 import { entityCardSchema } from "@/lib/schema";
 import { ImageSearchResult } from "@/lib/types";
+import { experimental_useObject as useObject } from "@ai-sdk/react";
 import * as Headless from "@headlessui/react";
 import { MagnifyingGlassIcon, StopCircleIcon } from "@heroicons/react/20/solid";
-import { experimental_useObject as useObject } from "@ai-sdk/react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import AnimatedSparkleIcon from "../components/animated-sparkle";
@@ -53,7 +53,7 @@ export default function AiTopics({ q, defaultModel }: AiTopicsProps) {
   const [model, setModel] = useState<string>(defaultModel || defaultLanguageModel);
   const [images, setImages] = useState<ImageSearchResult[] | null>(null);
   const [hideImage, setHideImage] = useState(false);
-  const [useCache, setUseCache] = useState(true);
+  const [useCache, setUseCache] = useState(false);
   const [card, setCard] = useState<any>(null);
   const { resetExpansion } = useResetExpansion();
   const { deduct } = useCredits();
@@ -145,7 +145,7 @@ export default function AiTopics({ q, defaultModel }: AiTopicsProps) {
                   <SwitchField>
                     <Label className="grow text-sm font-semibold">Cache</Label>
                     <Switch
-                      defaultChecked
+                      defaultChecked={false}
                       name="enable_cache"
                       onChange={setUseCache}
                       disabled={isLoading}

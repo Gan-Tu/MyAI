@@ -9,7 +9,6 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@agentic/bing": "^7.2.0",
     "@ai-sdk/fal": "^1.0.3",
     "@ai-sdk/react": "^1.2.12",
     "@ai-sdk/replicate": "^1.0.1",
