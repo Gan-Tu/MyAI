@@ -50,10 +50,12 @@ const exampleIdeas = [
 
 export default function AiTopics({ q, defaultModel }: AiTopicsProps) {
   const [input, setInput] = useState(q);
-  const [model, setModel] = useState<string>(defaultModel || defaultLanguageModel);
+  const [model, setModel] = useState<string>(
+    defaultModel || defaultLanguageModel,
+  );
   const [images, setImages] = useState<ImageSearchResult[] | null>(null);
   const [hideImage, setHideImage] = useState(false);
-  const [useCache, setUseCache] = useState(false);
+  const [useCache, setUseCache] = useState(true);
   const [card, setCard] = useState<any>(null);
   const { resetExpansion } = useResetExpansion();
   const { deduct } = useCredits();
@@ -145,7 +147,7 @@ export default function AiTopics({ q, defaultModel }: AiTopicsProps) {
                   <SwitchField>
                     <Label className="grow text-sm font-semibold">Cache</Label>
                     <Switch
-                      defaultChecked={false}
+                      defaultChecked={true}
                       name="enable_cache"
                       onChange={setUseCache}
                       disabled={isLoading}
