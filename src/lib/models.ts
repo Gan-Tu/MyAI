@@ -26,7 +26,7 @@ export const supportedLanguageModels = [
   'anthropic/claude-3.7-sonnet',
   'anthropic/claude-3.5-haiku',
   'deepseek/deepseek-r1',
-  'deepseek/deepseek-v3',
+  'deepseek/deepseek-v3.1',
 ]
 
 export const supportedImageModels: ImageModelMetadata[] = [
