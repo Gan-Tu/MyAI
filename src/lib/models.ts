@@ -14,14 +14,16 @@ import { type ImageModelMetadata } from "@/lib/types";
 import { fal } from '@ai-sdk/fal';
 import { replicate } from '@ai-sdk/replicate';
 
-export const defaultLanguageModel = 'openai/gpt-5-mini';
+export const defaultLanguageModel = 'openai/gpt-5.1-instant';
 
 export const supportedLanguageModels = [
   'xai/grok-4',
   'xai/grok-3',
   'openai/gpt-5',
   'openai/gpt-5-mini',
+  'openai/gpt-5.1-instant',
   'google/gemini-2.5-flash',
+  'google/gemini-3-pro-preview',
   'mistral/ministral-3b',
   'anthropic/claude-3.7-sonnet',
   'anthropic/claude-3.5-haiku',
