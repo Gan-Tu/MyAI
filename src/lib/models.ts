@@ -74,11 +74,10 @@ export const supportedImageModels: ImageModelMetadata[] = [
       }
     ]
   },
-
   {
-    displayName: 'Google ImageGen 3 - Fast',
+    displayName: 'Google ImageGen 4 - Fast',
     provider: "replicate",
-    model: 'google/imagen-3-fast',
+    model: 'google/imagen-4-fast',
     creditsCost: 2,
     aspectRatio: ['1:1', '9:16', '16:9', '3:4', '4:3'],
     parameters: [],
@@ -87,15 +86,50 @@ export const supportedImageModels: ImageModelMetadata[] = [
     }
   },
   {
-    displayName: 'Google ImageGen 3 - High Quality',
+    displayName: 'Google ImageGen 4',
     provider: "replicate",
-    model: 'google/imagen-3',
-    creditsCost: 5,
+    model: 'google/imagen-4',
+    creditsCost: 4,
     aspectRatio: ['1:1', '9:16', '16:9', '3:4', '4:3'],
     parameters: [],
     defaultParameters: {
       "safety_filter_level": "block_only_high"
     }
+  },
+  {
+    displayName: 'Google ImageGen 4 - Ultra',
+    provider: "replicate",
+    model: 'google/imagen-4-ultra',
+    creditsCost: 6,
+    aspectRatio: ['1:1', '9:16', '16:9', '3:4', '4:3'],
+    parameters: [],
+    defaultParameters: {
+      "safety_filter_level": "block_only_high"
+    }
+  },
+  {
+    displayName: 'Google Nano Banana',
+    provider: "replicate",
+    model: 'google/nano-banana',
+    creditsCost: 4,
+    aspectRatio: ["1:1","2:3","3:2","3:4","4:3","4:5","5:4","9:16","16:9","21:9"],
+    parameters: [],
+  },
+  {
+    displayName: 'Google Nano Banana Pro',
+    provider: "replicate",
+    model: 'google/nano-banana-pro',
+    creditsCost: 15,
+    aspectRatio: ["1:1","2:3","3:2","3:4","4:3","4:5","5:4","9:16","16:9","21:9"],
+    defaultParameters: {
+      "safety_filter_level": "block_only_high"
+    },
+    parameters: [
+      {
+        name: "resolution",
+        options: ["1K", "2K", "4K"],
+      }
+    ],
   },
   {
     displayName: 'Minimax Image-01',
@@ -245,7 +279,8 @@ export const supportedImageModels: ImageModelMetadata[] = [
     promptPrefix: "A cartoon wolf OTAKE with orange fur, ",
     creditsCost: 5,
     parameters: []
-  }
+  },
+
 ];
 
 export const getImageModelMetadata = (model: string): ImageModelMetadata | null => {
