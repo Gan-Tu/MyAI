@@ -18,17 +18,20 @@ export const defaultLanguageModel = 'openai/gpt-5.1-instant';
 
 export const supportedLanguageModels = [
   'xai/grok-4',
-  'xai/grok-3',
+  'xai/grok-4.1-fast-reasoning',
+  "xai/grok-4-fast-non-reasoning",
   'openai/gpt-5',
   'openai/gpt-5-mini',
   'openai/gpt-5.1-instant',
+  "openai/gpt-5.1-thinking",
   'google/gemini-2.5-flash',
   'google/gemini-3-pro-preview',
   'mistral/ministral-3b',
-  'anthropic/claude-3.7-sonnet',
-  'anthropic/claude-3.5-haiku',
-  'deepseek/deepseek-r1',
-  'deepseek/deepseek-v3.1',
+  "anthropic/claude-opus-4.5",
+  "anthropic/claude-sonnet-4.5",
+  "anthropic/claude-haiku-4.5",
+  'deepseek/deepseek-v3.2',
+  "deepseek/deepseek-v3.2-thinking",
 ]
 
 export const supportedImageModels: ImageModelMetadata[] = [
