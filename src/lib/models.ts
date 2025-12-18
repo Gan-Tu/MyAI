@@ -23,7 +23,7 @@ export const supportedLanguageModels = [
   'openai/gpt-5.1-instant',
   "openai/gpt-5.1-thinking",
   "openai/gpt-5.2",
-  'google/gemini-2.5-flash',
+  'google/gemini-3-flash',
   'google/gemini-3-pro-preview',
   'mistral/ministral-3b',
   "anthropic/claude-opus-4.5",
