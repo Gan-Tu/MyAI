@@ -29,9 +29,6 @@ import {
   PhotoIcon,
 } from "@heroicons/react/20/solid";
 import { CurrencyDollarIcon } from "@heroicons/react/24/outline";
-import Intercom, {
-  shutdown as shutdownIntercom,
-} from "@intercom/messenger-js-sdk";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import toast from "react-hot-toast";
@@ -53,27 +50,12 @@ export function TopNavbar({
   enableCredits = false,
 }: NavigationProps) {
   let pathname = usePathname();
-  const { user, userIntercomHash, gravatarUrl, signOut } = useSession();
+  const { user, gravatarUrl, signOut } = useSession();
   const { balance, isLoading: isCreditsLoading } = useCredits();
   const router = useRouter();
   let showLogin = enableLogin && !user;
   let showLogout = user; // always allow user to sign out, if logged in
   let showDropDown = showLogin || showLogout;
-
-  if (user) {
-    Intercom({
-      app_id: "od46lrxi",
-      user_id: user.uid,
-      user_hash: userIntercomHash || undefined,
-      name: user.displayName || undefined,
-      email: user.email || undefined,
-      created_at: user.metadata.creationTime
-        ? new Date(user.metadata.creationTime).getTime()
-        : undefined,
-    });
-  } else {
-    shutdownIntercom();
-  }
 
   const onBuyCredits = async () => {
     if (!user) {

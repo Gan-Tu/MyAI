@@ -30,7 +30,6 @@ interface SessionContextTypeValue {
   isLoading: boolean;
   user: User | null;
   setUser: Dispatch<SetStateAction<User | null>>;
-  userIntercomHash: string | null;
   gravatarUrl: string | null;
   token: string | null;
   signOut: () => Promise<void>;
@@ -52,21 +51,6 @@ function getGravatarUrl(email: string, size = 24) {
   return `https://www.gravatar.com/avatar/${hash}?s=${size}&d=identicon`;
 }
 
-async function getIntercomHash(userId: string): Promise<string | null> {
-  try {
-    const response = await fetch("/api/intercom/user_hash", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userId }),
-    });
-    const data = await response.json();
-    return data.user_hash || null;
-  } catch (error) {
-    console.error(error);
-    return null;
-  }
-}
-
 // Create the Provider component
 export const SessionProvider: React.FC<SessionProviderProps> = ({
   children,
@@ -75,7 +59,6 @@ export const SessionProvider: React.FC<SessionProviderProps> = ({
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [gravatarUrl, setGravatarUrl] = useState<string | null>(null);
-  const [userIntercomHash, setUserIntercomHash] = useState<string | null>(null);
 
   useEffect(() => {
     return onAuthStateChanged(auth, async (user) => {
@@ -85,13 +68,10 @@ export const SessionProvider: React.FC<SessionProviderProps> = ({
           setGravatarUrl(getGravatarUrl(user.email));
         }
         await getIdToken(user).then(setToken).catch(console.error);
-        const userHash = await getIntercomHash(user.uid);
-        setUserIntercomHash(userHash);
       } else {
         setUser(null);
         setToken(null);
         setGravatarUrl(null);
-        setUserIntercomHash(null);
       }
       setIsLoading(false);
     });
@@ -103,7 +83,6 @@ export const SessionProvider: React.FC<SessionProviderProps> = ({
       setUser(null);
       setToken(null);
       setGravatarUrl(null);
-      setUserIntercomHash(null);
       console.info("User signed out");
     } catch (error) {
       console.error("Error signing out:", error);
@@ -116,7 +95,6 @@ export const SessionProvider: React.FC<SessionProviderProps> = ({
         isLoading,
         user,
         setUser,
-        userIntercomHash,
         gravatarUrl,
         token,
         signOut: handleSignOut,

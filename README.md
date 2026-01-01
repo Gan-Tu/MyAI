@@ -44,7 +44,6 @@ Summarize any web page in seconds. Get **clear, concise summaries** of articles,
 - **AI SDK** for LLM integration
 - **Resend** for email
 - **React Email** for email templates
-- **Intercom** for customer support
 - more...
 
 ## 💡 Contributing
