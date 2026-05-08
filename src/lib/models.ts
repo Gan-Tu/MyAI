@@ -14,22 +14,19 @@ import { type ImageModelMetadata } from "@/lib/types";
 import { fal } from '@ai-sdk/fal';
 import { replicate } from '@ai-sdk/replicate';
 
-export const defaultLanguageModel = 'openai/gpt-5.4';
+export const defaultLanguageModel = 'openai/gpt-5.5';
 
 export const supportedLanguageModels = [
-  'xai/grok-4',
-  'xai/grok-4.1-fast-reasoning',
-  "xai/grok-4-fast-non-reasoning",
-  "openai/gpt-5.2",
-  "openai/gpt-5.4",
-  'google/gemini-3-flash',
-  'google/gemini-3-pro-preview',
-  'mistral/ministral-3b',
-  "anthropic/claude-opus-4.5",
-  "anthropic/claude-sonnet-4.5",
-  "anthropic/claude-haiku-4.5",
+  'xai/grok-4.3',
+  'xai/grok-4.20-reasoning',
+  'openai/gpt-5.4',
+  'openai/gpt-5.5',
+  'google/gemini-3.1-flash-lite',
+  'google/gemini-3.1-pro-preview',
+  'anthropic/claude-opus-4.7',
+  'anthropic/claude-sonnet-4.6',
   'deepseek/deepseek-v3.2',
-  "deepseek/deepseek-v3.2-thinking",
+  'deepseek/deepseek-v4-flash',
 ]
 
 export const supportedImageModels: ImageModelMetadata[] = [
