@@ -20,6 +20,10 @@ type OpenAIImageSearchResult = {
   caption?: string | null;
 };
 
+type SearchImagesWithOpenAIOptions = {
+  signal?: AbortSignal;
+};
+
 function collectOpenAIImageResults(
   value: unknown,
   results: OpenAIImageSearchResult[] = [],
@@ -69,6 +73,7 @@ function toImageSearchResult(
 export async function searchImagesWithOpenAI(
   query: string,
   maxResults = 10,
+  options: SearchImagesWithOpenAIOptions = {},
 ): Promise<ImageSearchResult[]> {
   if (!process.env.OPENAI_API_KEY) {
     throw new Error("Missing OPENAI_API_KEY");
@@ -76,6 +81,7 @@ export async function searchImagesWithOpenAI(
 
   const response = await fetch("https://api.openai.com/v1/responses", {
     method: "POST",
+    signal: options.signal,
     headers: {
       Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
       "Content-Type": "application/json",

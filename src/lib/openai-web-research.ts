@@ -34,6 +34,7 @@ type WidgetWebResearchRequest = {
   query: string;
   purpose: string;
   userPrompt: string;
+  signal?: AbortSignal;
   referenceImageContext?: {
     count: number;
     names: string[];
@@ -93,6 +94,7 @@ export async function researchWithOpenAIWebSearch(
 
   const response = await fetch("https://api.openai.com/v1/responses", {
     method: "POST",
+    signal: request.signal,
     headers: {
       Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
       "Content-Type": "application/json",

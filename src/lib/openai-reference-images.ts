@@ -15,6 +15,10 @@ type ReferenceImage = {
   name?: string;
 };
 
+type AnalyzeWidgetReferenceImagesOptions = {
+  signal?: AbortSignal;
+};
+
 function collectOutputText(value: unknown, text: string[] = []) {
   if (!value || typeof value !== "object") return text;
 
@@ -35,7 +39,10 @@ function collectOutputText(value: unknown, text: string[] = []) {
   return text;
 }
 
-function createReferenceImagePrompt(prompt: string, referenceImages: ReferenceImage[]) {
+function createReferenceImagePrompt(
+  prompt: string,
+  referenceImages: ReferenceImage[],
+) {
   const imageNames = referenceImages
     .map((image) => image.name)
     .filter(Boolean)
@@ -80,6 +87,7 @@ Do not create the final widget. Do not include markdown fences. Keep the notes s
 export async function analyzeWidgetReferenceImages(
   prompt: string,
   referenceImages: ReferenceImage[],
+  options: AnalyzeWidgetReferenceImagesOptions = {},
 ) {
   if (!process.env.OPENAI_API_KEY) {
     throw new Error("Missing OPENAI_API_KEY");
@@ -87,6 +95,7 @@ export async function analyzeWidgetReferenceImages(
 
   const response = await fetch("https://api.openai.com/v1/responses", {
     method: "POST",
+    signal: options.signal,
     headers: {
       Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
       "Content-Type": "application/json",

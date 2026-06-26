@@ -22,8 +22,16 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { z } from "zod";
 
-export const maxDuration = 60;
+export const maxDuration = 300;
 
+const FUNCTION_DEADLINE_MS = 295_000;
+const PLANNER_TIMEOUT_MS = 30_000;
+const REFERENCE_IMAGE_TIMEOUT_MS = 30_000;
+const WEB_RESEARCH_TIMEOUT_MS = 45_000;
+const IMAGE_SEARCH_TIMEOUT_MS = 60_000;
+const FINAL_WIDGET_TIMEOUT_MS = 240_000;
+const MIN_FINAL_WIDGET_TIME_MS = 90_000;
+const STATUS_TICK_INTERVAL_MS = 8_000;
 const MAX_REFERENCE_IMAGES = 3;
 const MAX_REFERENCE_IMAGE_BYTES = 5 * 1024 * 1024;
 const MAX_ASSET_SEARCHES = 10;
@@ -116,6 +124,71 @@ When searches are useful:
 
 const systemPrompt = widgetAuthoringGuide;
 
+const finalGenerationStatusMessages = [
+  "Generating the widget interface",
+  "Needing more time",
+  "Shaping the layout",
+  "Fitting the data into the widget",
+  "Checking the preview",
+  "Preparing the final widget",
+];
+
+const webResearchStatusMessages = [
+  "Searching the web for facts",
+  "Gathering supporting context",
+  "Checking current details",
+  "Condensing research notes",
+];
+
+const imageSearchStatusMessages = [
+  "Searching for real image URLs",
+  "Gathering image options",
+  "Checking image candidates",
+  "Preparing visual references",
+];
+
+type StreamSender = (type: string, payload: Record<string, unknown>) => void;
+
+async function withStatusTicker<T>(
+  send: StreamSender,
+  messages: string[],
+  task: () => Promise<T>,
+) {
+  let messageIndex = 0;
+  send("status", { message: messages[messageIndex] });
+
+  const interval = setInterval(() => {
+    messageIndex = (messageIndex + 1) % messages.length;
+    send("status", { message: messages[messageIndex] });
+  }, STATUS_TICK_INTERVAL_MS);
+
+  try {
+    return await task();
+  } finally {
+    clearInterval(interval);
+  }
+}
+
+async function withTimedSignal<T>(
+  timeoutMs: number,
+  parentSignal: AbortSignal,
+  task: (signal: AbortSignal) => Promise<T>,
+) {
+  const abortController = new AbortController();
+  const timeout = setTimeout(() => abortController.abort(), timeoutMs);
+  const abort = () => abortController.abort();
+
+  if (parentSignal.aborted) abortController.abort();
+  parentSignal.addEventListener("abort", abort, { once: true });
+
+  try {
+    return await task(abortController.signal);
+  } finally {
+    clearTimeout(timeout);
+    parentSignal.removeEventListener("abort", abort);
+  }
+}
+
 function getWidgetGenerationReasoning(model: string) {
   return model.startsWith("openai/") ? "high" : undefined;
 }
@@ -150,10 +223,7 @@ function promptExplicitlyRequestsImages(prompt: string) {
 
 function createFallbackImageSearch(prompt: string) {
   return {
-    query: prompt
-      .trim()
-      .replace(/\s+/g, " ")
-      .slice(0, 160),
+    query: prompt.trim().replace(/\s+/g, " ").slice(0, 160),
     purpose: "The user explicitly requested images in the widget.",
   };
 }
@@ -267,8 +337,27 @@ export async function POST(req: Request) {
   const encoder = new TextEncoder();
   const stream = new ReadableStream({
     async start(controller) {
+      let streamClosed = false;
+      const deadline = Date.now() + FUNCTION_DEADLINE_MS;
+      const getRemainingMs = () => Math.max(0, deadline - Date.now());
+      const getStageTimeout = (
+        maxTimeoutMs: number,
+        reserveMs = MIN_FINAL_WIDGET_TIME_MS,
+      ) =>
+        Math.max(1_000, Math.min(maxTimeoutMs, getRemainingMs() - reserveMs));
+      const hasTimeForStage = (reserveMs = MIN_FINAL_WIDGET_TIME_MS) =>
+        getRemainingMs() > reserveMs + 1_000;
       const send = (type: string, payload: Record<string, unknown>) => {
-        controller.enqueue(encoder.encode(createStreamEvent(type, payload)));
+        if (streamClosed) return;
+        try {
+          controller.enqueue(encoder.encode(createStreamEvent(type, payload)));
+        } catch (error) {
+          streamClosed = true;
+          console.error(
+            "Failed to write generative widget stream event: ",
+            error,
+          );
+        }
       };
 
       try {
@@ -281,9 +370,16 @@ export async function POST(req: Request) {
                   ? "Reading reference image"
                   : `Reading ${referenceImages.length} reference images`,
             });
-            referenceImageAnalysis = await analyzeWidgetReferenceImages(
-              prompt.trim(),
-              referenceImages,
+            referenceImageAnalysis = await withTimedSignal(
+              getStageTimeout(
+                REFERENCE_IMAGE_TIMEOUT_MS,
+                MIN_FINAL_WIDGET_TIME_MS + PLANNER_TIMEOUT_MS,
+              ),
+              req.signal,
+              (signal) =>
+                analyzeWidgetReferenceImages(prompt.trim(), referenceImages, {
+                  signal,
+                }),
             );
             send("status", { message: "Reference image analysis complete" });
           } catch (referenceImageError) {
@@ -302,16 +398,38 @@ export async function POST(req: Request) {
         );
 
         send("status", { message: "Planning the widget" });
-        const { object: plannedAssets } = await generateObject({
-          model: getLanguageModel(modelChoice),
-          reasoning: getWidgetGenerationReasoning(modelChoice),
-          schema: widgetAssetPlanSchema,
-          system: assetPlanningPrompt,
-          prompt: JSON.stringify({
-            prompt: prompt.trim(),
-            referenceImageContext,
-          }),
-        });
+        let plannedAssets: z.infer<typeof widgetAssetPlanSchema> = {
+          webSearches: [],
+          imageSearches: [],
+        };
+        try {
+          const { object } = await withTimedSignal(
+            getStageTimeout(
+              PLANNER_TIMEOUT_MS,
+              MIN_FINAL_WIDGET_TIME_MS + IMAGE_SEARCH_TIMEOUT_MS,
+            ),
+            req.signal,
+            (signal) =>
+              generateObject({
+                model: getLanguageModel(modelChoice),
+                reasoning: getWidgetGenerationReasoning(modelChoice),
+                abortSignal: signal,
+                maxRetries: 0,
+                schema: widgetAssetPlanSchema,
+                system: assetPlanningPrompt,
+                prompt: JSON.stringify({
+                  prompt: prompt.trim(),
+                  referenceImageContext,
+                }),
+              }),
+          );
+          plannedAssets = object;
+        } catch (planningError) {
+          console.error("Failed to plan widget assets: ", planningError);
+          send("status", {
+            message: "Planning took too long. Continuing with a basic plan",
+          });
+        }
         const assetPlan =
           promptExplicitlyRequestsImages(prompt) &&
           plannedAssets.imageSearches.length === 0
@@ -337,24 +455,74 @@ export async function POST(req: Request) {
         }[] = [];
         if (assetPlan.webSearches.length > 0) {
           try {
-            send("status", {
-              message:
+            if (!hasTimeForStage(MIN_FINAL_WIDGET_TIME_MS)) {
+              throw new Error("Not enough time left for web research.");
+            }
+            const webResearchTimeout = getStageTimeout(
+              WEB_RESEARCH_TIMEOUT_MS,
+              MIN_FINAL_WIDGET_TIME_MS +
+                (assetPlan.imageSearches.length > 0
+                  ? IMAGE_SEARCH_TIMEOUT_MS
+                  : 0),
+            );
+            const settledResearchNotes = await withStatusTicker(
+              send,
+              [
                 assetPlan.webSearches.length === 1
                   ? "Searching the web for facts"
                   : `Searching the web for ${assetPlan.webSearches.length} fact sources`,
-            });
-            researchNotes = await Promise.all(
-              assetPlan.webSearches.map(async (search) => ({
-                ...search,
-                summary: await researchWithOpenAIWebSearch({
-                  query: search.query,
-                  purpose: search.purpose,
-                  userPrompt: prompt.trim(),
-                  referenceImageContext,
-                }),
-              })),
+                ...webResearchStatusMessages.slice(1),
+              ],
+              () =>
+                Promise.allSettled(
+                  assetPlan.webSearches.map((search) =>
+                    withTimedSignal(
+                      webResearchTimeout,
+                      req.signal,
+                      async (signal) => ({
+                        ...search,
+                        summary: await researchWithOpenAIWebSearch({
+                          query: search.query,
+                          purpose: search.purpose,
+                          userPrompt: prompt.trim(),
+                          referenceImageContext,
+                          signal,
+                        }),
+                      }),
+                    ),
+                  ),
+                ),
             );
-            send("status", { message: "Web research complete" });
+            researchNotes = settledResearchNotes
+              .filter(
+                (
+                  result,
+                ): result is PromiseFulfilledResult<{
+                  query: string;
+                  purpose: string;
+                  summary: string;
+                }> => result.status === "fulfilled",
+              )
+              .map((result) => result.value);
+            const failedResearchCount =
+              settledResearchNotes.length - researchNotes.length;
+            if (failedResearchCount > 0) {
+              console.error(
+                `Failed to enrich widget with ${failedResearchCount} web searches.`,
+                settledResearchNotes
+                  .filter(
+                    (result): result is PromiseRejectedResult =>
+                      result.status === "rejected",
+                  )
+                  .map((result) => result.reason),
+              );
+            }
+            send("status", {
+              message:
+                researchNotes.length > 0
+                  ? "Web research complete"
+                  : "Web research timed out. Continuing without it",
+            });
           } catch (researchError) {
             console.error(
               "Failed to enrich widget with web research: ",
@@ -366,26 +534,64 @@ export async function POST(req: Request) {
           }
         }
 
-        let availableImages: Awaited<ReturnType<typeof searchImagesWithOpenAI>> =
-          [];
+        let availableImages: Awaited<
+          ReturnType<typeof searchImagesWithOpenAI>
+        > = [];
         if (assetPlan.imageSearches.length > 0) {
           try {
-            send("status", {
-              message:
+            if (!hasTimeForStage(MIN_FINAL_WIDGET_TIME_MS)) {
+              throw new Error("Not enough time left for image search.");
+            }
+            const imageSearchTimeout = getStageTimeout(IMAGE_SEARCH_TIMEOUT_MS);
+            const settledImageGroups = await withStatusTicker(
+              send,
+              [
                 assetPlan.imageSearches.length === 1
                   ? "Searching for real image URLs"
                   : `Searching for real image URLs from ${assetPlan.imageSearches.length} queries`,
-            });
-            const imageGroups = await Promise.all(
-              assetPlan.imageSearches.map((search) =>
-                searchImagesWithOpenAI(search.query, 3),
-              ),
+                ...imageSearchStatusMessages.slice(1),
+              ],
+              () =>
+                Promise.allSettled(
+                  assetPlan.imageSearches.map((search) =>
+                    withTimedSignal(imageSearchTimeout, req.signal, (signal) =>
+                      searchImagesWithOpenAI(search.query, 3, { signal }),
+                    ),
+                  ),
+                ),
             );
+            const imageGroups = settledImageGroups
+              .filter(
+                (
+                  result,
+                ): result is PromiseFulfilledResult<
+                  Awaited<ReturnType<typeof searchImagesWithOpenAI>>
+                > => result.status === "fulfilled",
+              )
+              .map((result) => result.value);
+            const failedImageCount =
+              settledImageGroups.length - imageGroups.length;
+            if (failedImageCount > 0) {
+              console.error(
+                `Failed to enrich widget with ${failedImageCount} image searches.`,
+                settledImageGroups
+                  .filter(
+                    (result): result is PromiseRejectedResult =>
+                      result.status === "rejected",
+                  )
+                  .map((result) => result.reason),
+              );
+            }
             availableImages = dedupeImages(imageGroups.flat()).slice(
               0,
               MAX_AVAILABLE_IMAGES,
             );
-            send("status", { message: "Image search complete" });
+            send("status", {
+              message:
+                availableImages.length > 0
+                  ? "Image search complete"
+                  : "Image search timed out. Continuing without it",
+            });
           } catch (imageError) {
             console.error(
               "Failed to enrich widget with image search: ",
@@ -397,27 +603,44 @@ export async function POST(req: Request) {
           }
         }
 
-        send("status", { message: "Generating the widget interface" });
-        const { text } = await generateText({
-          model: getLanguageModel(modelChoice),
-          reasoning: getWidgetGenerationReasoning(modelChoice),
-          system: `${systemPrompt}
+        const finalWidgetTimeout = getStageTimeout(
+          FINAL_WIDGET_TIMEOUT_MS,
+          1_000,
+        );
+        if (finalWidgetTimeout < 5_000) {
+          throw new Error(
+            "Generation took too long before the widget step. Try a simpler prompt or fewer searches.",
+          );
+        }
+        const { text } = await withStatusTicker(
+          send,
+          finalGenerationStatusMessages,
+          () =>
+            withTimedSignal(finalWidgetTimeout, req.signal, (signal) =>
+              generateText({
+                model: getLanguageModel(modelChoice),
+                reasoning: getWidgetGenerationReasoning(modelChoice),
+                abortSignal: signal,
+                maxRetries: 0,
+                system: `${systemPrompt}
 
 Return only valid JSON with these keys: template, data, theme, designSpec.
 Do not wrap the JSON in markdown or prose.`,
-          prompt: JSON.stringify({
-            prompt: prompt.trim(),
-            referenceImageContext,
-            webSearchesRequested: assetPlan.webSearches,
-            researchNotes: compactResearchNotes(researchNotes),
-            imageSearchesRequested: assetPlan.imageSearches,
-            availableImages: availableImages.map((image) => ({
-              url: image.link,
-              title: image.title,
-              source: image.image?.contextLink,
-            })),
-          }),
-        });
+                prompt: JSON.stringify({
+                  prompt: prompt.trim(),
+                  referenceImageContext,
+                  webSearchesRequested: assetPlan.webSearches,
+                  researchNotes: compactResearchNotes(researchNotes),
+                  imageSearchesRequested: assetPlan.imageSearches,
+                  availableImages: availableImages.map((image) => ({
+                    url: image.link,
+                    title: image.title,
+                    source: image.image?.contextLink,
+                  })),
+                }),
+              }),
+            ),
+        );
         const object = parseGeneratedWidget(text);
 
         send("status", { message: "Widget ready" });
@@ -426,10 +649,17 @@ Do not wrap the JSON in markdown or prose.`,
         console.error("Failed to generate widget: ", error);
         send("error", {
           error:
-            error instanceof Error ? error.message : "Failed to generate widget",
+            error instanceof Error
+              ? error.message
+              : "Failed to generate widget",
         });
       } finally {
-        controller.close();
+        streamClosed = true;
+        try {
+          controller.close();
+        } catch {
+          // The request may already be closed if the client disconnected.
+        }
       }
     },
   });

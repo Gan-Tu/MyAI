@@ -172,6 +172,34 @@ function readFileAsDataUrl(file: File) {
   });
 }
 
+function formatActionPayload(action: unknown) {
+  try {
+    return JSON.stringify(action, null, 2);
+  } catch {
+    return String(action);
+  }
+}
+
+function showActionToast(action: unknown) {
+  const payload = formatActionPayload(action);
+
+  toast.custom(
+    (toastInstance) => (
+      <div
+        className={`max-w-md rounded-lg bg-white p-4 text-slate-900 shadow-lg ring-1 ring-slate-200 transition ${
+          toastInstance.visible ? "opacity-100" : "opacity-0"
+        }`}
+      >
+        <div className="text-sm font-medium">Action received</div>
+        <pre className="mt-2 max-h-64 overflow-auto font-mono text-xs leading-5 break-words whitespace-pre-wrap text-slate-700">
+          {payload}
+        </pre>
+      </div>
+    ),
+    { duration: 3500 },
+  );
+}
+
 export default function GenerativeWidgets({
   q,
   defaultModel,
@@ -243,6 +271,24 @@ export default function GenerativeWidgets({
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
       let buffer = "";
+      let receivedWidget = false;
+      const handleStreamLine = (line: string) => {
+        if (!line.trim()) return;
+        const event = JSON.parse(line) as GenerationStreamEvent;
+        if (event.type === "status") {
+          setGenerationStatus(event.message);
+        } else if (event.type === "result") {
+          receivedWidget = true;
+          setWidget({
+            template: event.widget.template,
+            data: event.widget.data || {},
+            theme: event.widget.theme || "light",
+            designSpec: event.widget.designSpec,
+          });
+        } else if (event.type === "error") {
+          throw new Error(event.error);
+        }
+      };
 
       while (true) {
         const { value, done } = await reader.read();
@@ -251,23 +297,21 @@ export default function GenerativeWidgets({
         buffer = lines.pop() || "";
 
         for (const line of lines) {
-          if (!line.trim()) continue;
-          const event = JSON.parse(line) as GenerationStreamEvent;
-          if (event.type === "status") {
-            setGenerationStatus(event.message);
-          } else if (event.type === "result") {
-            setWidget({
-              template: event.widget.template,
-              data: event.widget.data || {},
-              theme: event.widget.theme || "light",
-              designSpec: event.widget.designSpec,
-            });
-          } else if (event.type === "error") {
-            throw new Error(event.error);
-          }
+          handleStreamLine(line);
         }
 
-        if (done) break;
+        if (done) {
+          if (buffer.trim()) {
+            handleStreamLine(buffer);
+          }
+          break;
+        }
+      }
+
+      if (!receivedWidget) {
+        throw new Error(
+          "Generation ended before a widget was returned. It may have timed out.",
+        );
       }
     } catch (caught) {
       setError(
@@ -299,7 +343,9 @@ export default function GenerativeWidgets({
 
     const files = selectedFiles.slice(0, remainingSlots);
     if (selectedFiles.length > remainingSlots) {
-      toast.error(`You can attach up to ${maxReferenceImages} reference images.`);
+      toast.error(
+        `You can attach up to ${maxReferenceImages} reference images.`,
+      );
     }
 
     const validFiles = files.filter((file) => {
@@ -322,10 +368,9 @@ export default function GenerativeWidgets({
       })),
     );
 
-    setReferenceImages((currentImages) => [
-      ...currentImages,
-      ...images,
-    ].slice(0, maxReferenceImages));
+    setReferenceImages((currentImages) =>
+      [...currentImages, ...images].slice(0, maxReferenceImages),
+    );
   };
 
   const removeReferenceImage = (id: string) => {
@@ -346,13 +391,13 @@ export default function GenerativeWidgets({
   ) : null;
 
   return (
-    <div className="font-display mx-auto my-auto flex h-full w-full max-w-6xl grow flex-col pb-4 dark:bg-gray-950 lg:flex-row">
+    <div className="font-display mx-auto my-auto flex h-full w-full max-w-6xl grow flex-col pb-4 lg:flex-row dark:bg-gray-950">
       <div className="relative flex min-w-[400px] grow flex-col justify-center overflow-hidden px-6 lg:pointer-events-none lg:inset-0 lg:z-40 lg:flex lg:w-1/2 lg:px-0">
         <div className="relative flex w-full lg:pointer-events-auto lg:mr-[calc(max(2rem,50%-38rem)+40rem)] lg:min-w-[32rem] lg:overflow-x-hidden lg:overflow-y-auto lg:pl-[max(4rem,calc(50%-38rem))]">
           <div className="mx-auto w-full max-w-md min-w-[350px] md:min-w-[400px] lg:mx-0 lg:flex lg:w-96 lg:flex-col lg:before:flex-1 lg:before:pt-6">
-            <div className="pb-10 sm:pb-20 sm:pt-32 lg:py-20 lg:pt-20">
+            <div className="pb-10 sm:pt-32 sm:pb-20 lg:py-20 lg:pt-20">
               <div className="relative">
-                <h1 className="text-slate mt-14 text-pretty text-4xl/tight font-light">
+                <h1 className="text-slate mt-14 text-4xl/tight font-light text-pretty">
                   Generative Widgets{" "}
                   <span className="text-violet-500">from any prompt</span>
                 </h1>
@@ -449,7 +494,7 @@ export default function GenerativeWidgets({
                             <button
                               type="button"
                               aria-label={`Remove ${image.name}`}
-                              className="absolute right-1 top-1 inline-flex h-6 w-6 cursor-pointer items-center justify-center rounded-full bg-white/90 text-slate-600 shadow-sm transition hover:bg-white hover:text-slate-900"
+                              className="absolute top-1 right-1 inline-flex h-6 w-6 cursor-pointer items-center justify-center rounded-full bg-white/90 text-slate-600 shadow-sm transition hover:bg-white hover:text-slate-900"
                               onClick={() => removeReferenceImage(image.id)}
                               disabled={isLoading}
                             >
@@ -468,7 +513,6 @@ export default function GenerativeWidgets({
                     <p>{error}</p>
                   </div>
                 ) : null}
-
               </div>
             </div>
             <div className="hidden flex-1 items-end pb-4 lg:block lg:justify-start lg:pb-6">
@@ -478,7 +522,7 @@ export default function GenerativeWidgets({
         </div>
       </div>
 
-      <div className="stretch no-scrollbar mx-auto flex min-h-[28rem] w-full max-w-[600px] min-w-[350px] grow flex-col items-center justify-center gap-4 overflow-y-auto pb-10 pt-8 md:min-w-[400px] lg:mx-6 lg:min-h-[calc(100vh-3rem)] lg:w-1/2 lg:pt-0">
+      <div className="stretch no-scrollbar mx-auto flex min-h-[28rem] w-full max-w-[600px] min-w-[350px] grow flex-col items-center justify-center gap-4 overflow-y-auto pt-8 pb-10 md:min-w-[400px] lg:mx-6 lg:min-h-[calc(100vh-3rem)] lg:w-1/2 lg:pt-0">
         <div className="flex w-full flex-col items-center justify-center p-5">
           {isLoading ? (
             <div className="flex min-h-[18rem] w-full items-center justify-center">
@@ -501,11 +545,7 @@ export default function GenerativeWidgets({
                     template={widget.template}
                     data={widget.data}
                     theme={widget.theme}
-                    onAction={(action) =>
-                      toast(JSON.stringify(action, null, 2), {
-                        duration: 2500,
-                      })
-                    }
+                    onAction={showActionToast}
                   />
                 </div>
               </WidgetPreviewBoundary>
