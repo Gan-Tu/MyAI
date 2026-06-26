@@ -33,7 +33,7 @@ export function getAiTopicsRespCacheKey(str: string, model: string = 'gpt-5-mini
 }
 
 export function getAiTopicsImagesCacheKey(str: string) {
-  return `ai-topics:images:${str?.toLowerCase()?.trim()}`
+  return `ai-topics:images:openai-web-v1:${str?.toLowerCase()?.trim()}`
 }
 
 export async function copyToClipboard(textToCopy: string) {

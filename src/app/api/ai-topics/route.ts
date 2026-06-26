@@ -11,6 +11,7 @@
 // limitations under the License.
 
 import { defaultLanguageModel } from '@/lib/models';
+import { getLanguageModel } from '@/lib/language-model';
 import redis, { checkRateLimit } from "@/lib/redis";
 import { entityCardSchema } from '@/lib/schema';
 import { getAiTopicsRespCacheKey } from "@/lib/utils";
@@ -102,7 +103,7 @@ export async function POST(req: Request) {
     }
 
     const result = streamObject({
-        model: modelChoice,
+        model: getLanguageModel(modelChoice),
         schema: entityCardSchema,
         system: prompt,
         prompt: context,

@@ -11,6 +11,7 @@
 // limitations under the License.
 
 
+import { getLanguageModel } from '@/lib/language-model';
 import { defaultLanguageModel } from '@/lib/models';
 import { checkRateLimit } from '@/lib/redis';
 import { streamText } from 'ai';
@@ -47,7 +48,7 @@ export async function POST(req: Request) {
   }
 
   const result = streamText({
-    model: modelChoice,
+    model: getLanguageModel(modelChoice),
     prompt: `
       You are an AI assistant specialized in summarizing web content. Given webpage content in Markdown format, generate a concise high level summary, no more than 3 paragraphs or 20% of original content length. Each paragraph should cover a distinct aspect of the content.
 

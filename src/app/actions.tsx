@@ -24,23 +24,103 @@ import {
   getAiTopicsRespCacheKey,
 } from "@/lib/utils";
 
+type OpenAIImageSearchResult = {
+  type?: string;
+  image_url?: string;
+  thumbnail_url?: string;
+  source_website_url?: string;
+  caption?: string | null;
+};
+
+function collectOpenAIImageResults(
+  value: unknown,
+  results: OpenAIImageSearchResult[] = [],
+) {
+  if (!value || typeof value !== "object") return results;
+
+  if (Array.isArray(value)) {
+    for (const item of value) {
+      collectOpenAIImageResults(item, results);
+    }
+    return results;
+  }
+
+  const item = value as Record<string, unknown>;
+  if (
+    item.type === "image_result" ||
+    typeof item.image_url === "string" ||
+    typeof item.thumbnail_url === "string"
+  ) {
+    results.push(item as OpenAIImageSearchResult);
+  }
+
+  for (const child of Object.values(item)) {
+    collectOpenAIImageResults(child, results);
+  }
+
+  return results;
+}
+
+function toImageSearchResult(
+  result: OpenAIImageSearchResult,
+): ImageSearchResult | null {
+  const link = result.image_url || result.thumbnail_url;
+  if (!link) return null;
+
+  return {
+    link,
+    title: result.caption || "Image result",
+    image: result.source_website_url
+      ? {
+          contextLink: result.source_website_url,
+        }
+      : undefined,
+  };
+}
+
 export async function searchImage(
   query: string,
 ): Promise<{ data?: ImageSearchResult[]; error?: string }> {
   try {
+    if (!process.env.OPENAI_API_KEY) {
+      return { error: "Missing OPENAI_API_KEY" };
+    }
+
     let cacheKey = getAiTopicsImagesCacheKey(query);
     const cache: ImageSearchResult[] | null = await redis.get(cacheKey);
     if (cache) return { data: cache };
 
-    const response = await fetch(
-      `https://www.googleapis.com/customsearch/v1?q=${query.trim()}&cx=${process
-        .env.GOOGLE_SEARCH_ENGINE_ID!}&key=${process.env
-        .GOOGLE_SEARCH_API_KEY!}&searchType=image&num=10`,
-    );
+    const response = await fetch("https://api.openai.com/v1/responses", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "gpt-5.5",
+        reasoning: { effort: "low" },
+        tools: [
+          {
+            type: "web_search",
+            search_content_types: ["image"],
+            image_settings: {
+              max_results: 10,
+              caption: true,
+            },
+          },
+        ],
+        include: ["web_search_call.results"],
+        input: `Find image results for ${query.trim()}.`,
+      }),
+    });
     if (!response.ok) {
       throw new Error(`Error fetching images: ${response.status}`);
     }
-    const { items } = await response.json();
+    const body = await response.json();
+    const items = collectOpenAIImageResults(body)
+      .map(toImageSearchResult)
+      .filter((item): item is ImageSearchResult => Boolean(item));
+
     if (items && query) {
       await redis.set(cacheKey, items);
       return { data: items };

@@ -11,6 +11,7 @@
 // limitations under the License.
 
 import { decrypt } from '@/lib/encryption';
+import { getLanguageModel } from '@/lib/language-model';
 import { defaultLanguageModel } from '@/lib/models';
 import { checkRateLimit } from '@/lib/redis';
 import { claimsSchema } from '@/lib/schema';
@@ -38,7 +39,7 @@ export async function POST(req: Request) {
   }
 
   const result = streamObject({
-    model: modelChoice,
+    model: getLanguageModel(modelChoice),
     schema: claimsSchema,
     system: decrypt(systemPrompt, process.env.PROMPT_SECRET!).trim(),
     prompt: context.trim(),
