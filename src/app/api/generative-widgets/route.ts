@@ -128,8 +128,15 @@ const finalGenerationStatusMessages = [
   "Generating the widget interface",
   "Needing more time",
   "Shaping the layout",
+  "Choosing the right structure",
   "Fitting the data into the widget",
+  "Balancing the content",
+  "Arranging the sections",
+  "Tuning the visual hierarchy",
   "Checking the preview",
+  "Reviewing the widget data",
+  "Polishing the details",
+  "Keeping the widget compact",
   "Preparing the final widget",
 ];
 
