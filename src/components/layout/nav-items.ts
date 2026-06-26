@@ -16,5 +16,6 @@ export const navItems = [
   { label: "Claims Extractor", url: "/claims" },
   { label: "Citation Necessity", url: "/citations" },
   { label: "Pixel Crafter", url: "/pixels" },
+  { label: "Generative Widgets", url: "/generative-widgets" },
   { label: "Web Summarizer", url: "/web-summarizer" },
 ];

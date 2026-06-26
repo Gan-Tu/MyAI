@@ -15,7 +15,7 @@ import { checkRateLimit } from "@/lib/redis";
 import { ImageModelMetadata } from '@/lib/types';
 import { neon } from '@neondatabase/serverless';
 import { put } from '@vercel/blob';
-import { generateId, experimental_generateImage as generateImage, ImageModel, JSONValue } from 'ai';
+import { generateId, generateImage, ImageModel, JSONValue } from 'ai';
 import { NextResponse } from 'next/server';
 
 // Allow streaming responses up to 30 seconds

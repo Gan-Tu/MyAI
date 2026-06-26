@@ -13,17 +13,21 @@
 import { NextResponse } from "next/server";
 import Replicate from "replicate";
 
-export const fetchCache = 'force-no-store'
+export const fetchCache = "force-no-store";
 
 const replicate = new Replicate({
   auth: process.env.REPLICATE_API_TOKEN,
 });
 
-export async function GET(request: Request, { params }: { params: { id: string } }) {
-  const { id } = params;
+export async function GET(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  const { id } = await params;
   if (!id) {
     return NextResponse.json(
-      { error: "Missing required parameter 'id'" }, { status: 400 }
+      { error: "Missing required parameter 'id'" },
+      { status: 400 },
     );
   }
   const prediction = await replicate.predictions.get(id);

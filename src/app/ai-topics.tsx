@@ -49,7 +49,7 @@ const exampleIdeas = [
 ];
 
 export default function AiTopics({ q, defaultModel }: AiTopicsProps) {
-  const [input, setInput] = useState(q);
+  const [input, setInput] = useState(q ?? "");
   const [model, setModel] = useState<string>(
     defaultModel || defaultLanguageModel,
   );
@@ -88,17 +88,21 @@ export default function AiTopics({ q, defaultModel }: AiTopicsProps) {
     }
 
     // Fetch Entity Card
+    let foundCachedCard = false;
     if (useCache) {
       const { data: cache, error } = await getCachedAiTopics(input, model);
       if (error) {
         console.error(error);
       } else if (cache) {
         setCard(cache);
+        foundCachedCard = true;
         toast("Fetched AI response from redis cache");
-        return;
       }
     }
-    submit(input);
+
+    if (!foundCachedCard) {
+      submit(input);
+    }
 
     // Fetch Images
     const { data, error } = await searchImage(input);
@@ -155,7 +159,7 @@ export default function AiTopics({ q, defaultModel }: AiTopicsProps) {
                     />
                   </SwitchField>
 
-                  <Headless.Field className="justift-center flex items-baseline gap-6">
+                  <Headless.Field className="flex items-baseline justify-center gap-6">
                     <Label className="grow text-sm font-semibold">Model</Label>
                     <Select
                       name="model"
@@ -176,7 +180,7 @@ export default function AiTopics({ q, defaultModel }: AiTopicsProps) {
                     </Select>
                   </Headless.Field>
 
-                  <Headless.Field className="justift-center flex items-baseline gap-6">
+                  <Headless.Field className="flex items-baseline justify-center gap-6">
                     <Label className="grow text-sm font-semibold">
                       Color Theme
                     </Label>

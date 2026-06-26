@@ -12,7 +12,6 @@
 
 "use client";
 
-import { deductCreditsBalanceBy, getOrInitCreditsBalance } from "@/app/actions";
 import { auth } from "@/lib/firebase/client";
 import { onAuthStateChanged } from "firebase/auth";
 import { usePathname, useRouter } from "next/navigation";
@@ -26,6 +25,32 @@ import React, {
   useState,
 } from "react";
 import toast from "react-hot-toast";
+
+type CreditsResponse = {
+  balance?: number;
+  error?: string;
+};
+
+async function updateCredits(
+  body:
+    | { action: "getOrInit"; uid: string }
+    | { action: "deduct"; uid: string; amount: number },
+) {
+  const response = await fetch("/api/credits", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body),
+  });
+  const result = (await response.json()) as CreditsResponse;
+
+  if (!response.ok && !result.error) {
+    return { error: "Failed to update credits" };
+  }
+
+  return result;
+}
 
 // Define the type for the context value
 interface CreditsContextTypeValue {
@@ -62,23 +87,27 @@ export const CreditsProvider: React.FC<CreditsProviderProps> = ({
       return true;
     }
     if (!uid) {
+      const redirectTarget = query
+        ? `${pathname}?q=${encodeURIComponent(query)}`
+        : pathname;
       router.push(
-        `/login?redirect_to=${encodeURIComponent(pathname)}${query ? `?q=${query}` : ""}`,
+        `/login?redirect_to=${encodeURIComponent(redirectTarget)}`,
       );
       toast.error("Sign in to use your credits!");
       return false;
     }
-    const { balance: newBalance, error } = await deductCreditsBalanceBy(
+    const { balance: newBalance, error } = await updateCredits({
+      action: "deduct",
       uid,
-      credit,
-    );
-    toast.success(`Used ${credit} credit${credit > 1 ? "s" : ""}.`);
-    if (newBalance !== undefined) {
-      setBalance(newBalance);
-    }
+      amount: credit,
+    });
     if (error) {
       toast.error(error);
       return false;
+    }
+    toast.success(`Used ${credit} credit${credit > 1 ? "s" : ""}.`);
+    if (newBalance !== undefined) {
+      setBalance(newBalance);
     }
     return true;
   };
@@ -88,7 +117,10 @@ export const CreditsProvider: React.FC<CreditsProviderProps> = ({
       if (enableCredits) {
         if (user && user.uid) {
           setUid(user.uid);
-          const { balance, error } = await getOrInitCreditsBalance(user.uid);
+          const { balance, error } = await updateCredits({
+            action: "getOrInit",
+            uid: user.uid,
+          });
           if (error) {
             console.error(`Failed to get credit balance: ${error}`);
             setBalance(0);
