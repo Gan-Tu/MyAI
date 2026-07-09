@@ -10,6 +10,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { defaultOpenAIResponsesModel } from "@/lib/models";
+
 type ReferenceImage = {
   dataUrl: string;
   name?: string;
@@ -101,7 +103,7 @@ export async function analyzeWidgetReferenceImages(
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      model: "gpt-5.5",
+      model: defaultOpenAIResponsesModel,
       reasoning: { effort: "high" },
       input: [
         {

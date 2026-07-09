@@ -11,6 +11,7 @@
 // limitations under the License.
 
 import { ImageSearchResult } from "@/lib/types";
+import { defaultOpenAIResponsesModel } from "@/lib/models";
 
 type OpenAIImageSearchResult = {
   type?: string;
@@ -87,7 +88,7 @@ export async function searchImagesWithOpenAI(
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      model: "gpt-5.5",
+      model: defaultOpenAIResponsesModel,
       reasoning: { effort: "high" },
       tools: [
         {

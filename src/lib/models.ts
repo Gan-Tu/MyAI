@@ -14,13 +14,16 @@ import { type ImageModelMetadata } from "@/lib/types";
 import { fal } from '@ai-sdk/fal';
 import { replicate } from '@ai-sdk/replicate';
 
-export const defaultLanguageModel = 'openai/gpt-5.5';
+export const defaultOpenAIResponsesModel = 'gpt-5.6';
+
+export const defaultLanguageModel = `openai/${defaultOpenAIResponsesModel}`;
 
 export const supportedLanguageModels = [
   'xai/grok-4.3',
   'xai/grok-4.20-reasoning',
   'openai/gpt-5.4',
   'openai/gpt-5.5',
+  defaultLanguageModel,
   'google/gemini-3.1-flash-lite',
   'google/gemini-3.1-pro-preview',
   'anthropic/claude-opus-4.7',

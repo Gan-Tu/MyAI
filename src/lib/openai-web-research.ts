@@ -10,6 +10,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { defaultOpenAIResponsesModel } from "@/lib/models";
+
 function collectOutputText(value: unknown, text: string[] = []) {
   if (!value || typeof value !== "object") return text;
 
@@ -100,7 +102,7 @@ export async function researchWithOpenAIWebSearch(
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      model: "gpt-5.5",
+      model: defaultOpenAIResponsesModel,
       reasoning: { effort: "high" },
       tools: [
         {
