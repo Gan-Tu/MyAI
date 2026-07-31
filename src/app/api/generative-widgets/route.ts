@@ -18,8 +18,6 @@ import { researchWithOpenAIWebSearch } from "@/lib/openai-web-research";
 import { checkRateLimit } from "@/lib/redis";
 import { generateObject, generateText } from "ai";
 import { NextResponse } from "next/server";
-import { readFileSync } from "node:fs";
-import { join } from "node:path";
 import { z } from "zod";
 
 export const maxDuration = 300;
@@ -32,17 +30,15 @@ const IMAGE_SEARCH_TIMEOUT_MS = 60_000;
 const FINAL_WIDGET_TIMEOUT_MS = 240_000;
 const MIN_FINAL_WIDGET_TIME_MS = 90_000;
 const STATUS_TICK_INTERVAL_MS = 8_000;
+const WIDGET_AUTHORING_GUIDE_URL = "https://widgets.gan.dev/AGENTS.md";
+const WIDGET_AUTHORING_GUIDE_TIMEOUT_MS = 10_000;
+const MAX_WIDGET_AUTHORING_GUIDE_BYTES = 512 * 1024;
 const MAX_REFERENCE_IMAGES = 3;
 const MAX_REFERENCE_IMAGE_BYTES = 5 * 1024 * 1024;
 const MAX_ASSET_SEARCHES = 10;
 const MAX_AVAILABLE_IMAGES = 24;
 const referenceImageDataUrlPattern =
   /^data:image\/(?:png|jpeg|jpg|webp);base64,/i;
-const widgetAuthoringGuide = readFileSync(
-  join(process.cwd(), "src/app/api/generative-widgets/AGENTS.md"),
-  "utf8",
-).trim();
-
 type JsonValue =
   | string
   | number
@@ -122,8 +118,6 @@ When searches are useful:
 - Prefer product/place/person/media-title queries that can return directly usable image URLs.
 `.trim();
 
-const systemPrompt = widgetAuthoringGuide;
-
 const finalGenerationStatusMessages = [
   "Generating the widget interface",
   "Needing more time",
@@ -194,6 +188,34 @@ async function withTimedSignal<T>(
     clearTimeout(timeout);
     parentSignal.removeEventListener("abort", abort);
   }
+}
+
+async function fetchWidgetAuthoringGuide(signal: AbortSignal) {
+  const response = await fetch(WIDGET_AUTHORING_GUIDE_URL, {
+    signal,
+    cache: "no-store",
+    headers: { Accept: "text/markdown, text/plain;q=0.9" },
+  });
+  if (!response.ok) {
+    throw new Error(
+      `Unable to load the widget authoring guide (HTTP ${response.status}).`,
+    );
+  }
+
+  const contentLength = Number(response.headers.get("content-length"));
+  if (contentLength > MAX_WIDGET_AUTHORING_GUIDE_BYTES) {
+    throw new Error("The widget authoring guide is unexpectedly large.");
+  }
+
+  const guide = (await response.text()).trim();
+  if (!guide) {
+    throw new Error("The widget authoring guide is empty.");
+  }
+  if (Buffer.byteLength(guide, "utf8") > MAX_WIDGET_AUTHORING_GUIDE_BYTES) {
+    throw new Error("The widget authoring guide is unexpectedly large.");
+  }
+
+  return guide;
 }
 
 function getWidgetGenerationReasoning(model: string) {
@@ -368,6 +390,13 @@ export async function POST(req: Request) {
       };
 
       try {
+        send("status", { message: "Loading latest widget authoring guide" });
+        const widgetAuthoringGuide = await withTimedSignal(
+          WIDGET_AUTHORING_GUIDE_TIMEOUT_MS,
+          req.signal,
+          fetchWidgetAuthoringGuide,
+        );
+
         let referenceImageAnalysis = "";
         if (referenceImages.length > 0) {
           try {
@@ -629,7 +658,7 @@ export async function POST(req: Request) {
                 reasoning: getWidgetGenerationReasoning(modelChoice),
                 abortSignal: signal,
                 maxRetries: 0,
-                system: `${systemPrompt}
+                system: `${widgetAuthoringGuide}
 
 Return only valid JSON with these keys: template, data, theme, designSpec.
 Do not wrap the JSON in markdown or prose.`,
