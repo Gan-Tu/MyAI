@@ -15,6 +15,7 @@
 import { Button } from "@/components/base/button";
 import { Label } from "@/components/base/fieldset";
 import { Select } from "@/components/base/select";
+import { Switch } from "@/components/base/switch";
 import AnimatedSparkleIcon from "@/components/animated-sparkle";
 import CreditFooter from "@/components/credit-footer";
 import { useCredits } from "@/hooks/credits";
@@ -208,6 +209,7 @@ export default function GenerativeWidgets({
     q || "Generate a package tracking history widget.",
   );
   const [model, setModel] = useState(defaultModel || defaultWidgetGenerationModel);
+  const [glassEnabled, setGlassEnabled] = useState(false);
   const [widget, setWidget] = useState<GeneratedWidget>(defaultWidget);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -392,9 +394,9 @@ export default function GenerativeWidgets({
 
   return (
     <div className="font-display mx-auto my-auto flex h-full w-full max-w-6xl grow flex-col pb-4 lg:flex-row dark:bg-gray-950">
-      <div className="relative flex min-w-[400px] grow flex-col justify-center overflow-hidden px-6 lg:pointer-events-none lg:inset-0 lg:z-40 lg:flex lg:w-1/2 lg:px-0">
+      <div className="relative flex min-w-0 grow flex-col justify-center overflow-hidden sm:px-6 lg:pointer-events-none lg:inset-0 lg:z-40 lg:flex lg:w-1/2 lg:px-0">
         <div className="relative flex w-full lg:pointer-events-auto lg:mr-[calc(max(2rem,50%-38rem)+40rem)] lg:min-w-[32rem] lg:overflow-x-hidden lg:overflow-y-auto lg:pl-[max(4rem,calc(50%-38rem))]">
-          <div className="mx-auto w-full max-w-md min-w-[350px] md:min-w-[400px] lg:mx-0 lg:flex lg:w-96 lg:flex-col lg:before:flex-1 lg:before:pt-6">
+          <div className="mx-auto w-full min-w-0 max-w-md lg:mx-0 lg:flex lg:w-96 lg:flex-col lg:before:flex-1 lg:before:pt-6">
             <div className="pb-10 sm:pt-32 sm:pb-20 lg:py-20 lg:pt-20">
               <div className="relative">
                 <h1 className="text-slate mt-14 text-4xl/tight font-light text-pretty">
@@ -427,12 +429,24 @@ export default function GenerativeWidgets({
                       ))}
                     </Select>
                   </Headless.Field>
+                  <Headless.Field className="flex items-center justify-between gap-6">
+                    <Label className="cursor-pointer text-sm font-semibold">
+                      Glass mode
+                    </Label>
+                    <Switch
+                      name="glass-mode"
+                      checked={glassEnabled}
+                      onChange={setGlassEnabled}
+                      className="cursor-pointer!"
+                    />
+                  </Headless.Field>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div className="relative isolate mt-4 text-sm">
-                    <label className="sr-only">Widget prompt</label>
+                    <label htmlFor="widget-prompt" className="sr-only">Widget prompt</label>
                     <textarea
+                      id="widget-prompt"
                       required
                       name="prompt"
                       autoFocus={true}
@@ -522,8 +536,8 @@ export default function GenerativeWidgets({
         </div>
       </div>
 
-      <div className="stretch no-scrollbar mx-auto flex min-h-[28rem] w-full max-w-[600px] min-w-[350px] grow flex-col items-center justify-center gap-4 overflow-y-auto pt-8 pb-10 md:min-w-[400px] lg:mx-6 lg:min-h-[calc(100vh-3rem)] lg:w-1/2 lg:pt-0">
-        <div className="flex w-full flex-col items-center justify-center p-5">
+      <div className="stretch no-scrollbar mx-auto flex min-h-[28rem] w-full max-w-[600px] min-w-0 grow flex-col items-center justify-center gap-4 overflow-y-auto pt-8 pb-10 lg:mx-6 lg:min-h-[calc(100vh-3rem)] lg:w-1/2 lg:pt-0">
+        <div className="widget-preview-backdrop flex w-full flex-col items-center justify-center rounded-3xl px-2 py-8 sm:p-5">
           {isLoading ? (
             <div className="flex min-h-[18rem] w-full items-center justify-center">
               {statusPill}
@@ -545,6 +559,7 @@ export default function GenerativeWidgets({
                     template={widget.template}
                     data={widget.data}
                     theme={widget.theme}
+                    appearance={glassEnabled ? "glass" : "default"}
                     onAction={showActionToast}
                   />
                 </div>

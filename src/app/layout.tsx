@@ -20,6 +20,7 @@ import { Inter } from "next/font/google";
 import localFont from "next/font/local";
 import { Toaster } from "react-hot-toast";
 import "@tugan/widgets/styles.css";
+import "@tugan/widgets/liquid-glass.css";
 import "./globals.css";
 
 const inter = Inter({

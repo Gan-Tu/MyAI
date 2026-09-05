@@ -1,5 +1,11 @@
 @import 'tailwindcss';
 
+.widget-preview-backdrop {
+  background:
+    radial-gradient(ellipse at 15% 20%, rgb(196 181 253 / 24%), transparent 60%),
+    radial-gradient(ellipse at 85% 80%, rgb(165 218 223 / 24%), transparent 60%);
+}
+
 @custom-variant dark (&:is(.dark *));
 
 @theme {
