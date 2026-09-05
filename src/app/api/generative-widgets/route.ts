@@ -11,7 +11,7 @@
 // limitations under the License.
 
 import { getLanguageModel } from "@/lib/language-model";
-import { defaultLanguageModel } from "@/lib/models";
+import { defaultWidgetGenerationModel } from "@/lib/models";
 import { searchImagesWithOpenAI } from "@/lib/openai-image-search";
 import { analyzeWidgetReferenceImages } from "@/lib/openai-reference-images";
 import { researchWithOpenAIWebSearch } from "@/lib/openai-web-research";
@@ -333,7 +333,7 @@ export async function POST(req: Request) {
   }
 
   const { prompt, referenceImages = [] } = requestBody;
-  const modelChoice = req.headers.get("X-AI-Model") || defaultLanguageModel;
+  const modelChoice = req.headers.get("X-AI-Model") || defaultWidgetGenerationModel;
 
   if (!prompt?.trim()) {
     return NextResponse.json({ error: "Missing prompt" }, { status: 400 });

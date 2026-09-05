@@ -18,12 +18,15 @@ export const defaultOpenAIResponsesModel = 'gpt-5.6';
 
 export const defaultLanguageModel = `openai/${defaultOpenAIResponsesModel}`;
 
+export const defaultWidgetGenerationModel = 'openai/gpt-6-astra';
+
 export const supportedLanguageModels = [
   'xai/grok-4.3',
   'xai/grok-4.20-reasoning',
   'openai/gpt-5.4',
   'openai/gpt-5.5',
   defaultLanguageModel,
+  defaultWidgetGenerationModel,
   'google/gemini-3.1-flash-lite',
   'google/gemini-3.1-pro-preview',
   'anthropic/claude-opus-4.7',

@@ -18,7 +18,7 @@ import { Select } from "@/components/base/select";
 import AnimatedSparkleIcon from "@/components/animated-sparkle";
 import CreditFooter from "@/components/credit-footer";
 import { useCredits } from "@/hooks/credits";
-import { defaultLanguageModel, supportedLanguageModels } from "@/lib/models";
+import { defaultWidgetGenerationModel, supportedLanguageModels } from "@/lib/models";
 import { WidgetRenderer } from "@tugan/widgets";
 import * as Headless from "@headlessui/react";
 import {
@@ -207,7 +207,7 @@ export default function GenerativeWidgets({
   const [input, setInput] = useState(
     q || "Generate a package tracking history widget.",
   );
-  const [model, setModel] = useState(defaultModel || defaultLanguageModel);
+  const [model, setModel] = useState(defaultModel || defaultWidgetGenerationModel);
   const [widget, setWidget] = useState<GeneratedWidget>(defaultWidget);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
