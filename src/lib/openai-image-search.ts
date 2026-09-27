@@ -23,6 +23,7 @@ type OpenAIImageSearchResult = {
 
 type SearchImagesWithOpenAIOptions = {
   signal?: AbortSignal;
+  model?: string;
 };
 
 function collectOpenAIImageResults(
@@ -88,7 +89,7 @@ export async function searchImagesWithOpenAI(
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      model: defaultOpenAIResponsesModel,
+      model: options.model ?? defaultOpenAIResponsesModel,
       reasoning: { effort: "high" },
       tools: [
         {

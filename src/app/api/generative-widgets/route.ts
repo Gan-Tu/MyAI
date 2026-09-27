@@ -11,7 +11,10 @@
 // limitations under the License.
 
 import { getLanguageModel } from "@/lib/language-model";
-import { defaultWidgetGenerationModel } from "@/lib/models";
+import {
+  defaultWidgetGenerationModel,
+  defaultWidgetOpenAIResponsesModel,
+} from "@/lib/models";
 import { searchImagesWithOpenAI } from "@/lib/openai-image-search";
 import { analyzeWidgetReferenceImages } from "@/lib/openai-reference-images";
 import { researchWithOpenAIWebSearch } from "@/lib/openai-web-research";
@@ -591,7 +594,10 @@ export async function POST(req: Request) {
                 Promise.allSettled(
                   assetPlan.imageSearches.map((search) =>
                     withTimedSignal(imageSearchTimeout, req.signal, (signal) =>
-                      searchImagesWithOpenAI(search.query, 3, { signal }),
+                      searchImagesWithOpenAI(search.query, 3, {
+                        signal,
+                        model: defaultWidgetOpenAIResponsesModel,
+                      }),
                     ),
                   ),
                 ),
