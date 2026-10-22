@@ -10,7 +10,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { unstable_flag as flag } from '@vercel/flags/next';
+import { flag } from 'flags/next';
 
 export const getEnableLogin = flag<boolean>({
   key: 'enable-login',
