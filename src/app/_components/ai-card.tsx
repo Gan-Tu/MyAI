@@ -12,6 +12,7 @@
 
 import CreditFooter from "@/components/credit-footer";
 import { entityCardSchemaType, ImageSearchResult } from "@/lib/types";
+import type { WebSearchResult } from "@/lib/openai-web-search";
 import { capElements } from "@/lib/utils";
 import clsx from "clsx";
 import Description from "./description";
@@ -54,6 +55,29 @@ export default function AiCard({
             className={card?.description ? "pt-3" : "pt-0"}
             facts={capElements(3, card?.facts)}
           />
+          {!!card?.sources?.length && (
+            <div className="px-6 pb-5 text-xs text-slate-600">
+              <p className="mb-1 font-semibold">Web sources</p>
+              <ul className="space-y-1">
+                {card.sources.map(
+                  (source: Partial<WebSearchResult>, index: number) =>
+                    source?.link &&
+                    /^https?:\/\//.test(source.link) && (
+                      <li key={`${source.link}-${index}`}>
+                        <a
+                          href={source.link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="underline"
+                        >
+                          {source.title || source.displayLink || source.link}
+                        </a>
+                      </li>
+                    ),
+                )}
+              </ul>
+            </div>
+          )}
         </div>
       </div>
 

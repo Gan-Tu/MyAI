@@ -53,3 +53,10 @@ We welcome contributions! Feel free to submit a PR or open an issue.
 ## 📜 License
 
 This project is licensed under the Apache-2.0 License – see the LICENSE file for details.
+
+## Search configuration
+
+Web grounding and image search use the existing server-side `OPENAI_API_KEY`.
+Google Custom Search credentials are no longer used. See
+[search migration and verification](docs/search-migration.md) for response
+compatibility, configuration, cache behavior and rollout checks.

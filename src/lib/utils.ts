@@ -29,7 +29,7 @@ export function capElements(count: number, arr?: any[]) {
 
 export function getAiTopicsRespCacheKey(str: string, model: string = 'gpt-5-mini') {
   let modelStr = model === 'gpt-5-mini' ? '' : `${model}:`
-  return `ai-topics:resp:${modelStr}${str?.toLowerCase()?.trim()}`
+  return `ai-topics:resp:openai-web-v1:${modelStr}${str?.toLowerCase()?.trim()}`
 }
 
 export function getAiTopicsImagesCacheKey(str: string) {

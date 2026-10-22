@@ -13,6 +13,12 @@
 import { z } from "zod";
 
 export const entityCardSchema = z.object({
+  sources: z.array(z.object({
+    title: z.string(),
+    link: z.string(),
+    displayLink: z.string(),
+    snippet: z.string(),
+  })).optional(),
   title: z.string().describe("A brief, informative phrase (under 40 characters) representing the main topic of the user query."),
   subtitle: z.string().describe("A short phrase (under 5 words) that categorize or further describe the title."),
   video: z.object({
