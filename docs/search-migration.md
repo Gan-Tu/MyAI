@@ -16,8 +16,9 @@ been verified.
 - `GOOGLE_SEARCH_API_KEY` and `GOOGLE_SEARCH_ENGINE_ID` are no longer read by MyAI.
   No credentials were changed or revoked. Check other applications before removing
   these deployment secrets; do not infer that the named Google project is unused.
-- No Redis configuration changes. Topic response cache keys use a new
-  `openai-web-v1` namespace so old Google-grounded cards do not bypass the migration.
+- No Redis configuration changes. Topic response cache keys use an
+  `openai-web-v2` namespace so old Google-grounded cards and earlier ungrounded
+  fallback cards are bypassed. Successful topic cards expire after one hour.
   Existing image cache keys are unchanged. No cache data is deleted.
 - OpenAI search/model usage incurs charges under the existing provider account.
   No service was purchased or account enrolled as part of this change.
@@ -35,17 +36,22 @@ been verified.
   title. Google-only fields such as `pagemap`/`htmlSnippet` are not fabricated.
   No Google engine domain restrictions were known or assumed.
 - `POST /api/ai-topics` retains string input, model selection, rate limiting,
-  streamed JSON and response caching. Search is mandatory within the provider
-  request, but optional for topic generation: timeouts/errors/empty searches let
-  generation continue without search grounding. Today's date is always supplied.
-  A ten-second search timeout reserves part of the existing 30-second route budget
-  for generation; the caller's cancellation signal is forwarded.
+  streamed JSON and response caching. Search is required: timeouts/errors or a
+  result without usable cited summaries return a retryable 503 error before
+  generation. Failed grounding never produces or caches a card. Today's date is
+  always supplied to the generation model.
+- Search has a 60-second timeout covering both the hosted search and the model's
+  cited summaries. The topic route has a 120-second execution budget, leaving
+  time for generation; the standalone web-search route has a 75-second budget.
+  The caller's cancellation signal is forwarded to search and generation.
 - Source URLs come from provider citation annotations/source metadata, not model
   prose. Unsafe schemes and URL credentials are rejected. Provider-supplied source entries
   are injected into the streamed card and cache independently of the generation
   model. The card shows clickable source links; older cards without sources still
   render. Source links describe the search context, not verification of every
   generated claim.
+- Deduplication ignores `utm_*` tracking parameters and URL fragments while
+  retaining the original provider citation link and meaningful query parameters.
 - Images already use `src/lib/openai-image-search.ts`: `searchImage` in
   `src/app/actions.tsx` serves topic images via Redis, `AiTopics` passes them to
   `AiCard`/`HeroCarousel`, and the widget route calls the same image helper.
@@ -58,22 +64,17 @@ Run `npm ci`, `npm run test:search`, `npm run test:security`, `npm run lint`,
 `npx tsc --noEmit`, and `npm run build`. Search tests mock external requests and
 Redis; they do not spend credits or write to live caches.
 
-Local checks on October 22, 2026: all 16 search regression tests and all four
-existing security tests passed; lint and `tsc --noEmit` passed. The production
-build passed with a Dropbox dynamic-dependency warning in the unrelated backup
-route. No Custom Search endpoint or credential references remain under `src/`.
+The October 22, 2026 investigation reproduced the original ten-second timeout
+using the existing preview credentials. The same current-events request completed
+in 22.84 seconds with five citations when allowed more time. A local credential
+separately returned HTTP 401 because its OpenAI project had been archived; the
+preview uses a different working credential. No credentials were changed.
 
-The saved environment's live search attempt reached OpenAI through its required
-proxy and returned **HTTP 401**. Its existing key is present but was not accepted;
-no key value was printed, generated, or changed. Live provider success, image
-search and full Redis-backed topic generation remain to be verified using valid
-existing application credentials. Upstash Redis variables are absent from the
-saved environment. Do not treat mocked test success as production acceptance.
-
-Before a separately authorized deployment, verify the existing server credential,
-try a current-events query and an image query, inspect clickable source links and
-repeat a topic query to check caching. Review search quality, latency and usage
-costs. This change does not merge, deploy, or prove live Google traffic has stopped.
+After deployment, try a current-events query, check that the complete streamed
+card has source links, and repeat the query to check caching. Search errors must
+show a retryable failure rather than an ungrounded card. Also verify the unchanged
+image flow. Review search quality, latency and usage costs; mocked tests alone do
+not establish live acceptance.
 
 Provider contract: [OpenAI web search documentation](https://developers.openai.com/api/docs/guides/tools-web-search)
 (citations, source metadata, required tool choice and image results).

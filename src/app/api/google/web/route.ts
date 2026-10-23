@@ -13,6 +13,9 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { searchWebWithOpenAI } from '@/lib/openai-web-search';
 
+// The helper can spend up to 60 seconds searching and summarizing sources.
+export const maxDuration = 75;
+
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams
   const query = searchParams.get('query')?.trim();
@@ -24,7 +27,10 @@ export async function GET(request: NextRequest) {
   try {
     const items = await searchWebWithOpenAI(query, { signal: request.signal });
     return NextResponse.json({ data: items })
-  } catch {
+  } catch (error) {
+    console.warn('Web search unavailable', {
+      name: error instanceof Error ? error.name : 'UnknownError',
+    });
     return NextResponse.json({ error: 'Web search is temporarily unavailable' }, { status: 500 })
   }
 }

@@ -44,8 +44,17 @@ function normalizeResults(body: SearchResponse): WebSearchResult[] {
   const results = new Map<string, WebSearchResult>();
   const add = (link: unknown, title = "", snippet = "") => {
     const url = webUrl(link);
-    if (!url || results.has(url.href) || results.size >= 10) return;
-    results.set(url.href, {
+    if (!url) return;
+    // Citations may add tracking parameters that are absent from search sources.
+    // Keep the provider's link, but use the page identity for deduplication.
+    const identity = new URL(url);
+    identity.hash = "";
+    for (const key of [...identity.searchParams.keys()]) {
+      if (key.toLowerCase().startsWith("utm_")) identity.searchParams.delete(key);
+    }
+    identity.searchParams.sort();
+    if (results.has(identity.href) || results.size >= 10) return;
+    results.set(identity.href, {
       title: title.trim() || url.hostname,
       link: url.href,
       displayLink: url.hostname,
@@ -113,8 +122,9 @@ export async function searchWebWithOpenAI(
   if (!query.trim()) throw new Error("Missing search query");
   if (!process.env.OPENAI_API_KEY) throw new Error("Missing OPENAI_API_KEY");
 
-  // Leave time for topic generation within the route's 30-second budget.
-  const timeout = AbortSignal.timeout(10_000);
+  // This includes both the hosted search and the model's cited summaries.
+  // Topic generation has a separate allowance in the route's 120-second budget.
+  const timeout = AbortSignal.timeout(60_000);
   const signal = options.signal
     ? AbortSignal.any([options.signal, timeout])
     : timeout;
@@ -139,7 +149,10 @@ export async function searchWebWithOpenAI(
       input: query.trim(),
     }),
   });
-  if (!response.ok) throw new Error(`Web search failed (${response.status})`);
+  if (!response.ok) {
+    console.warn("OpenAI web search failed", { status: response.status });
+    throw new Error(`Web search failed (${response.status})`);
+  }
   const body: SearchResponse = await response.json();
   if (
     body.status !== "completed" ||

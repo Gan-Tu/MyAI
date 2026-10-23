@@ -138,6 +138,23 @@ test("results deduplicate and cap at ten without accepting generated URLs", asyn
   assert.ok(!results.some((r) => r.link.includes("made-up")));
 });
 
+test("citation tracking parameters do not duplicate pages or discard distinct query results", async () => {
+  const body = fixture();
+  body.output[1].content[0].annotations[0].url =
+    "https://example.com/a?utm_source=openai#summary";
+  body.output[0].action.sources.push(
+    { url: "https://example.com/a?utm_campaign=search" },
+    { url: "https://example.com/a?page=2" },
+  );
+  respond(body);
+  const results = await searchWebWithOpenAI("topic");
+  assert.equal(results.length, 4);
+  assert.equal(results[0].title, "First source");
+  assert.equal(results[0].snippet, "A useful fact about the topic.");
+  assert.equal(results[0].link, "https://example.com/a?utm_source=openai#summary");
+  assert.ok(results.some((result) => result.link === "https://example.com/a?page=2"));
+});
+
 test("completed empty search returns an empty list; incomplete or missing search fails", async () => {
   respond({
     status: "completed",
@@ -295,24 +312,31 @@ test("topic generation uses search summaries and keeps model, stream, provenance
   await generated.onFinish({ object: { title: "Topic" } });
   assert.equal(
     route.cached()[0],
-    "ai-topics:resp:openai-web-v1:selected-model:topic",
+    "ai-topics:resp:openai-web-v2:selected-model:topic",
   );
   assert.deepEqual(route.cached()[1].sources, body.sources);
+  assert.deepEqual(route.cached()[2], { ex: 3600 });
 });
 
-test("topic generation degrades gracefully on search failure and empty results", async () => {
+test("failed or unusable grounding returns a retryable error without generating or caching a card", async () => {
   for (const search of [
     async () => {
       throw new Error("secret");
     },
+    async () => {
+      throw new DOMException("Search timed out", "TimeoutError");
+    },
     async () => [],
+    async () => [{ title: "Uncited page", link: "https://example.com", displayLink: "example.com", snippet: "" }],
   ]) {
     const route = topicRoute({ search });
     const response = await route.POST(topicRequest("topic"));
-    assert.equal(response.status, 200);
-    assert.deepEqual((await response.json()).sources, []);
-    assert.match(route.generated().system, /Today is/);
-    assert.ok(!route.generated().system.includes("secret"));
+    assert.equal(response.status, 503);
+    const body = await response.json();
+    assert.match(body.error, /Web search/);
+    assert.ok(!body.error.includes("secret"));
+    assert.equal(route.generated(), undefined);
+    assert.equal(route.cached(), undefined);
   }
 });
 
@@ -422,7 +446,7 @@ test("existing image action preserves cache hits, misses and error handling", as
 
 test("search timeout bounds the provider request", async (t) => {
   t.mock.method(AbortSignal, "timeout", (milliseconds) => {
-    assert.equal(milliseconds, 10_000);
+    assert.equal(milliseconds, 60_000);
     return AbortSignal.abort(new DOMException("Timed out", "TimeoutError"));
   });
   globalThis.fetch = async (_, options) => {
