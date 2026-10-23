@@ -14,6 +14,7 @@ import CreditFooter from "@/components/credit-footer";
 import { entityCardSchemaType, ImageSearchResult } from "@/lib/types";
 import type { WebSearchResult } from "@/lib/openai-web-search";
 import { capElements } from "@/lib/utils";
+import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import clsx from "clsx";
 import Description from "./description";
 import FactsList from "./fact-list";
@@ -56,9 +57,15 @@ export default function AiCard({
             facts={capElements(3, card?.facts)}
           />
           {!!card?.sources?.length && (
-            <div className="px-6 pb-5 text-xs text-slate-600">
-              <p className="mb-1 font-semibold">Web sources</p>
-              <ul className="space-y-1">
+            <details className="group px-6 pb-5 text-xs text-slate-600">
+              <summary className="flex w-fit cursor-pointer list-none items-center gap-1 rounded-md py-1 font-semibold hover:text-slate-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-500 [&::-webkit-details-marker]:hidden">
+                Web sources
+                <ChevronDownIcon
+                  aria-hidden="true"
+                  className="size-4 transition-transform group-open:rotate-180 motion-reduce:transition-none"
+                />
+              </summary>
+              <ul className="mt-2 space-y-1">
                 {card.sources.map(
                   (source: Partial<WebSearchResult>, index: number) =>
                     source?.link &&
@@ -68,7 +75,7 @@ export default function AiCard({
                           href={source.link}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="underline"
+                          className="cursor-pointer underline"
                         >
                           {source.title || source.displayLink || source.link}
                         </a>
@@ -76,7 +83,7 @@ export default function AiCard({
                     ),
                 )}
               </ul>
-            </div>
+            </details>
           )}
         </div>
       </div>
